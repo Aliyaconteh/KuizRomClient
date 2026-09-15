@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useCallback, useEffect } from "react";
-import { apiUrl } from "../config/api";
+import { apiRequest } from "../services/api/apiClient";
+import { logger } from "../utils/apiLogger";
 
 const AuthContext = createContext();
 const STORAGE_KEY = "kuizroom_host_auth";
@@ -40,7 +41,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (err) {
-      console.warn("Failed to read auth from storage", err);
+      logger.warn("AUTH_STORAGE", "Failed to read auth from storage", { error: err.message });
     } finally {
       setLoading(false);
     }
@@ -56,6 +57,7 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(true);
     setError(null);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: authToken }));
+    logger.info("AUTH_PERSIST", `User session authenticated for ${userData?.email || userData?.username || "user"}`);
   }, []);
 
   const login = useCallback((userData, authToken) => {
@@ -68,6 +70,7 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(false);
     setError(null);
     localStorage.removeItem(STORAGE_KEY);
+    logger.info("AUTH_LOGOUT", "User logged out successfully");
   }, []);
 
   const authFetch = useCallback(
@@ -77,30 +80,25 @@ export function AuthProvider({ children }) {
         ...(token ? { Authorization: `Bearer ${token}` } : {})
       };
 
-      if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
-        headers["Content-Type"] = "application/json";
-      }
-
-      const response = await fetch(apiUrl(path), {
+      return apiRequest(path, {
         ...options,
-        headers
+        headers,
+        action: options.action || "AUTH_FETCH"
       });
-
-      return response;
     },
     [token]
   );
 
   const updateProfile = useCallback(
     async (username) => {
-      const response = await authFetch("/auth/profile", {
+      const payload = await authFetch("/auth/profile", {
         method: "PUT",
+        action: "UPDATE_PROFILE",
         body: JSON.stringify({ username })
       });
-      const payload = await response.json().catch(() => ({}));
 
-      if (!response.ok || !payload.success) {
-        throw new Error(payload.message || "Unable to update profile");
+      if (!payload?.success) {
+        throw new Error(payload?.message || "Unable to update profile");
       }
 
       const updatedUser = { ...(user || {}), ...payload.data.user };
@@ -114,14 +112,14 @@ export function AuthProvider({ children }) {
 
   const changePassword = useCallback(
     async (currentPassword, newPassword) => {
-      const response = await authFetch("/auth/password", {
+      const payload = await authFetch("/auth/password", {
         method: "PUT",
+        action: "CHANGE_PASSWORD",
         body: JSON.stringify({ currentPassword, newPassword })
       });
-      const payload = await response.json().catch(() => ({}));
 
-      if (!response.ok || !payload.success) {
-        throw new Error(payload.message || "Unable to change password");
+      if (!payload?.success) {
+        throw new Error(payload?.message || "Unable to change password");
       }
 
       return payload.data;

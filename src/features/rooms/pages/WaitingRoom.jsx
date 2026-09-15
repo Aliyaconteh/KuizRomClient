@@ -129,7 +129,7 @@ export default function WaitingRoom() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ roomCode })
       });
-      const result = await res.json();
+      const result = res;
       if (result.success) {
         socket.emit("start-game", { roomCode, quizId: room?.quizId });
       } else {

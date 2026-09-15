@@ -80,8 +80,9 @@ export function ToastProvider({ children }) {
 
   // Cleanup all timers on unmount
   useEffect(() => {
+    const timers = timersRef.current;
     return () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer));
+      timers.forEach((timer) => clearTimeout(timer));
     };
   }, []);
 

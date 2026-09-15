@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Lock, UserCircle, Trophy, Award, Gamepad2, Layers, Flame, Calendar, Clock, ChevronRight } from "lucide-react";
+import { ArrowLeft, Lock, UserCircle, Trophy, Award, Gamepad2, Layers } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { useToast } from "../../../components/ui/ToastContext";
-import { apiUrl } from "../../../config/api";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, updateProfile, changePassword, token } = useAuth();
+  const { user, updateProfile, changePassword, authFetch, token } = useAuth();
   const { addToast } = useToast();
 
   const [username, setUsername] = useState(user?.username || "");
@@ -35,20 +34,15 @@ export default function Profile() {
   useEffect(() => {
     if (!token) return;
     setStatsLoading(true);
-    fetch(apiUrl("/api/auth/stats"), {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success && json.data) {
-          setStats(json.data);
-        }
+    authFetch("/auth/stats")
+      .then((payload) => {
+        if (payload?.data) setStats(payload.data);
       })
       .catch((err) => {
-        console.error("Failed to fetch user stats:", err);
+        addToast(err.message || "Unable to load profile statistics", { type: "error" });
       })
       .finally(() => setStatsLoading(false));
-  }, [token]);
+  }, [addToast, authFetch, token]);
 
   const handleProfileSave = async (event) => {
     event.preventDefault();

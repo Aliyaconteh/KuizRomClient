@@ -152,7 +152,7 @@ export default function AIPractice() {
         })
       });
 
-      const payload = await response.json();
+      const payload = response;
       if (!payload.success) {
         throw new Error(payload.message || "AI chat failed.");
       }

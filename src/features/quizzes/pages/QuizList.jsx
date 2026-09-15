@@ -47,6 +47,11 @@ const QuizCard = memo(function QuizCard({
           <h2 className="text-lg sm:text-xl font-extrabold truncate">
             {quiz.title}
           </h2>
+          {quiz.description && (
+            <p className="text-sm text-slate-500 mt-1 line-clamp-2">
+              {quiz.description}
+            </p>
+          )}
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-2.5 py-0.5 mt-2">
             {quiz.question_count || 0} questions
           </span>
@@ -99,7 +104,6 @@ export default function QuizList() {
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
     authFetch("/api/quizzes")
-      .then((res) => res.json())
       .then((response) => {
         if (!response.success) throw new Error(response.message || "Failed to load quizzes");
         setQuizzes(response.data || []);
@@ -123,7 +127,7 @@ export default function QuizList() {
     try {
       const response = await authFetch(`/api/quizzes/${quiz.id}`, {
         method: "DELETE"
-      }).then((res) => res.json());
+      });
       if (!response.success) throw new Error(response.message || "Could not delete");
 
       setQuizzes((prev) => prev.filter((item) => item.id !== quiz.id));
@@ -277,34 +281,38 @@ export default function QuizList() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="relative z-10 w-full max-w-sm sm:max-w-md bg-[#ff0000] border border-[#ff0000] rounded-2xl p-5 sm:p-6 shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-quiz-title"
+              className="relative z-10 w-full max-w-sm sm:max-w-md overflow-hidden rounded-2xl border border-slate-700/80 bg-[#0d131c] p-5 text-white shadow-2xl shadow-black/40 sm:p-6"
             >
-              <div className="flex items-start gap-3 mb-3 sm:mb-4 rounded-xl bg-[#ff0000]/10 border border-[#ff0000]/30 p-3">
-                <div className="w-10 h-10 rounded-xl bg-[#ff0000] border border-[#ff0000] flex items-center justify-center shrink-0">
-                  <AlertTriangle size={18} className="text-white" />
+              <div className="mb-5 flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-red-400/25 bg-red-500/10 text-red-300">
+                  <AlertTriangle size={19} />
                 </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white">Delete Quiz?</h3>
-                  <p className="text-sm text-red-100 mt-1 break-words">
+                <div className="min-w-0">
+                  <h3 id="delete-quiz-title" className="text-base font-bold text-white sm:text-lg">
+                    Delete quiz?
+                  </h3>
+                  <p className="mt-1 break-words text-sm leading-5 text-slate-400">
                     "{confirmDeleteQuiz.title}"
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-red-100 mb-5 sm:mb-6">
-                This will permanently remove the quiz and all its questions.
-                This action cannot be undone.
+              <p className="mb-6 text-sm leading-6 text-slate-400">
+                This permanently removes the quiz and all its questions. This action cannot be undone.
               </p>
-              <div className="flex justify-end gap-2 sm:gap-3">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
                 <button
                   onClick={handleCancelDelete}
-                  className="rounded-xl bg-slate-800 hover:bg-slate-700 px-4 py-2.5 text-sm font-semibold transition"
+                  className="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-slate-600 hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleConfirmDelete}
                   disabled={deletingId === confirmDeleteQuiz.id}
-                  className="rounded-xl bg-[#ff0000] hover:bg-[#e60000] px-4 py-2.5 text-sm font-bold flex items-center gap-2 disabled:opacity-60 transition text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {deletingId === confirmDeleteQuiz.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

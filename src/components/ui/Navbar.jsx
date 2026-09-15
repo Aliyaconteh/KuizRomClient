@@ -12,8 +12,6 @@ const hostDesktopLinks = [
   { to: "/leaderboard", label: "Scores",       icon: Trophy },
 ];
 
-// Mobile links exclude "Create Quiz" — it gets its own big FAB-style button in the center.
-// Keep the mobile list balanced around the FAB.
 const hostMobileLinks = [
   { to: "/",            label: "Home",       icon: Home },
   { to: "/quizzes",     label: "Quizzes",    icon: BookOpen },
@@ -25,7 +23,6 @@ const guestMainLinks = [
   { to: "/",            label: "Home",       icon: Home },
   { to: "/quizzes",     label: "Quizzes",    icon: BookOpen },
   { to: "/join-room",   label: "Join",       icon: DoorOpen },
- 
   { to: "/leaderboard", label: "Scores",     icon: Trophy },
 ];
 
@@ -47,17 +44,17 @@ function MobileNavButton({ to, label, Icon, isActive }) {
       onTouchStart={() => setShowLabel(true)}
       onTouchEnd={() => setShowLabel(false)}
       className={({ isActive: active }) =>
-        `group relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-900/95 text-slate-200 shadow-sm transition-all duration-200 ${
+        `group relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ${
           active || isActive
-            ? "border-indigo-500/60 bg-indigo-500/15 text-indigo-300 shadow-indigo-500/20"
-            : "hover:border-indigo-500/60 hover:bg-slate-800/95 hover:text-white"
+            ? "border-teal-500 bg-teal-500/10 text-teal-500 shadow-teal-500/20"
+            : "hover:border-teal-400 hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]"
         }`
       }
     >
       <Icon size={18} className="shrink-0" aria-hidden="true" />
       <span className="sr-only">{label}</span>
       <span
-        className={`pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2 py-1 text-[10px] font-medium text-slate-200 shadow-lg shadow-slate-950/40 transition-all duration-150 ${
+        className={`pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[var(--bg-card)] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] shadow-lg transition-all duration-150 ${
           showLabel ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"
         }`}
       >
@@ -73,7 +70,7 @@ export default function Navbar() {
   const mobileLinks = isAuthenticated ? hostMobileLinks : guestMainLinks;
   const authLink = isAuthenticated ? null : guestAuthLink;
 
-  // --- Hide/show the mobile bottom nav based on scroll direction (LinkedIn-style) ---
+  // --- Hide/show the mobile bottom nav based on scroll direction ---
   const [showMobileNav, setShowMobileNav] = useState(true);
   const lastScrollY = useRef(0);
   const idleTimer = useRef(null);
@@ -86,19 +83,15 @@ export default function Navbar() {
       const delta = currentY - lastScrollY.current;
 
       if (currentY <= 24) {
-        // Always show near the very top of the page.
         setShowMobileNav(true);
       } else if (delta > 4) {
-        // Scrolling down -> hide.
         setShowMobileNav(false);
       } else if (delta < -4) {
-        // Scrolling up -> show.
         setShowMobileNav(true);
       }
 
       lastScrollY.current = currentY;
 
-      // Reveal again once the user stops scrolling for a moment.
       if (idleTimer.current) clearTimeout(idleTimer.current);
       idleTimer.current = setTimeout(() => setShowMobileNav(true), 600);
     };
@@ -112,7 +105,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-[var(--border-color)] bg-[var(--bg-nav)] backdrop-blur-xl">
         <nav className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
           <div className="flex items-center h-15 justify-between gap-2 py-2 lg:py-0">
 
@@ -121,7 +114,7 @@ export default function Navbar() {
               className="flex items-center gap-2 group shrink-0"
               aria-label="KuizRoom Home"
             >
-              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-slate-700/80 bg-slate-900/90 group-hover:shadow-md group-hover:shadow-purple-500/25 transition-shadow duration-300">
+              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] group-hover:shadow-md group-hover:shadow-purple-500/25 transition-shadow duration-300">
                 <img src="/logo.png" alt="KuizRoom logo" className="h-full w-full object-contain p-0.5" />
               </div>
               <span className="hidden sm:inline text-base font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -135,10 +128,10 @@ export default function Navbar() {
                   key={to}
                   to={to}
                   className={({ isActive }) =>
-                    `inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/90 px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                    `inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                       isActive
-                        ? "text-indigo-300"
-                        : "text-slate-200 hover:text-white hover:border-indigo-500/60"
+                        ? "text-teal-500"
+                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-teal-400"
                     }`
                   }
                 >
@@ -152,7 +145,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/90 px-2.5 py-2 text-sm font-semibold text-slate-200 transition-all duration-200 hover:border-indigo-500/60 hover:text-white"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-all duration-200 hover:border-teal-400 hover:text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               >
                 {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
@@ -163,8 +156,8 @@ export default function Navbar() {
                 <NavLink
                   to={authLink.to}
                   className={({ isActive }) =>
-                    `inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/90 px-2.5 py-2 text-sm font-semibold transition-all duration-200 hover:border-indigo-500/60 hover:text-white ${
-                      isActive ? "text-indigo-300" : "text-slate-200"
+                    `inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold transition-all duration-200 hover:border-teal-400 hover:text-[var(--text-primary)] ${
+                      isActive ? "text-teal-500" : "text-[var(--text-secondary)]"
                     }`
                   }
                 >
@@ -181,12 +174,12 @@ export default function Navbar() {
       </header>
 
       <nav
-        className={`lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-slate-800/80 bg-slate-950/95 backdrop-blur-xl transition-transform duration-300 ease-out ${
+        className={`lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-color)] bg-[var(--bg-nav)] backdrop-blur-xl transition-transform duration-300 ease-out ${
           showMobileNav ? "translate-y-0" : "translate-y-full"
         }`}
       >
         <div
-          className={`mx-auto flex max-w-7xl items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 ${
+          className={`mx-auto flex max-w-7xl items-center gap-4 px-4 py-2.5 sm:gap-5 sm:px-5 ${
             isAuthenticated ? "justify-between" : "justify-center"
           }`}
         >
@@ -201,11 +194,11 @@ export default function Navbar() {
               to={hostFabLink.to}
               title={hostFabLink.label}
               aria-label={hostFabLink.label}
-              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 ring-4 ring-slate-950 transition-transform duration-200 hover:scale-105 active:scale-95"
+              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 ring-4 ring-[var(--bg-nav)] transition-transform duration-200 hover:scale-105 active:scale-95"
             >
               <Plus size={24} strokeWidth={2.5} aria-hidden="true" />
               <span className="sr-only">{hostFabLink.label}</span>
-              <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900 px-2 py-1 text-[10px] font-medium text-slate-200 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-active:opacity-100">
+              <span className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[var(--bg-card)] px-2 py-1 text-[10px] font-medium text-[var(--text-primary)] opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-active:opacity-100">
                 {hostFabLink.label}
               </span>
             </NavLink>

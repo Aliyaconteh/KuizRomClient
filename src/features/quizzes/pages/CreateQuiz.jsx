@@ -14,8 +14,7 @@ import {
   CheckCircle2,
   Loader2,
   FileSpreadsheet,
-  Download,
-  FileCode
+  Download
 } from "lucide-react";
 import { useToast } from "../../../components/ui/ToastContext";
 import { useNavigate } from "react-router-dom";
@@ -240,6 +239,7 @@ export default function CreateQuiz() {
   const prefersReducedMotion = useReducedMotion();
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [questions, setQuestions] = useState([emptyQuestion()]);
   const [aiMode, setAiMode] = useState("document");
   const [aiFile, setAiFile] = useState(null);
@@ -325,8 +325,8 @@ export default function CreateQuiz() {
       const quizRes = await authFetch("/api/quizzes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), created_by: user.id })
-      }).then((res) => res.json());
+        body: JSON.stringify({ title: title.trim(), description: description.trim(), created_by: user.id })
+      });
 
       if (!quizRes.success) throw new Error(quizRes.message || "Could not create quiz");
 
@@ -341,7 +341,7 @@ export default function CreateQuiz() {
             correct_answer: q.correctAnswer.trim(),
             time_limit: Number(q.timeLimit || 15)
           })
-        }).then((res) => res.json());
+        });
 
         if (!qRes.success) throw new Error(qRes.message || "Could not save a question");
       }
@@ -389,13 +389,14 @@ export default function CreateQuiz() {
         method: "POST",
         body: formData
       });
-      const payload = await res.json();
+      const payload = res;
       if (!payload.success) throw new Error(payload.message || "AI generation failed.");
 
       const quiz = payload.data;
       if (!quiz || !Array.isArray(quiz.questions)) throw new Error("Invalid AI response.");
 
       setTitle(quiz.title || "");
+      setDescription(quiz.description || "");
       setAiDescription(quiz.description || "");
       setQuestions(
         quiz.questions.map((item) => {
@@ -612,6 +613,16 @@ export default function CreateQuiz() {
           {touched.title && !title.trim() && (
             <p className="text-xs text-red-400 mt-1.5">Title is required</p>
           )}
+          <label className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2 mt-5 block">
+            Quiz Description
+          </label>
+          <textarea
+            rows="3"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className={`${inputClass(false)} resize-none`}
+            placeholder="Briefly describe the quiz topic or learning objective"
+          />
         </motion.div>
 
         {/* AI Generation Section */}

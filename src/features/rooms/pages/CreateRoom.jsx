@@ -124,6 +124,9 @@ export default function CreateRoom() {
   const [roomCreated,    setRoomCreated]    = useState(false);
   const [createdRoomCode, setCreatedRoomCode] = useState("");
   const [mounted,        setMounted]        = useState(false);
+  const [syncMode,       setSyncMode]       = useState("server");
+  const [delayLevel,     setDelayLevel]     = useState("low");
+  const [customDelayMs,  setCustomDelayMs]  = useState(200);
 
   const joinUrl = createdRoomCode
     ? `${window.location.origin}/join-room?roomCode=${encodeURIComponent(createdRoomCode)}`
@@ -146,7 +149,6 @@ export default function CreateRoom() {
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
     authFetch("/api/quizzes")
-      .then(res => res.json())
       .then(response => {
         const arr = response?.data || response || [];
         setQuizzes(arr);
@@ -191,10 +193,13 @@ export default function CreateRoom() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           hostId: user.id, username: hostUsername, quizId,
-          roomName: roomName.trim(), syncMode: "server", delayLevel: "medium", delayMs: null,
+          roomName: roomName.trim(),
+          syncMode,
+          delayLevel,
+          delayMs: delayLevel === "custom" ? Number(customDelayMs) : null,
         }),
       });
-      const result = await res.json();
+      const result = res;
 
       if (result.success) {
         const room = result.data;
@@ -202,7 +207,7 @@ export default function CreateRoom() {
         setCreatedRoomCode(roomCode);
         setRoomCreated(true);
         socket.emit("join-room", { roomCode, player: { id: user.id, username: hostUsername } });
-        setRoom({ id: room.id, code: roomCode, roomCode, name: roomName, roomName, quizId, isHost: true, hostId: user.id });
+        setRoom({ id: room.id, code: roomCode, roomCode, name: roomName, roomName, quizId, isHost: true, hostId: user.id, syncMode: room.sync_mode, delayLevel: room.delay_level, delayMs: room.delay_ms });
       } else {
         const m = result.message || "Room creation failed";
         setError(m);
@@ -422,6 +427,54 @@ export default function CreateRoom() {
                 </div>
               )}
             </div>
+
+            {/* research configuration */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
+                  Sync Strategy
+                </div>
+                <select
+                  value={syncMode}
+                  onChange={(e) => setSyncMode(e.target.value)}
+                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
+                >
+                  <option value="server">Server-Authoritative</option>
+                  <option value="optimistic">Optimistic</option>
+                </select>
+              </div>
+              <div>
+                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
+                  Network Delay
+                </div>
+                <select
+                  value={delayLevel}
+                  onChange={(e) => setDelayLevel(e.target.value)}
+                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
+                >
+                  <option value="low">0 ms</option>
+                  <option value="medium">200 ms</option>
+                  <option value="high">600 ms</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+            </div>
+
+            {delayLevel === "custom" && (
+              <div>
+                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
+                  Custom Delay (ms)
+                </div>
+                <input
+                  type="number"
+                  min="0"
+                  max="5000"
+                  value={customDelayMs}
+                  onChange={(e) => setCustomDelayMs(e.target.value)}
+                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
+                />
+              </div>
+            )}
 
             {/* submit */}
             <button

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Trophy, Users, Star, ArrowLeft, Crown, Medal, Download, BookOpen, CheckCircle, ChevronDown, ChevronUp, FileSpreadsheet, Activity } from "lucide-react";
+import { Trophy, Users, Star, ArrowLeft, Crown, Medal, BookOpen, CheckCircle, ChevronDown, ChevronUp, FileSpreadsheet, Activity } from "lucide-react";
 import { useGame } from "../../../context/GameContext";
 import { apiUrl } from "../../../config/api";
 import { useToast } from "../../../components/ui/ToastContext";

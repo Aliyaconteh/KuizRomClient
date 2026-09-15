@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AlertCircle, Clock, Flag, Zap, Server, Activity, CheckCircle, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Clock, Flag, Zap, Server, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import { socket } from "../../../services/socket/socket";
 import ScoreBoard from "../../../components/game/ScoreBoard";
 import { useGame } from "../../../context/GameContext";
 import { useToast } from "../../../components/ui/ToastContext";
+import { useRoom } from "../../../context/RoomContext";
 
 const LETTERS = ["A", "B", "C", "D"];
+
+const getClientTimestamp = () => Date.now();
 
 export default function GameRoom() {
   const { roomCode } = useParams();
@@ -22,18 +25,16 @@ export default function GameRoom() {
     setTotalQuestions,
     questionsAnswered,
     setQuestionsAnswered,
-    syncModel,
     setSyncModel,
     metrics,
     setMetrics,
-    clientPredictedScore,
     setClientPredictedScore,
     setServerScore
   } = useGame();
+  const { room } = useRoom();
 
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [answerStatus, setAnswerStatus] = useState("idle");
-  const [feedback, setFeedback] = useState("");
   const [questionNumber, setQuestionNumber] = useState(0);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -44,7 +45,7 @@ export default function GameRoom() {
   const [roomSyncMode, setRoomSyncMode] = useState("optimistic");
   const [roomDelayMs, setRoomDelayMs] = useState(0);
   const [reconciliationCount, setReconciliationCount] = useState(0);
-  const clientTimestampRef = useRef(Date.now());
+  const clientTimestampRef = useRef(null);
   const { addToast } = useToast();
 
   const username = useMemo(() => localStorage.getItem("username") || "Guest", []);
@@ -67,7 +68,6 @@ export default function GameRoom() {
       setTotalQuestions(data.totalQuestions || 0);
       setSelectedAnswer("");
       setAnswerStatus("idle");
-      setFeedback("");
       setError("");
       setReconciliationAlert(null);
       setQuestionKey((k) => k + 1);
@@ -115,7 +115,6 @@ export default function GameRoom() {
         });
       }
 
-      setFeedback(data.isCorrect ? `Correct! +${data.pointsAwarded} points` : "Incorrect answer");
       setQuestionsAnswered((count) => count + 1);
     };
 
@@ -129,7 +128,7 @@ export default function GameRoom() {
 
     const handleRejected = (data) => {
       setAnswerStatus("rejected");
-      setFeedback(data.reason || "Answer rejected");
+      setError(data.reason || "Answer could not be submitted.");
     };
 
     const handleFinished = (data) => {
@@ -178,7 +177,7 @@ export default function GameRoom() {
   const submitAnswer = (answer) => {
     if (!currentQuestion || answerStatus === "pending" || Number(timeRemaining || 0) <= 0) return;
 
-    clientTimestampRef.current = Date.now();
+    clientTimestampRef.current = getClientTimestamp();
     const isOptimistic = roomSyncMode.toLowerCase().includes("optimistic");
 
     // Compute optimistic score prediction
@@ -196,7 +195,6 @@ export default function GameRoom() {
 
     if (isOptimistic) {
       setClientPredictedScore(predictedTotalScore);
-      setFeedback(`Predicted +${predictedPoints} pts (Optimistic update applied)`);
       // Optimistically update local leaderboard display immediately
       setLeaderboard((prev) =>
         prev.map((p) =>
@@ -205,8 +203,6 @@ export default function GameRoom() {
             : p
         )
       );
-    } else {
-      setFeedback("Validating answer with authoritative server...");
     }
 
     socket.emit("game:answer", {
@@ -226,19 +222,8 @@ export default function GameRoom() {
   const timerBg = timerValue > 10 ? "bg-blue-500/10 border-blue-500/30" : timerValue > 5 ? "bg-amber-500/10 border-amber-500/30" : "bg-red-500/10 border-red-500/30";
   const progressPct = totalQuestions > 0 ? (questionNumber / totalQuestions) * 100 : 0;
 
-  const feedbackIcon = answerStatus === "rejected" 
-    ? <AlertCircle size={18} className="text-amber-400 shrink-0" /> 
-    : answerStatus === "submitted" 
-    ? <CheckCircle size={18} className="text-emerald-400 shrink-0" />
-    : <RefreshCw size={18} className="text-indigo-400 shrink-0 animate-spin" />;
-
-  const feedbackBg = answerStatus === "rejected" 
-    ? "bg-amber-500/10 border-amber-500/20" 
-    : answerStatus === "submitted"
-    ? "bg-emerald-500/10 border-emerald-500/20"
-    : "bg-indigo-500/10 border-indigo-500/20";
-
   const isOptimistic = roomSyncMode.toLowerCase().includes("optimistic");
+  const isHost = Boolean(room?.isHost) || localStorage.getItem("playerId") === room?.hostId;
 
   return (
     <div
@@ -392,22 +377,17 @@ export default function GameRoom() {
                 })}
               </div>
 
-              {feedback && (
-                <div className={`mt-6 rounded-xl px-4 py-3 flex items-center gap-3 border ${feedbackBg}`} style={{ animation: "fadeIn 0.3s ease both" }}>
-                  {feedbackIcon}
-                  <span className="text-slate-100 text-sm font-medium">{feedback}</span>
+              {isHost && (
+                <div className="flex flex-wrap gap-3 mt-8">
+                  <button
+                    onClick={() => socket.emit("quiz-end", { roomCode })}
+                    className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold flex items-center gap-2 transition-all duration-200"
+                  >
+                    <Flag size={14} />
+                    Finish Quiz
+                  </button>
                 </div>
               )}
-
-              <div className="flex flex-wrap gap-3 mt-8">
-                <button
-                  onClick={() => socket.emit("quiz-end", { roomCode })}
-                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold flex items-center gap-2 transition-all duration-200"
-                >
-                  <Flag size={14} />
-                  Finish Quiz
-                </button>
-              </div>
             </div>
           ) : (
             <div className="py-20 text-center">
@@ -427,7 +407,6 @@ export default function GameRoom() {
     </div>
   );
 }
-
 
 
 

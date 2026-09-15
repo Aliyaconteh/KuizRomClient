@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Server, Zap, Clock, RefreshCw, Shield, Activity, ArrowRight, Gauge, Download, BarChart2, CheckCircle, Search } from "lucide-react";
+import { Server, Zap, Clock, RefreshCw, Activity, Download, BarChart2, CheckCircle, Search } from "lucide-react";
 import { apiUrl } from "../../../config/api";
 import { useToast } from "../../../components/ui/ToastContext";
 

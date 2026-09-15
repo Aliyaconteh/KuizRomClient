@@ -7,7 +7,9 @@ import {
   Sparkles,
   LifeBuoy,
   UserX,
+  ArrowLeft,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const terms = [
   {
@@ -50,30 +52,39 @@ const terms = [
 
 export default function TermsAndServices() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <div className="relative overflow-hidden">
         {/* Soft glow background */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]" />
 
         <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-24">
+          {/* Back button */}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-colors hover:border-indigo-400 hover:text-[var(--text-primary)]"
+          >
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back to Home
+          </Link>
+
           {/* Header */}
-          <header className="border-b border-slate-800 pb-12">
-            <div className="mb-5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-indigo-300">
+          <header className="mt-8 border-b border-[var(--border-color)] pb-12">
+            <div className="mb-5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-indigo-500">
               <CheckCircle2 size={17} aria-hidden="true" />
               KuizRoom agreement
             </div>
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
               Terms and Services
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
               These terms set the ground rules for using KuizRoom as a host, player, or participant in the synchronization study.
             </p>
-            <p className="mt-4 text-sm text-slate-500">Last updated: 19 August 2026</p>
+            <p className="mt-4 text-sm text-[var(--text-muted)]">Last updated: 19 August 2026</p>
           </header>
 
           {/* Table of contents */}
           <nav className="my-10" aria-label="Table of contents">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               On this page
             </h2>
             <ul className="mt-4 flex flex-wrap gap-2">
@@ -81,7 +92,7 @@ export default function TermsAndServices() {
                 <li key={id}>
                   <a
                     href={`#${id}`}
-                    className="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-300 transition hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-white"
+                    className="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] transition hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-[var(--text-primary)]"
                   >
                     {title}
                   </a>
@@ -96,15 +107,15 @@ export default function TermsAndServices() {
               <section
                 key={id}
                 id={id}
-                className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 transition hover:border-indigo-500/50 hover:bg-slate-900/70 sm:p-8"
+                className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 transition hover:border-indigo-500/50 hover:bg-[var(--bg-card-hover)] sm:p-8"
               >
                 <div className="flex items-start gap-4">
-                  <div className="rounded-xl bg-indigo-500/10 p-3 text-indigo-300">
+                  <div className="rounded-xl bg-indigo-500/10 p-3 text-indigo-400">
                     <Icon size={22} aria-hidden="true" />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold tracking-tight">{title}</h2>
-                    <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
+                    <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{text}</p>
                   </div>
                 </div>
               </section>
@@ -112,9 +123,9 @@ export default function TermsAndServices() {
           </div>
 
           {/* Warning notice */}
-          <div className="mt-8 flex gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 text-sm leading-6 text-slate-300">
+          <div className="mt-8 flex gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 text-sm leading-6 text-[var(--text-secondary)]">
             <AlertTriangle
-              className="mt-0.5 shrink-0 text-amber-300"
+              className="mt-0.5 shrink-0 text-amber-400"
               size={20}
               aria-hidden="true"
             />

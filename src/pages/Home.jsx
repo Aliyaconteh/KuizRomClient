@@ -6,14 +6,15 @@ import {
   Clock3,
   Database,
   Download,
-  ListChecks,
-  PlusCircle,
   Radio,
   ShieldCheck,
   Sparkles,
   Trophy,
   Users,
   ArrowRight,
+  Laugh,
+  Puzzle,
+  Joystick,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/ui/Footer";
@@ -24,57 +25,62 @@ import { useToast } from "../components/ui/ToastContext";
 // -------------------------------------------------------------------
 const workflows = [
   {
-    title: "Create a quiz",
-    text: "Add questions, options, correct answers, and timers before opening a room.",
+    title: "Whip up a quiz",
+    text: "Throw in questions, options, and weird wrong answers. Set a timer, then hit the road.",
     path: "/quizzes/create",
-    icon: ListChecks,
-    action: "Build quiz",
+    icon: Puzzle,
+    action: "Start crafting",
+    color: "from-pink-400 to-rose-500",
   },
   {
-    title: "Host a live room",
-    text: "Select a quiz, generate a room code, and wait for participants in the lobby.",
+    title: "Spin up a room",
+    text: "Pick your quiz, get a room code, and watch the lobby fill with eager players.",
     path: "/create-room",
-    icon: PlusCircle,
-    action: "Create room",
+    icon: Joystick,
+    action: "Launch room",
+    color: "from-teal-400 to-cyan-500",
   },
   {
-    title: "Join with a code",
-    text: "Participants can enter a room code and username to join the waiting room.",
+    title: "Hop in with code",
+    text: "Enter the code, pick a silly username, and you're in. No email, no fuss.",
     path: "/join-room",
     icon: Users,
-    action: "Join room",
+    action: "Join the chaos",
+    color: "from-amber-400 to-orange-500",
   },
   {
-    title: "Review outcomes",
-    text: "Open room scores and synchronization analysis for evaluation and reporting.",
+    title: "See who survived",
+    text: "After the final buzzer, check the leaderboard and laugh at your friends' scores.",
     path: "/leaderboard",
     icon: Trophy,
-    action: "View scores",
+    action: "Gloat",
+    color: "from-purple-400 to-indigo-500",
   },
   {
-    title: "Practice with AI",
-    text: "Open a private tutor chat for doubts, explanations, and step-by-step practice questions.",
+    title: "Get your AI buddy",
+    text: "Stuck on a question? Open the AI tutor – it explains like a clever friend.",
     path: "/ai-practice",
     icon: Sparkles,
-    action: "Open tutor",
+    action: "Chat with AI",
+    color: "from-sky-400 to-blue-500",
   },
 ];
 
 const features = [
-  { icon: Radio, title: "Real-time rooms", text: "Room updates, player lists, questions, timers, and scores move through sockets." },
-  { icon: ShieldCheck, title: "Server authority", text: "The backend validates answers and controls scoring for consistent results." },
-  { icon: Clock3, title: "Optimistic feedback", text: "Client-side prediction is supported for comparing perceived responsiveness." },
-  { icon: Database, title: "Persistent records", text: "Quizzes, rooms, players, answers, and session results are saved in Supabase." },
-  { icon: BarChart3, title: "Analysis ready", text: "Synchronization logs support latency and reconciliation discussion." },
-  { icon: CheckCircle2, title: "Demo workflow", text: "Create quiz, create room, join, play, finish, and review results from one interface." },
+  { icon: Radio, title: "Live, instant rooms", text: "Everything moves via websockets – questions, timers, and scores update in real time." },
+  { icon: ShieldCheck, title: "Server's the boss", text: "The backend checks every answer and scores you fairly – no cheating!" },
+  { icon: Clock3, title: "Feedback that's snappy", text: "You see your own answer immediately, while we double-check behind the scenes." },
+  { icon: Database, title: "Every quiz saved", text: "All quizzes, rooms, and results live safely in Supabase – you can always revisit." },
+  { icon: BarChart3, title: "Synchronisation insights", text: "We compare server-authoritative and optimistic updates so you see what's really going on." },
+  { icon: CheckCircle2, title: "One-stop demo", text: "Create, join, play, and review – all from this same dashboard. No wandering." },
 ];
 
 // -------------------------------------------------------------------
-//  Animation variants (respects prefers-reduced-motion)
+//  Animation variants
 // -------------------------------------------------------------------
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+const popIn = {
+  hidden: { opacity: 0, scale: 0.9, y: 30 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", bounce: 0.4, duration: 0.6 } },
 };
 
 const staggerContainer = {
@@ -83,14 +89,7 @@ const staggerContainer = {
 };
 
 // -------------------------------------------------------------------
-//  Reusable motion wrappers
-// -------------------------------------------------------------------
-const MotionButton = motion.button;
-const MotionDiv = motion.div;
-const MotionSection = motion.section;
-
-// -------------------------------------------------------------------
-//  Card components – memoised for performance
+//  Memoised components
 // -------------------------------------------------------------------
 const WorkflowCard = memo(function WorkflowCard({
   title,
@@ -98,47 +97,53 @@ const WorkflowCard = memo(function WorkflowCard({
   icon: Icon,
   action,
   onOpen,
+  color,
 }) {
   return (
-    <MotionButton
+    <motion.button
       onClick={onOpen}
-      variants={fadeUp}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="group flex h-full flex-col rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-left backdrop-blur-sm transition-colors duration-200 hover:border-indigo-500/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
+      variants={popIn}
+      whileHover={{ scale: 1.03, rotate: -1 }}
+      whileTap={{ scale: 0.97, rotate: 1 }}
+      className={`group relative flex h-full flex-col rounded-[2rem] border-2 border-dashed border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left backdrop-blur-sm transition-colors hover:border-[var(--border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400`}
       aria-label={`${action}: ${title}`}
     >
-      <div className="mb-5 grid h-11 w-11 place-items-center rounded-xl bg-slate-800 text-indigo-300 transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-purple-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-purple-500/20">
-        <Icon size={20} aria-hidden="true" />
+      {/* Decorative wobbly background */}
+      <div className={`absolute -inset-1 -z-10 rounded-[2rem] bg-gradient-to-br ${color} opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-30`} />
+      
+      <div className="mb-5 flex items-center justify-between">
+        <div className={`grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br ${color} text-white shadow-lg`}>
+          <Icon size={22} aria-hidden="true" />
+        </div>
+        <span className="text-3xl font-black opacity-20">✦</span>
       </div>
-      <h3 className="text-xl font-extrabold tracking-tight">{title}</h3>
-      <p className="mt-3 flex-1 text-sm leading-6 text-slate-400">{text}</p>
-      <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-indigo-300 transition-colors group-hover:text-indigo-200">
+
+      <h3 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)]">{title}</h3>
+      <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
+
+      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-teal-500 transition-colors group-hover:text-teal-400">
         {action}
-        <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+        <ArrowRight size={16} className="transition-transform group-hover:translate-x-2 group-hover:-rotate-6" />
       </span>
-    </MotionButton>
+    </motion.button>
   );
 });
 
-const FeatureCard = memo(function FeatureCard({
-  icon: Icon,
-  title,
-  text,
-}) {
+const FeatureCard = memo(function FeatureCard({ icon: Icon, title, text }) {
   return (
-    <MotionDiv
-      variants={fadeUp}
-      className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-sm transition-colors duration-200 hover:border-indigo-500/40"
+    <motion.div
+      variants={popIn}
+      whileHover={{ y: -4 }}
+      className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 backdrop-blur-md hover:bg-[var(--bg-card-hover)]"
     >
       <div className="mb-4 flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-xl border border-slate-800 bg-slate-900 text-indigo-300">
+        <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--bg-secondary)] text-amber-500">
           <Icon size={20} aria-hidden="true" />
         </div>
-        <h3 className="font-extrabold">{title}</h3>
+        <h3 className="font-display text-lg font-bold text-[var(--text-primary)]">{title}</h3>
       </div>
-      <p className="text-sm leading-6 text-slate-400">{text}</p>
-    </MotionDiv>
+      <p className="text-sm leading-6 text-[var(--text-muted)]">{text}</p>
+    </motion.div>
   );
 });
 
@@ -183,15 +188,12 @@ export default function Home() {
     };
   }, []);
 
-  const handleNavigation = useCallback(
-    (path) => () => navigate(path),
-    [navigate]
-  );
+  const handleNavigation = useCallback((path) => () => navigate(path), [navigate]);
 
   const handleInstall = async () => {
     if (!installPrompt) {
       addToast(
-        "To install KuizRoom, open your browser menu and choose Install app or Add to Home Screen.",
+        "To install KuizRoom, open your browser menu and choose 'Install app' or 'Add to Home Screen'.",
         { type: "info", duration: 6000 }
       );
       return;
@@ -205,177 +207,146 @@ export default function Home() {
     setInstallPrompt(null);
   };
 
-  // Respect user motion preference – skip initial mount fade if reduced motion
   const heroOpacity = mounted ? "opacity-100" : "opacity-0";
-  const heroTransition = prefersReducedMotion
-    ? "transition-none"
-    : "transition-opacity duration-500";
+  const heroTransition = prefersReducedMotion ? "transition-none" : "transition-opacity duration-1000";
 
   return (
-    <main className="relative min-h-screen bg-slate-950 text-white">
-      {/* Soft radial glow background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-br from-indigo-900/20 to-purple-900/10 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-indigo-900/10 blur-3xl" />
+    <main className="relative min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
+      {/* Decorative floating blobs */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-rose-500/10 blur-3xl animate-float-slow" />
+        <div className="absolute bottom-20 right-20 h-96 w-96 rounded-full bg-teal-500/10 blur-3xl animate-float-slower" />
+        <div className="absolute top-1/2 left-1/3 h-40 w-40 rounded-full bg-amber-400/10 blur-2xl animate-pulse" />
       </div>
 
       <div className="relative">
-        {/* HERO (id="hero") */}
-        <section id="hero" className="border-b border-slate-800/80">
-          <div
-            className={`mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:py-28 ${heroOpacity} ${heroTransition}`}
-          >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/90 px-4 py-2 text-sm font-semibold text-slate-200 backdrop-blur-sm">
-              <Sparkles size={16} className="text-indigo-300" aria-hidden="true" />
-              KuizRoom
+        {/* HERO */}
+        <section id="hero" className="flex min-h-screen items-center justify-center px-4 py-20 sm:px-6">
+          <div className={`max-w-4xl text-center ${heroOpacity} ${heroTransition}`}>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[var(--bg-secondary)] px-4 py-2 text-sm font-semibold text-amber-600 backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
+              KuizRoom is live
             </div>
 
-            <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
-              KuizRoom:{" "}
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Real-Time Multiplayer Quiz Platform
+            <h1 className="font-display text-5xl font-black leading-tight sm:text-7xl text-[var(--text-primary)]">
+              Learn.{" "}
+              <span className="relative inline-block bg-gradient-to-r from-rose-400 via-amber-300 to-teal-400 bg-clip-text text-transparent">
+                Laugh.
+              </span>{" "}
+              <span className="underline decoration-wavy decoration-amber-400/50 underline-offset-8">
+                Compete.
               </span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-slate-400">
-              KuizRoom is a real-time multiplayer quiz application that allows
-              teachers, hosts, and learners to create quizzes, host live quiz
-              sessions, and participate using a room code. Participants answer
-              timed questions while scores and leaderboards are updated in real
-              time.
+            <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-[var(--text-secondary)]">
+              The multiplayer quiz platform that feels like a game night with your
+              loudest friends. Create a quiz, grab a room code, and watch the
+              leaderboard erupt. 
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <MotionButton
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <motion.button
                 onClick={handleNavigation("/quizzes/create")}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex min-h-12 items-center gap-2 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 px-6 py-3 font-bold text-white shadow-md shadow-purple-500/20 transition-shadow duration-200 hover:shadow-lg hover:shadow-purple-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
-                aria-label="Create a new quiz"
+                whileHover={{ scale: 1.05, rotate: -1 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-full bg-gradient-to-r from-rose-500 to-amber-500 px-8 py-4 font-bold text-white shadow-xl shadow-rose-500/20 hover:shadow-rose-500/40"
               >
-                Create Quiz
-              </MotionButton>
+                Make a quiz
+              </motion.button>
 
-              <MotionButton
+              <motion.button
                 onClick={handleNavigation("/join-room")}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="min-h-12 rounded-full border border-slate-700 bg-slate-900/90 px-6 py-3 font-bold text-slate-200 backdrop-blur-sm transition-colors duration-200 hover:border-indigo-500/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
-                aria-label="Join a room using a code"
+                whileHover={{ scale: 1.05, rotate: 1 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-full border-2 border-[var(--border-color)] bg-[var(--bg-card)] px-8 py-4 font-bold text-[var(--text-primary)] backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-500"
               >
-                Join Room
-              </MotionButton>
+                Join a room
+              </motion.button>
 
               {!isInstalled && (
-                <MotionButton
+                <motion.button
                   onClick={handleInstall}
                   whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="inline-flex min-h-12 items-center gap-2 rounded-full border border-blue-700 bg-blue-600 px-6 py-3 font-bold text-white shadow-md shadow-blue-600/20 transition-colors duration-200 hover:border-blue-800 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70"
-                  aria-label="Install KuizRoom as an app"
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--bg-secondary)] px-6 py-4 font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-card)]"
                 >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white/15">
-                    <Download size={16} aria-hidden="true" />
-                  </span>
-                  <span>Install KuizRoom</span>
-                </MotionButton>
+                  <Download size={18} />
+                  Install app
+                </motion.button>
               )}
             </div>
           </div>
         </section>
 
-        
-          
-        
-
-        {/* ABOUT (id="about") */}
-        <section id="about" className="border-b border-slate-800/80 bg-slate-900/20">
-          <div className="mx-auto max-w-4xl px-4 py-14 text-center sm:px-6">
-            <p className="text-sm font-bold uppercase tracking-wide text-indigo-300">
-              About KuizRoom
-            </p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight">
-              A live quiz space for learning and evaluation
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-400">
-              KuizRoom helps teachers, hosts, and learners run interactive quiz
-              sessions. It combines live questions, timed answers, server-validated
-              scoring, leaderboards, and optional AI-assisted practice. The project
-              also compares server-authoritative and optimistic synchronization to
-              study responsiveness and consistency in real-time web applications.
+        {/* About */}
+        <section id="about" className="border-y border-[var(--border-color)] bg-[var(--bg-secondary)] py-14">
+          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
+            <div className="flex items-center gap-3 text-amber-500">
+              <Laugh size={28} />
+              <p className="font-display text-lg font-bold uppercase tracking-widest">Why KuizRoom?</p>
+            </div>
+            <p className="max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
+              Because learning shouldn't feel like a lecture. KuizRoom combines live
+              quiz battles, instant feedback, and a bit of friendly trash-talking.
+              It's built to show how real-time sync works – but honestly, we just
+              wanted a reason to throw a quiz party.
             </p>
           </div>
         </section>
 
-        {/* WORKFLOWS (id="workflows") */}
-        <MotionSection
+        {/* Workflows */}
+        <motion.section
           id="workflows"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={prefersReducedMotion ? {} : staggerContainer}
-          className="mx-auto max-w-7xl px-4 py-16 sm:px-6"
+          className="mx-auto max-w-7xl px-4 py-20 sm:px-6"
         >
-          <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-indigo-300">
-                Main workflows
-              </p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight">
-                Move through the project
-              </h2>
-            </div>
-            <MotionButton
-              onClick={handleNavigation("/sync-analysis")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-fit rounded-full border border-slate-700 bg-slate-900/90 px-4 py-2 font-bold text-slate-200 backdrop-blur-sm transition-colors duration-200 hover:border-indigo-500/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/70"
-              aria-label="Open synchronization analysis dashboard"
-            >
-              Open Analysis
-            </MotionButton>
+          <div className="mb-10">
+            <p className="font-display text-sm font-bold uppercase tracking-widest text-teal-500">
+              The flow
+            </p>
+            <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">
+              Your quiz night, step by step
+            </h2>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {workflows.map((item) => (
-              <WorkflowCard
-                key={item.title}
-                {...item}
-                onOpen={handleNavigation(item.path)}
-              />
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {workflows.map((item, index) => (
+              <div key={item.title} className={`${index === 0 ? "md:col-span-2 xl:col-span-1" : ""} ${index === 3 ? "xl:col-span-2" : ""}`}>
+                <WorkflowCard {...item} onOpen={handleNavigation(item.path)} />
+              </div>
             ))}
           </div>
-        </MotionSection>
+        </motion.section>
 
-        {/* FEATURES (id="features") */}
-        <MotionSection
+        {/* Features */}
+        <motion.section
           id="features"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={prefersReducedMotion ? {} : staggerContainer}
-          className="border-t border-slate-800/80 bg-slate-900/30"
+          className="border-t border-[var(--border-color)] bg-[var(--bg-secondary)]"
         >
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-            <div className="mb-8">
-              <p className="text-sm font-bold uppercase tracking-wide text-indigo-300">
-                System design
+          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+            <div className="mb-12 text-center">
+              <p className="font-display text-sm font-bold uppercase tracking-widest text-rose-500">
+                Under the hood
               </p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight">
-                What the project demonstrates
+              <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">
+                Engineered for fun, built for speed
               </h2>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {features.map((feature) => (
                 <FeatureCard key={feature.title} {...feature} />
               ))}
             </div>
           </div>
-        </MotionSection>
+        </motion.section>
 
         <Footer />
       </div>
