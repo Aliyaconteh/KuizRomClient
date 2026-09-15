@@ -1,5 +1,5 @@
-const LIVE_API_URL = import.meta.env.VITE_API_BASE_URL || "https://quizroomserver.onrender.com";
-const LOCAL_API_URL = import.meta.env.VITE_LOCAL_API_URL || "http://localhost:5000";
+const LIVE_API_URL = import.meta.env.VITE_API_BASE_URL 
+const LOCAL_API_URL = import.meta.env.VITE_LOCAL_API_URL
 
 export const resolveApiBaseUrl = () => {
   if (typeof window === "undefined") {
