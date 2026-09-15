@@ -1,4 +1,4 @@
-const LIVE_API_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_SOCKET_URL || "https://quizroomserver.onrender.com";
+const LIVE_API_URL = import.meta.env.VITE_API_BASE_URL || "https://quizroomserver.onrender.com";
 const LOCAL_API_URL = import.meta.env.VITE_LOCAL_API_URL || "http://localhost:5000";
 
 export const resolveApiBaseUrl = () => {
@@ -21,10 +21,10 @@ export const API_BASE_URL = resolveApiBaseUrl();
 
 export const SOCKET_URL =
   import.meta.env.VITE_FORCE_REMOTE_API === "true"
-    ? (import.meta.env.VITE_SOCKET_URL || LIVE_API_URL)
+    ? LIVE_API_URL
     : (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
         ? LOCAL_API_URL
-        : (import.meta.env.VITE_SOCKET_URL || API_BASE_URL));
+        : API_BASE_URL);
 
 export const apiUrl = (path) => {
   const base = resolveApiBaseUrl();
