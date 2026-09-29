@@ -38,7 +38,7 @@ export default function UserMenu() {
         aria-haspopup="true"
       >
         {/* Avatar */}
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--brand-primary)] text-white font-bold flex items-center justify-center text-xs shrink-0">
           {user.username?.charAt(0).toUpperCase() || "U"}
         </div>
         {/* Username — hidden on very small screens */}
@@ -55,7 +55,7 @@ export default function UserMenu() {
       {open && (
         <div className="absolute right-0 mt-2 w-52 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-xl shadow-black/50 z-50 overflow-hidden animate-fade-in">
           {/* User info */}
-          <div className="px-4 py-3 border-b border-slate-700/50 bg-gradient-to-r from-blue-500/10 to-purple-600/10">
+          <div className="px-4 py-3 border-b border-slate-700/50 bg-gradient-to-r from-[color:rgba(27,95,156,0.15)] to-[color:rgba(247,166,43,0.12)]">
             <p className="text-[0.68rem] text-slate-400 uppercase tracking-wide">Signed in as</p>
             <p className="text-sm font-semibold text-white truncate">{user.username}</p>
           </div>

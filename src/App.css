@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  color: #e5e7eb;
-  background: #020617;
-  --app-bg: #020617;
-  --app-surface: #0f172a;
-  --app-surface-2: #111827;
-  --app-card: #0f172a;
-  --app-border: #1e293b;
-  --app-text: #e5e7eb;
-  --app-text-soft: #cbd5e1;
-  --app-text-muted: #94a3b8;
-  --app-input-bg: #0f1720;
-  --app-input-border: #334155;
-  --brand-primary: #4f46e5;
-  --brand-secondary: #2563eb;
-  --brand-accent: #06b6d4;
-  --brand-accent-2: #8b5cf6;
-  --brand-success: #10b981;
-  --brand-warning: #f59e0b;
-  --brand-danger: #ef4444;
+  font-family: 'Plus Jakarta Sans', 'Manrope', 'Segoe UI', sans-serif;
+  color: #e5eef8;
+  background: #0c1422;
+  --app-bg: #0c1422;
+  --app-surface: #101d2f;
+  --app-surface-2: #15263d;
+  --app-card: #13253c;
+  --app-border: rgba(148, 163, 184, 0.18);
+  --app-text: #e9f1f9;
+  --app-text-soft: #d9e8f8;
+  --app-text-muted: #a8bfd9;
+  --app-input-bg: #0f1d2e;
+  --app-input-border: rgba(148, 163, 184, 0.22);
+  --brand-primary: #f7a62b;
+  --brand-secondary: #1b5f9c;
+  --brand-accent: #f7d28a;
+  --brand-accent-2: #79b7f0;
+  --brand-success: #2bb673;
+  --brand-warning: #f7b731;
+  --brand-danger: #ef5350;
   --bg-primary: var(--app-bg);
-  --bg-secondary: rgba(15, 23, 42, 0.78);
-  --bg-card: rgba(15, 23, 42, 0.86);
-  --bg-card-hover: rgba(30, 41, 59, 0.9);
-  --bg-nav: rgba(2, 6, 23, 0.9);
-  --border-color: rgba(51, 65, 85, 0.78);
-  --border-hover: rgba(6, 182, 212, 0.72);
+  --bg-secondary: rgba(18, 31, 49, 0.82);
+  --bg-card: rgba(19, 37, 60, 0.86);
+  --bg-card-hover: rgba(28, 49, 73, 0.96);
+  --bg-nav: rgba(12, 20, 34, 0.8);
+  --border-color: rgba(148, 163, 184, 0.18);
+  --border-hover: rgba(247, 166, 43, 0.75);
   --text-primary: var(--app-text);
   --text-secondary: var(--app-text-soft);
   --text-muted: var(--app-text-muted);
@@ -38,32 +38,32 @@
 }
 
 :root[data-theme='light'] {
-  color: #0f172a;
-  background: #f8fafc;
-  --app-bg: #f8fafc;
-  --app-surface: #ffffff;
-  --app-surface-2: #f1f5f9;
-  --app-card: #ffffff;
-  --app-border: #e2e8f0;
-  --app-text: #0f172a;
-  --app-text-soft: #334155;
-  --app-text-muted: #64748b;
+  color: #102132;
+  background: #f7f3ee;
+  --app-bg: #f7f3ee;
+  --app-surface: #fffaf4;
+  --app-surface-2: #f4efe8;
+  --app-card: #fffdf9;
+  --app-border: rgba(102, 120, 146, 0.18);
+  --app-text: #102132;
+  --app-text-soft: #1d3553;
+  --app-text-muted: #597089;
   --app-input-bg: #ffffff;
-  --app-input-border: #cbd5e1;
-  --brand-primary: #4f46e5;
-  --brand-secondary: #2563eb;
-  --brand-accent: #0891b2;
-  --brand-accent-2: #7c3aed;
-  --brand-success: #059669;
-  --brand-warning: #d97706;
-  --brand-danger: #dc2626;
+  --app-input-border: rgba(87, 112, 140, 0.2);
+  --brand-primary: #f7a62b;
+  --brand-secondary: #1b5f9c;
+  --brand-accent: #f1c86d;
+  --brand-accent-2: #8ec3ff;
+  --brand-success: #1da96b;
+  --brand-warning: #d98d1b;
+  --brand-danger: #d94d4d;
   --bg-primary: var(--app-bg);
-  --bg-secondary: #eef4fb;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-nav: rgba(255, 255, 255, 0.92);
-  --border-color: rgba(203, 213, 225, 0.95);
-  --border-hover: rgba(8, 145, 178, 0.58);
+  --bg-secondary: #f2efe9;
+  --bg-card: #fffdf9;
+  --bg-card-hover: #f8f4ef;
+  --bg-nav: rgba(255, 250, 244, 0.9);
+  --border-color: rgba(71, 90, 118, 0.16);
+  --border-hover: rgba(27, 95, 156, 0.42);
   --text-primary: var(--app-text);
   --text-secondary: var(--app-text-soft);
   --text-muted: var(--app-text-muted);
@@ -205,9 +205,25 @@ button:disabled {
 
 /* ── Global Focus-Visible (accessibility) ───────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--brand-primary);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
+}
+
+[class*="from-blue-500"],
+[class*="to-purple-600"],
+[class*="from-indigo-600"],
+[class*="to-indigo-600"],
+[class*="from-cyan-500"],
+[class*="to-violet-600"],
+[class*="from-violet-600"] {
+  --tw-gradient-from: var(--brand-secondary) !important;
+  --tw-gradient-to: var(--brand-primary) !important;
+}
+
+.bg-gradient-to-br,
+.bg-gradient-to-r {
+  background-image: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%) !important;
 }
 
 /* ── Reusable Animation Keyframes ───────────────────────────────────────────── */

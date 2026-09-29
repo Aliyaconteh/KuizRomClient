@@ -46,8 +46,8 @@ function MobileNavButton({ to, label, Icon, isActive }) {
       className={({ isActive: active }) =>
         `group relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-secondary)] shadow-sm transition-all duration-200 ${
           active || isActive
-            ? "border-teal-500 bg-teal-500/10 text-teal-500 shadow-teal-500/20"
-            : "hover:border-teal-400 hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]"
+            ? "border-[var(--brand-primary)] bg-[color:rgba(247,166,43,0.12)] text-[var(--brand-primary)] shadow-[0_0_0_1px_rgba(247,166,43,0.2)]"
+            : "hover:border-[var(--brand-primary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]"
         }`
       }
     >
@@ -117,8 +117,9 @@ export default function Navbar() {
               <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] group-hover:shadow-md group-hover:shadow-purple-500/25 transition-shadow duration-300">
                 <img src="/logo.png" alt="KuizRoom logo" className="h-full w-full object-contain p-0.5" />
               </div>
-              <span className="hidden sm:inline text-base font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                KuizRoom
+              <span className="hidden sm:inline text-base font-extrabold tracking-tight text-[var(--app-text)]">
+                <span className="text-[var(--brand-primary)]">Kuiz</span>
+                <span className="text-[var(--brand-secondary)]">Room</span>
               </span>
             </NavLink>
 
@@ -130,8 +131,8 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                       isActive
-                        ? "text-teal-500"
-                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-teal-400"
+                        ? "text-[var(--brand-primary)] border-[var(--brand-primary)] bg-[color:rgba(247,166,43,0.08)]"
+                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--brand-primary)]"
                     }`
                   }
                 >
@@ -145,7 +146,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-all duration-200 hover:border-teal-400 hover:text-[var(--text-primary)]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-all duration-200 hover:border-[var(--brand-primary)] hover:text-[var(--text-primary)]"
                 aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               >
                 {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
@@ -156,8 +157,8 @@ export default function Navbar() {
                 <NavLink
                   to={authLink.to}
                   className={({ isActive }) =>
-                    `inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold transition-all duration-200 hover:border-teal-400 hover:text-[var(--text-primary)] ${
-                      isActive ? "text-teal-500" : "text-[var(--text-secondary)]"
+                    `inline-flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-2.5 py-2 text-sm font-semibold transition-all duration-200 hover:border-[var(--brand-primary)] hover:text-[var(--text-primary)] ${
+                      isActive ? "text-[var(--brand-primary)]" : "text-[var(--text-secondary)]"
                     }`
                   }
                 >
@@ -194,7 +195,7 @@ export default function Navbar() {
               to={hostFabLink.to}
               title={hostFabLink.label}
               aria-label={hostFabLink.label}
-              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-purple-500/30 ring-4 ring-[var(--bg-nav)] transition-transform duration-200 hover:scale-105 active:scale-95"
+              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--brand-primary)] text-white shadow-lg shadow-[color:rgba(247,166,43,0.25)] ring-4 ring-[var(--bg-nav)] transition-transform duration-200 hover:scale-105 active:scale-95"
             >
               <Plus size={24} strokeWidth={2.5} aria-hidden="true" />
               <span className="sr-only">{hostFabLink.label}</span>
