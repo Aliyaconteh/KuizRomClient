@@ -1,6 +1,28 @@
 import { apiUrl } from "../../config/api";
 import { logger, parseApiError } from "../../utils/apiLogger";
 
+export async function readJsonResponse(response, action = "Request") {
+  const body = await response.text();
+
+  if (!body.trim()) {
+    const statusMessage = `HTTP ${response.status}`;
+    throw new Error(`${action} received an empty response (${statusMessage}). Please check the API server and try again.`);
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    throw new Error(`${action} received an invalid response (HTTP ${response.status}). Please check the API server and try again.`);
+  }
+
+  if (!response.ok || payload?.success === false) {
+    throw new Error(payload?.message || payload?.error || `${action} failed (HTTP ${response.status}).`);
+  }
+
+  return payload;
+}
+
 /**
  * Standardized HTTP Request Wrapper for KuizRoom
  * Automatically manages headers, error parsing, and logging.

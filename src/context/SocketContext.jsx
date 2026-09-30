@@ -1,19 +1,23 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { socket as sharedSocket } from "../services/socket/socket";
 
 const SocketContext = createContext();
 
 export function SocketProvider({ children }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [socketError, setSocketError] = useState(null);
 
   useEffect(() => {
-    // Socket connection will be handled in hook
-    // This is just the context provider
-  }, [isAuthenticated, user]);
+    sharedSocket.auth = { token: isAuthenticated ? token : null };
+    if (sharedSocket.connected) {
+      sharedSocket.disconnect();
+      if (isAuthenticated) sharedSocket.connect();
+    }
+  }, [isAuthenticated, token]);
 
   const value = {
     socket,

@@ -6,6 +6,7 @@ import ScoreBoard from "../../../components/game/ScoreBoard";
 import { useGame } from "../../../context/GameContext";
 import { useToast } from "../../../components/ui/ToastContext";
 import { useRoom } from "../../../context/RoomContext";
+import { useAuth } from "../../../context/AuthContext";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -32,6 +33,7 @@ export default function GameRoom() {
     setServerScore
   } = useGame();
   const { room } = useRoom();
+  const { user } = useAuth();
 
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [answerStatus, setAnswerStatus] = useState("idle");
@@ -218,33 +220,29 @@ export default function GameRoom() {
   };
 
   const timerValue = Math.max(0, timeRemaining || 0);
-  const timerColor = timerValue > 10 ? "text-blue-400" : timerValue > 5 ? "text-amber-400" : "text-red-400";
-  const timerBg = timerValue > 10 ? "bg-blue-500/10 border-blue-500/30" : timerValue > 5 ? "bg-amber-500/10 border-amber-500/30" : "bg-red-500/10 border-red-500/30";
+  const timerColor = timerValue > 5 ? "text-[var(--brand-primary)]" : "text-red-400";
+  const timerBg = timerValue > 5 ? "bg-[color:rgba(247,166,43,0.1)] border-[color:rgba(247,166,43,0.3)]" : "bg-red-500/10 border-red-500/30";
   const progressPct = totalQuestions > 0 ? (questionNumber / totalQuestions) * 100 : 0;
 
   const isOptimistic = roomSyncMode.toLowerCase().includes("optimistic");
-  const isHost = Boolean(room?.isHost) || localStorage.getItem("playerId") === room?.hostId;
+  const isHost = Boolean(user?.id && room?.hostId && user.id === room.hostId);
 
   return (
     <div
-      className={`min-h-screen bg-[#060a0f] text-white px-4 py-6 md:px-10 relative overflow-hidden transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
+      className={`min-h-screen bg-[var(--app-bg)] text-[var(--app-text)] px-4 py-6 md:px-10 relative overflow-hidden transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
     >
-      {/* Ambient blobs */}
-      <div className="absolute w-[520px] h-[520px] rounded-full bg-indigo-500/6 blur-[90px] -top-32 -right-36 pointer-events-none" />
-      <div className="absolute w-[380px] h-[380px] rounded-full bg-violet-500/6 blur-[80px] -bottom-20 -left-16 pointer-events-none" />
-
       <div className="max-w-6xl mx-auto grid grid-cols-1 gap-6 relative">
         {/* Research Sync & Telemetry HUD */}
-        <div className="bg-[#0d131c]/90 border border-slate-800/80 rounded-2xl p-4 shadow-xl backdrop-blur-md">
+        <div className="bg-[var(--app-surface)] border border-[var(--app-border)] rounded-lg p-4 shadow-xl">
           <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setShowTelemetry(!showTelemetry)}>
             <div className="flex items-center gap-2.5">
-              <div className={`p-1.5 rounded-lg ${isOptimistic ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30"}`}>
+              <div className={`p-1.5 rounded-lg ${isOptimistic ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "bg-[color:rgba(27,95,156,0.18)] text-[var(--brand-accent-2)] border border-[color:rgba(27,95,156,0.35)]"}`}>
                 {isOptimistic ? <Zap size={16} /> : <Server size={16} />}
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Sync Architecture:</span>
-                  <span className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${isOptimistic ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"}`}>
+                  <span className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${isOptimistic ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" : "bg-[color:rgba(27,95,156,0.2)] text-[var(--brand-accent-2)] border border-[color:rgba(27,95,156,0.35)]"}`}>
                     {isOptimistic ? "Optimistic (Client-Predicted)" : "Server-Authoritative"}
                   </span>
                 </div>
@@ -293,7 +291,7 @@ export default function GameRoom() {
           </div>
         )}
 
-        <main className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 md:p-8">
+        <main className="bg-[var(--app-surface)] border border-[var(--app-border)] rounded-lg p-5 md:p-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
@@ -301,7 +299,7 @@ export default function GameRoom() {
               <h1 className="text-3xl font-extrabold mt-1">Live Quiz</h1>
             </div>
             <div className="flex items-center gap-3">
-              <div className="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/50">
+              <div className="px-4 py-2 rounded-lg bg-[var(--app-surface-2)] border border-[var(--app-border)]">
                 <span className="text-slate-400 text-sm">Question </span>
                 <span className="font-bold">{questionNumber || 0}/{totalQuestions || 0}</span>
               </div>
@@ -317,7 +315,7 @@ export default function GameRoom() {
             <div className="mb-6">
               <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-[var(--brand-secondary)] to-[var(--brand-primary)] rounded-full transition-all duration-500"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
@@ -351,8 +349,8 @@ export default function GameRoom() {
                   const showCorrect = false;
                   const showWrong = false;
 
-                  let optionStyle = "bg-slate-800/60 border-slate-700/50 hover:border-indigo-500/60 hover:bg-slate-800";
-                  if (isSelected && answerStatus === "pending") optionStyle = "bg-indigo-500/15 border-indigo-500/50";
+                  let optionStyle = "bg-[var(--app-surface-2)] border-[var(--app-border)] hover:border-[var(--brand-secondary)] hover:bg-[var(--bg-card-hover)]";
+                  if (isSelected && answerStatus === "pending") optionStyle = "bg-[color:rgba(247,166,43,0.1)] border-[var(--brand-primary)]";
                   if (showCorrect) optionStyle = "bg-emerald-500/15 border-emerald-500/50";
                   if (showWrong) optionStyle = "bg-red-500/15 border-red-500/50";
 
@@ -361,13 +359,13 @@ export default function GameRoom() {
                       key={option}
                       onClick={() => submitAnswer(option)}
                       disabled={isDisabled}
-                      className={`text-left rounded-2xl border px-5 py-4 transition-all duration-200 font-semibold flex items-center gap-3 ${optionStyle} disabled:cursor-not-allowed disabled:opacity-80`}
+                      className={`text-left rounded-lg border px-5 py-4 transition-all duration-200 font-semibold flex items-center gap-3 ${optionStyle} disabled:cursor-not-allowed disabled:opacity-80`}
                     >
                       <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
                         showCorrect ? "bg-emerald-500/20 text-emerald-400" :
                         showWrong ? "bg-red-500/20 text-red-400" :
-                        isSelected ? "bg-indigo-500/20 text-indigo-400" :
-                        "bg-slate-700/50 text-slate-400"
+                        isSelected ? "bg-[color:rgba(247,166,43,0.2)] text-[var(--brand-primary)]" :
+                        "bg-[var(--app-bg)] text-[var(--text-muted)]"
                       }`}>
                         {LETTERS[idx]}
                       </span>
@@ -381,7 +379,7 @@ export default function GameRoom() {
                 <div className="flex flex-wrap gap-3 mt-8">
                   <button
                     onClick={() => socket.emit("quiz-end", { roomCode })}
-                    className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-bold flex items-center gap-2 transition-all duration-200"
+                    className="px-5 py-3 rounded-lg bg-[var(--brand-secondary)] hover:bg-[#2476b7] text-white font-bold flex items-center gap-2 transition-all duration-200"
                   >
                     <Flag size={14} />
                     Finish Quiz
@@ -391,14 +389,14 @@ export default function GameRoom() {
             </div>
           ) : (
             <div className="py-20 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5 animate-float">
-                <Clock size={28} className="text-indigo-400" />
+              <div className="w-16 h-16 rounded-lg bg-[color:rgba(247,166,43,0.1)] border border-[color:rgba(247,166,43,0.2)] flex items-center justify-center mx-auto mb-5 animate-float">
+                <Clock size={28} className="text-[var(--brand-primary)]" />
               </div>
               <p className="text-slate-300 font-semibold text-lg">Waiting for the first question...</p>
               <div className="flex items-center justify-center gap-1.5 mt-3">
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0s" }} />
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0.2s" }} />
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "0.4s" }} />
+                <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-bounce" style={{ animationDelay: "0s" }} />
+                <span className="w-2 h-2 rounded-full bg-[var(--brand-secondary)] animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <span className="w-2 h-2 rounded-full bg-[var(--brand-primary)] animate-bounce" style={{ animationDelay: "0.4s" }} />
               </div>
             </div>
           )}

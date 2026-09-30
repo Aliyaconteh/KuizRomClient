@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import UserMenu from "./UserMenu";
 
@@ -66,6 +66,8 @@ function MobileNavButton({ to, label, Icon, isActive }) {
 
 export default function Navbar() {
   const { isAuthenticated, theme, setTheme } = useAuth();
+  const { pathname } = useLocation();
+  const isAuthPage = pathname === "/signin" || pathname === "/signup";
   const links = isAuthenticated ? hostDesktopLinks : guestMainLinks;
   const mobileLinks = isAuthenticated ? hostMobileLinks : guestMainLinks;
   const authLink = isAuthenticated ? null : guestAuthLink;
@@ -174,7 +176,7 @@ export default function Navbar() {
         </nav>
       </header>
 
-      <nav
+      {!isAuthPage && <nav
         className={`lg:hidden fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border-color)] bg-[var(--bg-nav)] backdrop-blur-xl transition-transform duration-300 ease-out ${
           showMobileNav ? "translate-y-0" : "translate-y-full"
         }`}
@@ -210,7 +212,7 @@ export default function Navbar() {
             <MobileNavButton key={to} to={to} label={label} Icon={Icon} isActive={false} />
           ))}
         </div>
-      </nav>
+      </nav>}
     </>
   );
 }

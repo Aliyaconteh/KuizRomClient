@@ -13,7 +13,7 @@ export const resolveApiBaseUrl = () => {
 
   const { hostname } = window.location;
   return hostname === "localhost" || hostname === "127.0.0.1"
-    ? LOCAL_API_URL
+    ? LOCAL_API_URL || LIVE_API_URL
     : LIVE_API_URL;
 };
 

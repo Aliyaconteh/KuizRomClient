@@ -112,7 +112,7 @@ export default function Profile() {
               <Gamepad2 size={15} className="text-blue-400" />
               Games Played
             </div>
-            <p className="text-2xl font-black text-white">{stats.gamesPlayed}</p>
+            <p className="text-2xl font-black text-white">{statsLoading ? "..." : stats.gamesPlayed}</p>
             <p className="text-[11px] text-slate-500 mt-0.5">Multiplayer sessions</p>
           </div>
 
@@ -121,7 +121,7 @@ export default function Profile() {
               <Trophy size={15} className="text-amber-400" />
               Victories
             </div>
-            <p className="text-2xl font-black text-amber-400">{stats.wins}</p>
+            <p className="text-2xl font-black text-amber-400">{statsLoading ? "..." : stats.wins}</p>
             <p className="text-[11px] text-slate-500 mt-0.5">1st place finishes</p>
           </div>
 
@@ -130,7 +130,7 @@ export default function Profile() {
               <Layers size={15} className="text-violet-400" />
               Quizzes Created
             </div>
-            <p className="text-2xl font-black text-violet-400">{stats.quizzesCreated}</p>
+            <p className="text-2xl font-black text-violet-400">{statsLoading ? "..." : stats.quizzesCreated}</p>
             <p className="text-[11px] text-slate-500 mt-0.5">Custom question sets</p>
           </div>
 
@@ -139,7 +139,7 @@ export default function Profile() {
               <Award size={15} className="text-emerald-400" />
               Avg Score
             </div>
-            <p className="text-2xl font-black text-emerald-400">{stats.avgScore}</p>
+            <p className="text-2xl font-black text-emerald-400">{statsLoading ? "..." : stats.avgScore}</p>
             <p className="text-[11px] text-slate-500 mt-0.5">Points per match</p>
           </div>
         </section>

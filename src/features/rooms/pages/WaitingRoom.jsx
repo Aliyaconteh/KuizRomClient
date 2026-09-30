@@ -26,7 +26,8 @@ export default function WaitingRoom() {
   const { room, setRoom } = useRoom();
 
   const { addToast } = useToast();
-  const { authFetch } = useAuth();
+  const { authFetch, user } = useAuth();
+  const isRoomCreator = Boolean(user?.id && room?.hostId && user.id === room.hostId);
 
   const [loading, setLoading] = useState(!room || !room.players);
   const [error, setError] = useState("");
@@ -48,8 +49,6 @@ export default function WaitingRoom() {
         if (response.success) {
           const roomData = response.data.room;
           const dbPlayers = response.data.players || [];
-          const currentUserId = localStorage.getItem("playerId");
-
           const mappedPlayers = dbPlayers.map((p) => ({
             id: p.id,
             userId: p.user_id,
@@ -68,7 +67,7 @@ export default function WaitingRoom() {
             delayMs: roomData.delay_ms,
             players: mappedPlayers,
             hostId: roomData.host_id,
-            isHost: currentUserId === roomData.host_id
+            isHost: Boolean(user?.id && user.id === roomData.host_id)
           });
         }
         setLoading(false);
@@ -80,14 +79,10 @@ export default function WaitingRoom() {
       });
 
     const handleRoomUpdate = (updatedRoom) => {
-      const currentUserId = localStorage.getItem("playerId");
       const hostId = updatedRoom.hostId || updatedRoom.host_id;
       setRoom((prev) => {
         const resolvedHostId = hostId || prev?.hostId;
-        const currentPlayer = updatedRoom.players?.find(p => p.username === localStorage.getItem("username"));
-        const isHost = resolvedHostId
-          ? currentUserId === resolvedHostId
-          : currentPlayer?.isHost || false;
+        const isHost = Boolean(user?.id && resolvedHostId && user.id === resolvedHostId);
         return {
           ...prev,
           ...updatedRoom,
@@ -119,7 +114,7 @@ export default function WaitingRoom() {
       socket.off("room:update", handleRoomUpdate);
       socket.off("room:started", handleRoomStarted);
     };
-  }, [navigate, roomCode, setRoom]);
+  }, [navigate, roomCode, setRoom, user?.id]);
 
   const handleStartQuiz = async () => {
     setStarting(true);
@@ -259,7 +254,7 @@ export default function WaitingRoom() {
 
       {/* FOOTER HOST ACTIONS */}
       <div className="max-w-3xl mx-auto w-full mt-8 border-t border-slate-800 pt-6 relative">
-        {room?.isHost ? (
+        {isRoomCreator ? (
           <button
             onClick={handleStartQuiz}
             disabled={starting || !room?.players || room.players.length === 0}

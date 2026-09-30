@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../config/api";
+import { readJsonResponse } from "../../../services/api/apiClient";
 import { supabase } from "../../../services/supabase/supabaseClient";
 import { useToast } from "../../../components/ui/ToastContext";
 
@@ -13,59 +14,6 @@ function GoogleIcon() {
       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23Z" />
       <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.84Z" />
       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06L5.84 9.9C6.71 7.3 9.14 5.38 12 5.38Z" />
-    </svg>
-  );
-}
-
-// Original flat-style illustration for the welcome panel.
-// Three friendly characters standing together — no reference to any
-// existing IP, purely generic shapes/colors for this login screen.
-function WelcomeIllustration() {
-  return (
-    <svg viewBox="0 0 300 190" className="w-full h-full" aria-hidden="true">
-      <defs>
-        <clipPath id="panelClip">
-          <rect x="0" y="0" width="300" height="190" rx="0" />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#panelClip)">
-        {/* Navy accent blob, top right */}
-        <circle cx="256" cy="24" r="34" fill="#16213E" />
-        {/* Ground shadow */}
-        <ellipse cx="150" cy="182" rx="120" ry="10" fill="#F5A800" opacity="0.25" />
-
-        {/* Character left */}
-        <g transform="translate(58,58)">
-          <path d="M-30 92 Q-30 40 0 40 Q30 40 30 92 Z" fill="#16213E" />
-          <circle cx="0" cy="14" r="26" fill="#FFD9A8" />
-          <path d="M-26 6 Q-26 -22 0 -22 Q26 -22 26 6 Q14 -6 0 -6 Q-14 -6 -26 6 Z" fill="#16213E" />
-          <circle cx="-9" cy="16" r="2.6" fill="#16213E" />
-          <circle cx="9" cy="16" r="2.6" fill="#16213E" />
-          <path d="M-7 26 Q0 31 7 26" stroke="#16213E" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-        </g>
-
-        {/* Character middle (taller) */}
-        <g transform="translate(150,42)">
-          <path d="M-34 108 Q-34 48 0 48 Q34 48 34 108 Z" fill="#2F5FFF" />
-          <circle cx="0" cy="18" r="29" fill="#FFD9A8" />
-          <path d="M-29 10 Q-32 -24 0 -26 Q32 -24 29 10 Q16 -8 0 -8 Q-16 -8 -29 10 Z" fill="#0F172A" />
-          <circle cx="-10" cy="20" r="2.8" fill="#16213E" />
-          <circle cx="10" cy="20" r="2.8" fill="#16213E" />
-          <path d="M-8 31 Q0 37 8 31" stroke="#16213E" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-          <path d="M52 -6 l6 -8 M60 -10 l6 -6 M46 -16 l4 -9" stroke="#F5A800" strokeWidth="3" strokeLinecap="round" />
-        </g>
-
-        {/* Character right */}
-        <g transform="translate(238,60)">
-          <path d="M-28 88 Q-28 38 0 38 Q28 38 28 88 Z" fill="#F5A800" />
-          <circle cx="0" cy="13" r="25" fill="#FFD9A8" />
-          <path d="M-25 4 Q-25 -20 0 -20 Q25 -20 25 4 L25 12 Q18 2 0 2 Q-18 2 -25 12 Z" fill="#5B3A22" />
-          <circle cx="-8" cy="15" r="6" fill="none" stroke="#16213E" strokeWidth="1.6" />
-          <circle cx="8" cy="15" r="6" fill="none" stroke="#16213E" strokeWidth="1.6" />
-          <line x1="-2" y1="15" x2="2" y2="15" stroke="#16213E" strokeWidth="1.6" />
-          <path d="M-6 25 Q0 29 6 25" stroke="#16213E" strokeWidth="2" fill="none" strokeLinecap="round" />
-        </g>
-      </g>
     </svg>
   );
 }
@@ -119,11 +67,11 @@ export default function SignIn() {
           throw new Error("Google sign-in did not return a session");
         }
 
-        const response = await fetch(apiUrl("/auth/google"), {
+        const response = await readJsonResponse(await fetch(apiUrl("/auth/google"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ accessToken })
-        }).then((res) => res.json());
+        }), "Google sign-in");
 
         if (!response.success) {
           throw new Error(response.message || "Google sign-in failed");
@@ -183,11 +131,11 @@ export default function SignIn() {
     setError(null);
 
     try {
-      const response = await fetch(apiUrl("/auth/login"), {
+      const response = await readJsonResponse(await fetch(apiUrl("/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
-      }).then((res) => res.json());
+      }), "Sign-in");
 
       if (!response.success) {
         throw new Error(response.message || "Sign in failed");
@@ -206,20 +154,28 @@ export default function SignIn() {
 
   return (
     <div
-      className={`min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"} ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}
+      className={`min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"} bg-[var(--app-bg)]`}
     >
-      {/* Illustration panel — full width hero band */}
-      <div className="relative bg-[#F5A800] w-full h-[200px] sm:h-[240px] overflow-hidden shrink-0">
-        <WelcomeIllustration />
+      {/* Sign-in artwork */}
+      <div className="relative flex h-[190px] w-full shrink-0 items-center justify-center overflow-hidden bg-[var(--brand-secondary)] sm:h-[240px]">
+        <img src="/SignIn.jpeg" alt="A learner working through a question at her desk" className="absolute inset-0 h-full w-full object-cover object-center" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(16,39,68,0.72) 0%, rgba(16,39,68,0.38) 52%, rgba(16,39,68,0.08) 100%)" }} />
+        <div className="relative flex items-center gap-4 text-white">
+          <img src="/logo.png" alt="KuizRoom logo" className="h-16 w-16 rounded-lg bg-white/95 p-1 object-contain shadow-xl sm:h-20 sm:w-20" />
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight sm:text-3xl">KuizRoom</p>
+            <p className="mt-1 text-sm font-medium text-white/80">Your next great quiz starts here</p>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
+      <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-6">
         <div
-          className={`w-full max-w-[420px] transition-all duration-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+          className={`w-full max-w-[420px] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-xl transition-all duration-500 sm:p-8 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
         >
           {/* Heading */}
-          <h1 className={`text-[1.7rem] font-extrabold text-center leading-tight ${theme === "dark" ? "text-slate-100" : "text-[#16213E]"}`}>
+          <h1 className="text-center text-[1.7rem] font-extrabold leading-tight text-[var(--app-text)]">
             Welcome Back
           </h1>
           <p className="text-sm text-slate-400 text-center mt-1.5 mb-6">
@@ -231,7 +187,7 @@ export default function SignIn() {
             type="button"
             onClick={continueWithGoogle}
             disabled={googleLoading || loading}
-            className={`w-full mb-5 py-3.5 rounded-full font-semibold text-[0.9rem] border-2 shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 ${theme === "dark" ? "bg-slate-900/90 border-slate-700 text-slate-200 hover:border-indigo-500/60" : "bg-white border-slate-200 text-[#16213E] hover:border-slate-300 hover:shadow-md"}`}
+            className={`w-full mb-5 py-3.5 rounded-lg font-semibold text-[0.9rem] border shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 ${theme === "dark" ? "bg-slate-900/90 border-slate-700 text-slate-200 hover:border-[var(--brand-primary)]/60" : "bg-white border-slate-200 text-[#16213E] hover:border-slate-300 hover:shadow-md"}`}
           >
             {googleLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -255,7 +211,7 @@ export default function SignIn() {
           <div className="flex flex-col gap-4">
             {/* Email */}
             <div>
-              <div className={`flex items-center gap-2.5 border-[1.5px] rounded-2xl px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-indigo-400 focus-within:bg-indigo-500/[0.06]" : "bg-[#F7F8FC] focus-within:border-[#2F5FFF] focus-within:bg-[#2F5FFF]/[0.04]"} ${errors.email ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
+              <div className={`flex items-center gap-2.5 border rounded-lg px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-[var(--brand-primary)] focus-within:bg-[var(--brand-primary)]/[0.06]" : "bg-[#F7F8FC] focus-within:border-[var(--brand-secondary)] focus-within:bg-[var(--brand-secondary)]/[0.04]"} ${errors.email ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
                 <Mail size={16} className="text-slate-400 shrink-0" />
                 <input
                   type="email"
@@ -271,7 +227,7 @@ export default function SignIn() {
 
             {/* Password */}
             <div>
-              <div className={`flex items-center gap-2.5 border-[1.5px] rounded-2xl px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-indigo-400 focus-within:bg-indigo-500/[0.06]" : "bg-[#F7F8FC] focus-within:border-[#2F5FFF] focus-within:bg-[#2F5FFF]/[0.04]"} ${errors.password ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
+              <div className={`flex items-center gap-2.5 border rounded-lg px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-[var(--brand-primary)] focus-within:bg-[var(--brand-primary)]/[0.06]" : "bg-[#F7F8FC] focus-within:border-[var(--brand-secondary)] focus-within:bg-[var(--brand-secondary)]/[0.04]"} ${errors.password ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
                 <Lock size={16} className="text-slate-400 shrink-0" />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -297,7 +253,7 @@ export default function SignIn() {
             <button
               onClick={signIn}
               disabled={loading || googleLoading}
-              className="w-full mt-1 py-3.5 rounded-full font-bold text-[0.9375rem] tracking-wide text-white bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-purple-500/40 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+              className="w-full mt-1 py-3.5 rounded-lg font-bold text-[0.9375rem] tracking-wide text-[#17283a] bg-[var(--brand-primary)] shadow-lg shadow-[rgba(247,166,43,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffc15b] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -320,7 +276,7 @@ export default function SignIn() {
             Don't have an account?{" "}
             <button
               onClick={() => navigate("/signup")}
-              className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"
+              className="text-[var(--brand-secondary)] font-semibold hover:text-[var(--brand-primary)] transition-colors"
             >
               Sign up
             </button>

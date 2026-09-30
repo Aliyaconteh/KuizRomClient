@@ -3,40 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { UserPlus, Eye, EyeOff, User, Mail, Lock, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../config/api";
+import { readJsonResponse } from "../../../services/api/apiClient";
 import { useToast } from "../../../components/ui/ToastContext";
-
-// Original flat-style illustration for the sign-up hero panel.
-// A single character mid-wave with a burst of sparkles — no reference
-// to any existing IP, purely generic shapes/colors for this screen.
-function JoinIllustration() {
-  return (
-    <svg viewBox="0 0 300 190" className="w-full h-full" aria-hidden="true">
-      {/* Sparkle bursts */}
-      <g stroke="#FDE68A" strokeWidth="3" strokeLinecap="round">
-        <path d="M70 40 l0 16 M62 48 l16 0" />
-        <path d="M232 100 l0 14 M225 107 l14 0" />
-        <path d="M220 34 l0 12 M214 40 l12 0" />
-      </g>
-
-      {/* Character */}
-      <g transform="translate(150,60)">
-        <path d="M-36 110 Q-36 50 0 50 Q36 50 36 110 Z" fill="#FFFFFF" fillOpacity="0.95" />
-        <circle cx="0" cy="18" r="30" fill="#FFD9A8" />
-        <path d="M-30 8 Q-33 -26 0 -28 Q33 -26 30 8 Q17 -10 0 -10 Q-17 -10 -30 8 Z" fill="#16213E" />
-        <circle cx="-10" cy="20" r="3" fill="#16213E" />
-        <circle cx="10" cy="20" r="3" fill="#16213E" />
-        <path d="M-8 32 Q0 38 8 32" stroke="#16213E" strokeWidth="2.4" fill="none" strokeLinecap="round" />
-
-        {/* Waving arm */}
-        <path d="M28 62 Q54 46 58 20" stroke="#FFFFFF" strokeOpacity="0.95" strokeWidth="16" fill="none" strokeLinecap="round" />
-        <circle cx="58" cy="18" r="11" fill="#FFD9A8" />
-      </g>
-
-      {/* Ground shadow */}
-      <ellipse cx="150" cy="182" rx="110" ry="9" fill="#0B1330" opacity="0.35" />
-    </svg>
-  );
-}
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -76,11 +44,11 @@ export default function SignUp() {
     setError(null);
 
     try {
-      const response = await fetch(apiUrl("/auth/signup"), {
+      const response = await readJsonResponse(await fetch(apiUrl("/auth/signup"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, username })
-      }).then((res) => res.json());
+      }), "Sign-up");
 
       if (!response.success) {
         throw new Error(response.message || "Sign up failed");
@@ -99,20 +67,28 @@ export default function SignUp() {
 
   return (
     <div
-      className={`min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"} ${theme === "dark" ? "bg-slate-950" : "bg-white"}`}
+      className={`min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"} bg-[var(--app-bg)]`}
     >
-      {/* Illustration panel — full width hero band */}
-      <div className="relative bg-gradient-to-br from-blue-600 to-purple-700 w-full h-[200px] sm:h-[240px] overflow-hidden shrink-0">
-        <JoinIllustration />
+      {/* Sign-up artwork */}
+      <div className="relative flex h-[190px] w-full shrink-0 items-center justify-center overflow-hidden bg-[var(--brand-secondary)] sm:h-[240px]">
+        <img src="/Signup.jpeg" alt="A learner preparing for a study session" className="absolute inset-0 h-full w-full object-cover object-center" />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(16,39,68,0.72) 0%, rgba(16,39,68,0.38) 52%, rgba(16,39,68,0.08) 100%)" }} />
+        <div className="relative flex items-center gap-4 text-white">
+          <img src="/logo.png" alt="KuizRoom logo" className="h-16 w-16 rounded-lg bg-white/95 p-1 object-contain shadow-xl sm:h-20 sm:w-20" />
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight sm:text-3xl">Join KuizRoom</p>
+            <p className="mt-1 text-sm font-medium text-white/80">Create your place in the game</p>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
+      <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-6">
         <div
-          className={`w-full max-w-[420px] transition-all duration-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+          className={`w-full max-w-[460px] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-xl transition-all duration-500 sm:p-8 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
         >
           {/* Heading */}
-          <h1 className={`text-[1.7rem] font-extrabold text-center leading-tight ${theme === "dark" ? "text-slate-100" : "text-[#16213E]"}`}>
+          <h1 className="text-center text-[1.7rem] font-extrabold leading-tight text-[var(--app-text)]">
             Join KuizRoom
           </h1>
           <p className="text-sm text-slate-400 text-center mt-1.5 mb-6">
@@ -193,7 +169,7 @@ export default function SignUp() {
             <button
               onClick={signUp}
               disabled={loading}
-              className="w-full mt-1 py-3.5 rounded-full font-bold text-[0.9375rem] tracking-wide text-white bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-purple-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-purple-500/40 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+              className="w-full mt-1 py-3.5 rounded-lg font-bold text-[0.9375rem] tracking-wide text-[#17283a] bg-[var(--brand-primary)] shadow-lg shadow-[rgba(247,166,43,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffc15b] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -219,7 +195,7 @@ export default function SignUp() {
             Already have an account?{" "}
             <button
               onClick={() => navigate("/signin")}
-              className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"
+              className="text-[var(--brand-secondary)] font-semibold hover:text-[var(--brand-primary)] transition-colors"
             >
               Sign in
             </button>

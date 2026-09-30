@@ -15,6 +15,8 @@ import {
   Laugh,
   Puzzle,
   Joystick,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/ui/Footer";
@@ -30,7 +32,7 @@ const workflows = [
     path: "/quizzes/create",
     icon: Puzzle,
     action: "Start crafting",
-    color: "from-pink-400 to-rose-500",
+    color: "from-[var(--brand-secondary)] to-[var(--brand-primary)]",
   },
   {
     title: "Spin up a room",
@@ -38,7 +40,7 @@ const workflows = [
     path: "/create-room",
     icon: Joystick,
     action: "Launch room",
-    color: "from-teal-400 to-cyan-500",
+    color: "from-[var(--brand-secondary)] to-[#4389c7]",
   },
   {
     title: "Hop in with code",
@@ -46,7 +48,7 @@ const workflows = [
     path: "/join-room",
     icon: Users,
     action: "Join the chaos",
-    color: "from-amber-400 to-orange-500",
+    color: "from-[var(--brand-primary)] to-[#f6c45d]",
   },
   {
     title: "See who survived",
@@ -54,7 +56,7 @@ const workflows = [
     path: "/leaderboard",
     icon: Trophy,
     action: "Gloat",
-    color: "from-purple-400 to-indigo-500",
+    color: "from-[var(--brand-secondary)] to-[#4389c7]",
   },
   {
     title: "Get your AI buddy",
@@ -62,7 +64,7 @@ const workflows = [
     path: "/ai-practice",
     icon: Sparkles,
     action: "Chat with AI",
-    color: "from-sky-400 to-blue-500",
+    color: "from-[var(--brand-secondary)] to-[var(--brand-primary)]",
   },
 ];
 
@@ -73,6 +75,14 @@ const features = [
   { icon: Database, title: "Every quiz saved", text: "All quizzes, rooms, and results live safely in Supabase – you can always revisit." },
   { icon: BarChart3, title: "Synchronisation insights", text: "We compare server-authoritative and optimistic updates so you see what's really going on." },
   { icon: CheckCircle2, title: "One-stop demo", text: "Create, join, play, and review – all from this same dashboard. No wandering." },
+];
+
+const heroImages = [
+  { src: "/Image1.jpeg", alt: "KuizRoom question mark logo", label: "Curiosity starts here", fit: "contain" },
+  { src: "/image2.jpeg", alt: "Learners connected through a shared digital classroom", label: "Learn together", fit: "cover" },
+  { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts", fit: "cover" },
+  { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful", fit: "cover" },
+  { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life", fit: "cover" },
 ];
 
 // -------------------------------------------------------------------
@@ -105,23 +115,20 @@ const WorkflowCard = memo(function WorkflowCard({
       variants={popIn}
       whileHover={{ scale: 1.03, rotate: -1 }}
       whileTap={{ scale: 0.97, rotate: 1 }}
-      className={`group relative flex h-full flex-col rounded-[2rem] border-2 border-dashed border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left backdrop-blur-sm transition-colors hover:border-[var(--border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400`}
+      className="group relative flex h-full flex-col rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left transition-colors hover:border-[var(--border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
       aria-label={`${action}: ${title}`}
     >
-      {/* Decorative wobbly background */}
-      <div className={`absolute -inset-1 -z-10 rounded-[2rem] bg-gradient-to-br ${color} opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-30`} />
-      
       <div className="mb-5 flex items-center justify-between">
-        <div className={`grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br ${color} text-white shadow-lg`}>
+        <div className={`grid h-12 w-12 place-items-center rounded-lg bg-gradient-to-br ${color} text-white shadow-lg`}>
           <Icon size={22} aria-hidden="true" />
         </div>
         <span className="text-3xl font-black opacity-20">✦</span>
       </div>
 
-      <h3 className="font-display text-2xl font-bold tracking-tight text-[var(--text-primary)]">{title}</h3>
+      <h3 className="font-display text-2xl font-bold text-[var(--text-primary)]">{title}</h3>
       <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
 
-      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-teal-500 transition-colors group-hover:text-teal-400">
+      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)] transition-colors group-hover:text-[var(--brand-accent)]">
         {action}
         <ArrowRight size={16} className="transition-transform group-hover:translate-x-2 group-hover:-rotate-6" />
       </span>
@@ -134,10 +141,10 @@ const FeatureCard = memo(function FeatureCard({ icon: Icon, title, text }) {
     <motion.div
       variants={popIn}
       whileHover={{ y: -4 }}
-      className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 backdrop-blur-md hover:bg-[var(--bg-card-hover)]"
+      className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 transition-colors hover:bg-[var(--bg-card-hover)]"
     >
       <div className="mb-4 flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--bg-secondary)] text-amber-500">
+        <div className="grid h-10 w-10 place-items-center rounded-lg bg-[var(--bg-secondary)] text-[var(--brand-primary)]">
           <Icon size={20} aria-hidden="true" />
         </div>
         <h3 className="font-display text-lg font-bold text-[var(--text-primary)]">{title}</h3>
@@ -155,6 +162,7 @@ export default function Home() {
   const { addToast } = useToast();
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [activeHeroImage, setActiveHeroImage] = useState(0);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -168,6 +176,14 @@ export default function Home() {
     const t = setTimeout(() => setMounted(true), 30);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return undefined;
+    const interval = window.setInterval(() => {
+      setActiveHeroImage((current) => (current + 1) % heroImages.length);
+    }, 5000);
+    return () => window.clearInterval(interval);
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event) => {
@@ -189,6 +205,9 @@ export default function Home() {
   }, []);
 
   const handleNavigation = useCallback((path) => () => navigate(path), [navigate]);
+  const showHeroImage = (direction) => {
+    setActiveHeroImage((current) => (current + direction + heroImages.length) % heroImages.length);
+  };
 
   const handleInstall = async () => {
     if (!installPrompt) {
@@ -211,45 +230,40 @@ export default function Home() {
   const heroTransition = prefersReducedMotion ? "transition-none" : "transition-opacity duration-1000";
 
   return (
-    <main className="relative min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
-      {/* Decorative floating blobs */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-rose-500/10 blur-3xl animate-float-slow" />
-        <div className="absolute bottom-20 right-20 h-96 w-96 rounded-full bg-teal-500/10 blur-3xl animate-float-slower" />
-        <div className="absolute top-1/2 left-1/3 h-40 w-40 rounded-full bg-amber-400/10 blur-2xl animate-pulse" />
-      </div>
-
-      <div className="relative">
+    <main className="relative overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      <div>
         {/* HERO */}
-        <section id="hero" className="flex min-h-screen items-center justify-center px-4 py-20 sm:px-6">
-          <div className={`max-w-4xl text-center ${heroOpacity} ${heroTransition}`}>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[var(--bg-secondary)] px-4 py-2 text-sm font-semibold text-amber-600 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-amber-500 animate-ping" />
-              KuizRoom is live
-            </div>
+        <section id="hero" className="relative flex min-h-[min(760px,calc(100svh-4rem))] items-center border-b border-[var(--border-color)] px-4 py-14 sm:px-6 lg:py-20">
+          <div className={`mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 ${heroOpacity} ${heroTransition}`}>
+            <div className="max-w-2xl">
+              <div className="mb-7 flex items-center gap-3">
+                <img src="/logo.png" alt="KuizRoom logo" className="h-14 w-14 rounded-lg bg-white object-contain p-1 shadow-md sm:h-16 sm:w-16" />
+                <div>
+                  <p className="text-xl font-extrabold tracking-tight"><span className="text-[var(--brand-primary)]">Kuiz</span><span className="text-[var(--brand-secondary)]">Room</span></p>
+                  <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Live quiz arena</p>
+                </div>
+              </div>
+              <div className="mb-5 inline-flex items-center gap-2 border-l-2 border-[var(--brand-primary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-secondary)]">
+                <span className="h-2 w-2 rounded-full bg-[var(--brand-success)]" />
+                Play together, learn in real time
+              </div>
 
-            <h1 className="font-display text-5xl font-black leading-tight sm:text-7xl text-[var(--text-primary)]">
-              Learn.{" "}
-              <span className="relative inline-block bg-gradient-to-r from-rose-400 via-amber-300 to-teal-400 bg-clip-text text-transparent">
-                Laugh.
-              </span>{" "}
-              <span className="underline decoration-wavy decoration-amber-400/50 underline-offset-8">
-                Compete.
-              </span>
+            <h1 className="font-display text-5xl font-black leading-[1.04] sm:text-6xl lg:text-7xl text-[var(--text-primary)]">
+              Learn. <span className="text-[var(--brand-primary)]">Laugh.</span><br />Compete.
             </h1>
 
-            <p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-[var(--text-secondary)]">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-[var(--text-secondary)] sm:text-lg sm:leading-8">
               The multiplayer quiz platform that feels like a game night with your
               loudest friends. Create a quiz, grab a room code, and watch the
               leaderboard erupt. 
             </p>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               <motion.button
                 onClick={handleNavigation("/quizzes/create")}
                 whileHover={{ scale: 1.05, rotate: -1 }}
                 whileTap={{ scale: 0.95 }}
-                className="rounded-full bg-gradient-to-r from-rose-500 to-amber-500 px-8 py-4 font-bold text-white shadow-xl shadow-rose-500/20 hover:shadow-rose-500/40"
+                className="rounded-lg bg-[var(--brand-primary)] px-7 py-3.5 font-bold text-[#17283a] shadow-lg shadow-[rgba(247,166,43,0.2)] transition hover:-translate-y-0.5 hover:bg-[#ffc15b]"
               >
                 Make a quiz
               </motion.button>
@@ -258,7 +272,7 @@ export default function Home() {
                 onClick={handleNavigation("/join-room")}
                 whileHover={{ scale: 1.05, rotate: 1 }}
                 whileTap={{ scale: 0.95 }}
-                className="rounded-full border-2 border-[var(--border-color)] bg-[var(--bg-card)] px-8 py-4 font-bold text-[var(--text-primary)] backdrop-blur transition-colors hover:border-teal-400 hover:text-teal-500"
+                className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-3.5 font-bold text-[var(--text-primary)] transition-colors hover:border-[var(--brand-secondary)] hover:text-[var(--brand-secondary)]"
               >
                 Join a room
               </motion.button>
@@ -268,12 +282,52 @@ export default function Home() {
                   onClick={handleInstall}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--bg-secondary)] px-6 py-4 font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-card)]"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-semibold text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)]"
                 >
                   <Download size={18} />
                   Install app
                 </motion.button>
               )}
+            </div>
+            </div>
+            <div className="relative mx-auto w-full max-w-[520px] lg:justify-self-end">
+              <div className="relative aspect-[1.13/1] overflow-hidden border border-[var(--border-color)] bg-[var(--app-surface)] shadow-[0_24px_60px_rgba(17,48,78,0.16)]">
+                {heroImages.map((image, index) => (
+                  <img
+                    key={image.src}
+                    src={image.src}
+                    alt={image.alt}
+                    aria-hidden={index !== activeHeroImage}
+                    className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${image.fit === "contain" ? "bg-white object-contain p-5 sm:p-8" : "object-cover"} ${index === activeHeroImage ? "opacity-100" : "opacity-0"}`}
+                  />
+                ))}
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-[#0c1422]/90 via-[#0c1422]/45 to-transparent px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
+                  <div aria-live="polite" aria-atomic="true">
+                    <p className="text-[10px] font-bold uppercase text-white/70">KuizRoom</p>
+                    <p className="mt-1 text-lg font-bold text-white sm:text-xl">{heroImages[activeHeroImage].label}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <button type="button" onClick={() => showHeroImage(-1)} aria-label="Show previous image" className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15">
+                      <ChevronLeft size={18} aria-hidden="true" />
+                    </button>
+                    <button type="button" onClick={() => showHeroImage(1)} aria-label="Show next image" className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15">
+                      <ChevronRight size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-center gap-2" role="group" aria-label="Choose homepage image">
+                {heroImages.map((image, index) => (
+                  <button
+                    key={image.src}
+                    type="button"
+                    onClick={() => setActiveHeroImage(index)}
+                    aria-label={`Show image ${index + 1}: ${image.label}`}
+                    aria-current={index === activeHeroImage ? "true" : undefined}
+                    className={`h-1.5 transition-all ${index === activeHeroImage ? "w-8 bg-[var(--brand-primary)]" : "w-4 bg-[var(--app-text-muted)]/50 hover:bg-[var(--brand-secondary)]"}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -281,7 +335,7 @@ export default function Home() {
         {/* About */}
         <section id="about" className="border-y border-[var(--border-color)] bg-[var(--bg-secondary)] py-14">
           <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
-            <div className="flex items-center gap-3 text-amber-500">
+            <div className="flex items-center gap-3 text-[var(--brand-primary)]">
               <Laugh size={28} />
               <p className="font-display text-lg font-bold uppercase tracking-widest">Why KuizRoom?</p>
             </div>
@@ -304,7 +358,7 @@ export default function Home() {
           className="mx-auto max-w-7xl px-4 py-20 sm:px-6"
         >
           <div className="mb-10">
-            <p className="font-display text-sm font-bold uppercase tracking-widest text-teal-500">
+            <p className="font-display text-sm font-bold uppercase tracking-widest text-[var(--brand-secondary)]">
               The flow
             </p>
             <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">
@@ -332,7 +386,7 @@ export default function Home() {
         >
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
             <div className="mb-12 text-center">
-              <p className="font-display text-sm font-bold uppercase tracking-widest text-rose-500">
+              <p className="font-display text-sm font-bold uppercase tracking-widest text-[var(--brand-primary)]">
                 Under the hood
               </p>
               <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">

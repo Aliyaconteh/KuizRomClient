@@ -668,39 +668,39 @@ button:disabled {
 /* KuizRoom unified visual system
    Keeps pages consistent even when older components use page-specific Tailwind colors. */
 :root {
-  --kuiz-bg: #050914;
-  --kuiz-bg-soft: #08111f;
-  --kuiz-surface: rgba(13, 19, 31, 0.92);
-  --kuiz-surface-2: rgba(15, 23, 42, 0.82);
-  --kuiz-border: rgba(71, 85, 105, 0.46);
-  --kuiz-border-strong: rgba(99, 102, 241, 0.38);
-  --kuiz-primary: #4f46e5;
-  --kuiz-primary-soft: rgba(79, 70, 229, 0.16);
-  --kuiz-blue: #2563eb;
-  --kuiz-cyan: #06b6d4;
-  --kuiz-violet: #8b5cf6;
-  --kuiz-text: #f8fafc;
-  --kuiz-muted: #94a3b8;
-  --kuiz-gradient: linear-gradient(135deg, var(--kuiz-primary) 0%, var(--kuiz-blue) 52%, var(--kuiz-cyan) 100%);
-  --kuiz-gradient-soft: linear-gradient(135deg, rgba(79,70,229,0.16), rgba(37,99,235,0.12), rgba(6,182,212,0.1));
+  --kuiz-bg: #0c1422;
+  --kuiz-bg-soft: #101d2f;
+  --kuiz-surface: rgba(16, 29, 47, 0.94);
+  --kuiz-surface-2: rgba(21, 38, 61, 0.9);
+  --kuiz-border: rgba(148, 163, 184, 0.2);
+  --kuiz-border-strong: rgba(247, 166, 43, 0.38);
+  --kuiz-primary: #1b5f9c;
+  --kuiz-primary-soft: rgba(27, 95, 156, 0.16);
+  --kuiz-blue: #2476b7;
+  --kuiz-cyan: #f7a62b;
+  --kuiz-violet: #79b7f0;
+  --kuiz-text: #e9f1f9;
+  --kuiz-muted: #a8bfd9;
+  --kuiz-gradient: linear-gradient(135deg, #1b5f9c 0%, #2476b7 54%, #f7a62b 100%);
+  --kuiz-gradient-soft: linear-gradient(135deg, rgba(27,95,156,0.16), rgba(36,118,183,0.12), rgba(247,166,43,0.1));
 }
 
 :root[data-theme='light'] {
-  --kuiz-bg: #f6f8fc;
-  --kuiz-bg-soft: #eef4fb;
-  --kuiz-surface: rgba(255, 255, 255, 0.95);
-  --kuiz-surface-2: rgba(248, 250, 252, 0.94);
-  --kuiz-border: rgba(148, 163, 184, 0.42);
-  --kuiz-border-strong: rgba(79, 70, 229, 0.28);
-  --kuiz-primary: #4f46e5;
-  --kuiz-primary-soft: rgba(79, 70, 229, 0.1);
-  --kuiz-blue: #2563eb;
-  --kuiz-cyan: #0891b2;
-  --kuiz-violet: #7c3aed;
-  --kuiz-text: #0f172a;
-  --kuiz-muted: #64748b;
-  --kuiz-gradient: linear-gradient(135deg, #4f46e5 0%, #2563eb 58%, #0891b2 100%);
-  --kuiz-gradient-soft: linear-gradient(135deg, rgba(79,70,229,0.1), rgba(37,99,235,0.08), rgba(8,145,178,0.08));
+  --kuiz-bg: #f7f3ee;
+  --kuiz-bg-soft: #f2efe9;
+  --kuiz-surface: rgba(255, 253, 249, 0.96);
+  --kuiz-surface-2: rgba(244, 239, 232, 0.94);
+  --kuiz-border: rgba(71, 90, 118, 0.18);
+  --kuiz-border-strong: rgba(27, 95, 156, 0.3);
+  --kuiz-primary: #1b5f9c;
+  --kuiz-primary-soft: rgba(27, 95, 156, 0.1);
+  --kuiz-blue: #2476b7;
+  --kuiz-cyan: #d98d1b;
+  --kuiz-violet: #4389c7;
+  --kuiz-text: #102132;
+  --kuiz-muted: #597089;
+  --kuiz-gradient: linear-gradient(135deg, #1b5f9c 0%, #2476b7 58%, #f7a62b 100%);
+  --kuiz-gradient-soft: linear-gradient(135deg, rgba(27,95,156,0.1), rgba(36,118,183,0.08), rgba(247,166,43,0.08));
 }
 
 html,
@@ -710,8 +710,8 @@ body,
 .min-h-screen.bg-\[\#050914\],
 .bg-\[\#060a0f\],
 .bg-\[\#050914\] {
-  background: radial-gradient(circle at 18% 0%, rgba(79, 70, 229, 0.14), transparent 34%),
-              radial-gradient(circle at 82% 16%, rgba(6, 182, 212, 0.1), transparent 30%),
+  background: radial-gradient(circle at 18% 0%, rgba(27, 95, 156, 0.14), transparent 34%),
+              radial-gradient(circle at 82% 16%, rgba(247, 166, 43, 0.08), transparent 30%),
               var(--kuiz-bg) !important;
   color: var(--kuiz-text) !important;
 }
@@ -760,7 +760,7 @@ body,
 .focus-within\:border-indigo-400:focus-within,
 .focus-within\:border-cyan-500\/50:focus-within {
   border-color: var(--kuiz-cyan) !important;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.14) !important;
+  box-shadow: 0 0 0 3px rgba(247, 166, 43, 0.14) !important;
 }
 
 .text-indigo-300,
@@ -875,7 +875,7 @@ a.bg-gradient-to-br,
 a.bg-gradient-to-r {
   background-image: var(--kuiz-gradient) !important;
   color: #ffffff !important;
-  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.23) !important;
+  box-shadow: 0 14px 34px rgba(27, 95, 156, 0.23) !important;
 }
 
 button.border-slate-700,
@@ -938,4 +938,69 @@ nav.fixed .hover\:border-teal-400:hover {
 :root[data-theme='light'] .bg-slate-800\/60,
 :root[data-theme='light'] .bg-slate-800\/80 {
   background: var(--kuiz-surface) !important;
+}
+
+/* Final light-mode tokens keep legacy Tailwind accents in the KuizRoom palette. */
+:root[data-theme='light'] {
+  --app-bg: #f7f3ee;
+  --app-surface: #fffaf4;
+  --app-surface-2: #f4efe8;
+  --app-card: #fffdf9;
+  --app-border: rgba(102, 120, 146, 0.18);
+  --app-text: #102132;
+  --app-text-soft: #1d3553;
+  --app-text-muted: #597089;
+  --app-input-bg: #ffffff;
+  --app-input-border: rgba(87, 112, 140, 0.2);
+  --app-primary: #1b5f9c;
+  --app-primary-strong: #174b78;
+  --app-success: #1da96b;
+}
+
+:root[data-theme='light'] body,
+:root[data-theme='light'] #root {
+  background: var(--kuiz-bg) !important;
+  color: var(--kuiz-text) !important;
+}
+
+:root[data-theme='light'] input:focus,
+:root[data-theme='light'] select:focus,
+:root[data-theme='light'] textarea:focus {
+  border-color: var(--kuiz-primary) !important;
+  box-shadow: 0 0 0 3px rgba(27, 95, 156, 0.14) !important;
+}
+
+:root[data-theme='light'] .bg-clip-text.text-transparent {
+  background: var(--kuiz-gradient) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+:root[data-theme='light'] .btn-shimmer,
+:root[data-theme='light'] .cr-btn-shine,
+:root[data-theme='light'] button.bg-gradient-to-br,
+:root[data-theme='light'] button.bg-gradient-to-r,
+:root[data-theme='light'] a.bg-gradient-to-br,
+:root[data-theme='light'] a.bg-gradient-to-r {
+  background-image: var(--kuiz-gradient) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(27, 95, 156, 0.2) !important;
+}
+
+:root[data-theme='light'] .border-indigo-500\/20,
+:root[data-theme='light'] .border-indigo-500\/30,
+:root[data-theme='light'] .border-violet-500\/20,
+:root[data-theme='light'] .border-blue-500\/20 {
+  border-color: var(--kuiz-border-strong) !important;
+}
+
+:root[data-theme='light'] .text-indigo-300,
+:root[data-theme='light'] .text-indigo-400,
+:root[data-theme='light'] .text-violet-400,
+:root[data-theme='light'] .text-blue-400,
+:root[data-theme='light'] .text-teal-500,
+:root[data-theme='light'] .text-cyan-400 {
+  color: var(--kuiz-cyan) !important;
 }

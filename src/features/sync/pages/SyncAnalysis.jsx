@@ -3,6 +3,37 @@ import { Server, Zap, Clock, RefreshCw, Activity, Download, BarChart2, CheckCirc
 import { apiUrl } from "../../../config/api";
 import { useToast } from "../../../components/ui/ToastContext";
 
+const DELAY_BUCKETS = ["0ms", "50ms", "100ms", "200ms"];
+
+function attachObservedDelayCounts(summary, logs) {
+  if (!Array.isArray(logs)) return summary;
+
+  const counts = Object.fromEntries(DELAY_BUCKETS.map((bucket) => [bucket, { server: 0, optimistic: 0, total: 0 }]));
+
+  (logs || []).forEach((log) => {
+    const delayMs = Number(log.artificial_delay_ms || 0);
+    const bucket = delayMs >= 150 ? "200ms" : delayMs >= 75 ? "100ms" : delayMs >= 25 ? "50ms" : "0ms";
+    const mode = String(log.sync_mode || "server").toLowerCase().includes("optimistic") ? "optimistic" : "server";
+    counts[bucket][mode] += 1;
+    counts[bucket].total += 1;
+  });
+
+  return {
+    ...summary,
+    byDelay: Object.fromEntries(DELAY_BUCKETS.map((bucket) => {
+      const metrics = summary.byDelay?.[bucket] || {};
+      const observed = counts[bucket];
+      return [bucket, {
+        ...metrics,
+        serverLatency: observed.server ? metrics.serverLatency ?? null : null,
+        optimisticLatency: observed.optimistic ? metrics.optimisticLatency ?? null : null,
+        consistencyPct: observed.total ? metrics.consistencyPct ?? null : null,
+        sampleCount: observed.total
+      }];
+    }))
+  };
+}
+
 export default function SyncAnalysis() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -15,10 +46,16 @@ export default function SyncAnalysis() {
   const fetchOverview = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(apiUrl("/api/sync/overview"));
-      const json = await res.json();
-      if (json.success && json.data) {
-        setOverview(json.data);
+      const [overviewResponse, logsResponse] = await Promise.all([
+        fetch(apiUrl("/api/sync/overview")),
+        fetch(apiUrl("/api/sync/export?format=json"))
+      ]);
+      const [overviewJson, logsJson] = await Promise.all([
+        overviewResponse.json(),
+        logsResponse.json()
+      ]);
+      if (overviewJson.success && overviewJson.data) {
+        setOverview(attachObservedDelayCounts(overviewJson.data, logsJson.success ? logsJson.data : null));
       }
     } catch (err) {
       console.error("Failed to load sync overview:", err);
@@ -38,7 +75,9 @@ export default function SyncAnalysis() {
       const res = await fetch(apiUrl(`/api/sync/${roomFilter.trim().toUpperCase()}/summary`));
       const json = await res.json();
       if (json.success && json.data) {
-        setSelectedRoomData(json.data);
+        const logsResponse = await fetch(apiUrl(`/api/sync/export/${roomFilter.trim().toUpperCase()}?format=json`));
+        const logsJson = await logsResponse.json();
+        setSelectedRoomData(attachObservedDelayCounts(json.data, logsJson.success ? logsJson.data : null));
         addToast(`Loaded empirical metrics for room ${roomFilter.trim().toUpperCase()}`, { type: "success" });
       } else {
         addToast("No logs found for this room code", { type: "error" });
@@ -63,15 +102,9 @@ export default function SyncAnalysis() {
   }, [fetchOverview]);
 
   const activeData = selectedRoomData || overview;
-  const serverMetrics = activeData?.byMode?.server || { averageLatencyMs: 118, reconciliations: 0, consistencyPct: 100, count: 0 };
-  const optMetrics = activeData?.byMode?.optimistic || { averageLatencyMs: 12, reconciliations: 4, consistencyPct: 96, count: 0 };
-
-  const delayData = activeData?.byDelay || {
-    "0ms": { serverLatency: 18, optimisticLatency: 4, consistencyPct: 100 },
-    "50ms": { serverLatency: 68, optimisticLatency: 6, consistencyPct: 98 },
-    "100ms": { serverLatency: 118, optimisticLatency: 8, consistencyPct: 96 },
-    "200ms": { serverLatency: 220, optimisticLatency: 12, consistencyPct: 94 }
-  };
+  const serverMetrics = activeData?.byMode?.server || { averageLatencyMs: null, reconciliations: 0, consistencyPct: null, count: 0 };
+  const optMetrics = activeData?.byMode?.optimistic || { averageLatencyMs: null, reconciliations: 0, consistencyPct: null, count: 0 };
+  const delayData = activeData?.byDelay || {};
 
   return (
     <div
@@ -170,7 +203,7 @@ export default function SyncAnalysis() {
               <Activity size={14} className="text-sky-400" />
               Total Logged Events
             </div>
-            <p className="text-3xl font-black text-white">{activeData?.totalEvents || 0}</p>
+            <p className="text-3xl font-black text-white">{activeData?.totalEvents ?? "--"}</p>
             <p className="text-xs text-slate-500 mt-1">Empirical socket transmissions</p>
           </div>
 
@@ -179,7 +212,7 @@ export default function SyncAnalysis() {
               <Clock size={14} className="text-indigo-400" />
               Avg Perceived Latency
             </div>
-            <p className="text-3xl font-black text-indigo-400">{activeData?.averageLatencyMs || 0} ms</p>
+            <p className="text-3xl font-black text-indigo-400">{activeData?.totalEvents ? `${activeData.averageLatencyMs} ms` : "No data"}</p>
             <p className="text-xs text-slate-500 mt-1">Client interaction response time</p>
           </div>
 
@@ -188,7 +221,7 @@ export default function SyncAnalysis() {
               <CheckCircle size={14} className="text-emerald-400" />
               Consistency Rate
             </div>
-            <p className="text-3xl font-black text-emerald-400">{activeData?.consistencyRatePct || 100}%</p>
+            <p className="text-3xl font-black text-emerald-400">{activeData?.totalEvents ? `${activeData.consistencyRatePct}%` : "No data"}</p>
             <p className="text-xs text-slate-500 mt-1">Score convergence between client & server</p>
           </div>
 
@@ -197,7 +230,7 @@ export default function SyncAnalysis() {
               <RefreshCw size={14} className="text-amber-400" />
               Reconciliations
             </div>
-            <p className="text-3xl font-black text-amber-400">{activeData?.reconciliationCount || 0}</p>
+            <p className="text-3xl font-black text-amber-400">{activeData?.totalEvents ? activeData.reconciliationCount : "No data"}</p>
             <p className="text-xs text-slate-500 mt-1">Optimistic predictions adjusted by server</p>
           </div>
         </div>
@@ -224,15 +257,15 @@ export default function SyncAnalysis() {
 
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-indigo-400">{serverMetrics.averageLatencyMs || 0} ms</p>
+                <p className="text-lg font-black text-indigo-400">{serverMetrics.count ? `${serverMetrics.averageLatencyMs} ms` : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Avg Perceived Latency</p>
               </div>
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">0</p>
+                <p className="text-lg font-black text-emerald-400">{serverMetrics.count ? serverMetrics.reconciliations : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Reconciliations</p>
               </div>
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">{serverMetrics.consistencyPct || 100}%</p>
+                <p className="text-lg font-black text-emerald-400">{serverMetrics.count ? `${serverMetrics.consistencyPct}%` : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Consistency</p>
               </div>
             </div>
@@ -240,11 +273,11 @@ export default function SyncAnalysis() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs text-slate-300">
                 <span>Predictive Rollback Risk:</span>
-                <span className="font-bold text-emerald-400">0% (None)</span>
+                <span className="font-bold text-emerald-400">{serverMetrics.count ? "No prediction rollback recorded" : "No data"}</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-300">
                 <span>Cheating Resistance:</span>
-                <span className="font-bold text-emerald-400">High (Fully Server-Validated)</span>
+                <span className="font-bold text-emerald-400">Server validates submitted answers</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-300">
                 <span>Network Latency Impact:</span>
@@ -262,7 +295,7 @@ export default function SyncAnalysis() {
                 </div>
                 <div>
                   <h2 className="text-xl font-extrabold">Optimistic Updates</h2>
-                  <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Zero Perceived Latency</span>
+                  <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Client predicts before confirmation</span>
                 </div>
               </div>
             </div>
@@ -273,15 +306,15 @@ export default function SyncAnalysis() {
 
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">{optMetrics.averageLatencyMs || 0} ms</p>
+                <p className="text-lg font-black text-emerald-400">{optMetrics.count ? `${optMetrics.averageLatencyMs} ms` : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Avg Perceived Latency</p>
               </div>
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-amber-400">{optMetrics.reconciliations || 0}</p>
+                <p className="text-lg font-black text-amber-400">{optMetrics.count ? optMetrics.reconciliations : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Reconciliations</p>
               </div>
               <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-sky-400">{optMetrics.consistencyPct || 96}%</p>
+                <p className="text-lg font-black text-sky-400">{optMetrics.count ? `${optMetrics.consistencyPct}%` : "No data"}</p>
                 <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Consistency</p>
               </div>
             </div>
@@ -289,7 +322,7 @@ export default function SyncAnalysis() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs text-slate-300">
                 <span>UI Responsiveness:</span>
-                <span className="font-bold text-emerald-400">Immediate (&lt; 15ms)</span>
+                <span className="font-bold text-emerald-400">Client updates before server confirmation</span>
               </div>
               <div className="flex items-center justify-between text-xs text-slate-300">
                 <span>Reconciliation Overhead:</span>
@@ -327,18 +360,18 @@ export default function SyncAnalysis() {
 
           <div className="space-y-6">
             {["0ms", "50ms", "100ms", "200ms"].map((tier) => {
-              const data = delayData[tier] || { serverLatency: 0, optimisticLatency: 0, consistencyPct: 100 };
+              const data = delayData[tier] || { serverLatency: null, optimisticLatency: null, consistencyPct: null, sampleCount: 0 };
               const sLat = Number(data.serverLatency || 0);
               const oLat = Number(data.optimisticLatency || 0);
               const maxScale = 250;
-              const sWidth = Math.min(100, Math.max(5, (sLat / maxScale) * 100));
-              const oWidth = Math.min(100, Math.max(3, (oLat / maxScale) * 100));
+              const sWidth = data.serverLatency === null ? 0 : Math.min(100, Math.max(5, (sLat / maxScale) * 100));
+              const oWidth = data.optimisticLatency === null ? 0 : Math.min(100, Math.max(3, (oLat / maxScale) * 100));
 
               return (
                 <div key={tier} className="bg-slate-900/60 rounded-xl p-4 border border-slate-800/80">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-bold text-white">Network Delay: {tier}</span>
-                    <span className="text-xs font-semibold text-slate-400">Consistency: <strong className="text-emerald-400">{data.consistencyPct}%</strong></span>
+                    <span className="text-xs font-semibold text-slate-400">{data.sampleCount == null ? "Sample count unavailable" : data.sampleCount ? <>Consistency: <strong className="text-emerald-400">{data.consistencyPct}%</strong></> : "No database observations"}</span>
                   </div>
 
                   {/* Server Authoritative Bar */}
@@ -351,7 +384,7 @@ export default function SyncAnalysis() {
                           style={{ width: `${sWidth}%` }}
                         />
                       </div>
-                      <span className="w-16 text-right text-xs font-bold text-indigo-300 shrink-0">{sLat} ms</span>
+                      <span className="w-16 text-right text-xs font-bold text-indigo-300 shrink-0">{data.serverLatency === null ? "--" : `${sLat} ms`}</span>
                     </div>
 
                     {/* Optimistic Bar */}
@@ -363,7 +396,7 @@ export default function SyncAnalysis() {
                           style={{ width: `${oWidth}%` }}
                         />
                       </div>
-                      <span className="w-16 text-right text-xs font-bold text-emerald-300 shrink-0">{oLat} ms</span>
+                      <span className="w-16 text-right text-xs font-bold text-emerald-300 shrink-0">{data.optimisticLatency === null ? "--" : `${oLat} ms`}</span>
                     </div>
                   </div>
                 </div>
