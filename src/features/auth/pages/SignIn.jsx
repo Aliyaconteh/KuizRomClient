@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogIn, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { apiUrl } from "../../../config/api";
 import { readJsonResponse } from "../../../services/api/apiClient";
@@ -27,6 +27,8 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [emailVerificationRequired, setEmailVerificationRequired] = useState(false);
   const [errors, setErrors] = useState({});
   const [mounted, setMounted] = useState(false);
 
@@ -145,6 +147,7 @@ export default function SignIn() {
       addToast("Welcome back!", { type: "success" });
       navigate("/quizzes");
     } catch (err) {
+      setEmailVerificationRequired(err.message.toLowerCase().includes("verify your email"));
       setError(err.message);
       addToast(err.message, { type: "error" });
     } finally {
@@ -152,72 +155,55 @@ export default function SignIn() {
     }
   };
 
+  const resendVerification = async () => {
+    if (!email.trim() || resendingVerification) return;
+    setResendingVerification(true);
+
+    try {
+      const response = await readJsonResponse(await fetch(apiUrl("/auth/resend-verification"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      }), "Resend verification email");
+      addToast(response.message, { type: "success" });
+    } catch (err) {
+      addToast(err.message, { type: "error" });
+    } finally {
+      setResendingVerification(false);
+    }
+  };
+
   return (
     <div
-      className={`min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"} bg-[var(--app-bg)]`}
+      className={`auth-page min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
     >
       {/* Sign-in artwork */}
-      <div className="relative flex h-[190px] w-full shrink-0 items-center justify-center overflow-hidden bg-[var(--brand-secondary)] sm:h-[240px]">
-        <img src="/SignIn.jpeg" alt="A learner working through a question at her desk" className="absolute inset-0 h-full w-full object-cover object-center" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(16,39,68,0.72) 0%, rgba(16,39,68,0.38) 52%, rgba(16,39,68,0.08) 100%)" }} />
-        <div className="relative flex items-center gap-4 text-white">
-          <img src="/logo.png" alt="KuizRoom logo" className="h-16 w-16 rounded-lg bg-white/95 p-1 object-contain shadow-xl sm:h-20 sm:w-20" />
-          <div>
-            <p className="text-2xl font-extrabold tracking-tight sm:text-3xl">KuizRoom</p>
-            <p className="mt-1 text-sm font-medium text-white/80">Your next great quiz starts here</p>
-          </div>
-        </div>
+      <div className="auth-hero">
+        <img src="/SignIn.jpeg" alt="A learner working through a question at her desk" className="auth-hero-image" />
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-6">
+      <div className={`auth-panel transition-all duration-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}>
+        <div className="auth-brand">KuizRoom</div>
         <div
-          className={`w-full max-w-[420px] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-xl transition-all duration-500 sm:p-8 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+          className="auth-panel-inner"
         >
           {/* Heading */}
-          <h1 className="text-center text-[1.7rem] font-extrabold leading-tight text-[var(--app-text)]">
-            Welcome Back
+          <h1 className="auth-title text-[1.625rem] font-bold text-center mb-6">
+            Sign in
           </h1>
-          <p className="text-sm text-slate-400 text-center mt-1.5 mb-6">
-            Sign in to manage your quizzes and rooms
-          </p>
-
-          {/* Google button */}
-          <button
-            type="button"
-            onClick={continueWithGoogle}
-            disabled={googleLoading || loading}
-            className={`w-full mb-5 py-3.5 rounded-lg font-semibold text-[0.9rem] border shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2 ${theme === "dark" ? "bg-slate-900/90 border-slate-700 text-slate-200 hover:border-[var(--brand-primary)]/60" : "bg-white border-slate-200 text-[#16213E] hover:border-slate-300 hover:shadow-md"}`}
-          >
-            {googleLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className={`w-4 h-4 border-2 rounded-full animate-spin ${theme === "dark" ? "border-slate-600 border-t-slate-200" : "border-slate-300 border-t-[#16213E]"}`} />
-                Connecting...
-              </span>
-            ) : (
-              <>
-                <GoogleIcon />
-                Continue with Google
-              </>
-            )}
-          </button>
-
-          <div className="flex items-center gap-2.5 text-[0.7rem] tracking-wide text-slate-400 mb-5">
-            <span className={`flex-1 h-px ${theme === "dark" ? "bg-slate-800" : "bg-slate-200"}`} />
-            or sign in with email
-            <span className={`flex-1 h-px ${theme === "dark" ? "bg-slate-800" : "bg-slate-200"}`} />
-          </div>
+         
 
           <div className="flex flex-col gap-4">
             {/* Email */}
             <div>
-              <div className={`flex items-center gap-2.5 border rounded-lg px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-[var(--brand-primary)] focus-within:bg-[var(--brand-primary)]/[0.06]" : "bg-[#F7F8FC] focus-within:border-[var(--brand-secondary)] focus-within:bg-[var(--brand-secondary)]/[0.04]"} ${errors.email ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
+              <div className={`auth-field flex items-center gap-2.5 ${errors.email ? "has-error" : ""}`}>
                 <Mail size={16} className="text-slate-400 shrink-0" />
                 <input
                   type="email"
                   placeholder="Email"
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                  onChange={(e) => { setEmail(e.target.value); setEmailVerificationRequired(false); setErrors((p) => ({ ...p, email: undefined })); }}
                   onKeyDown={(e) => e.key === "Enter" && signIn()}
                   className={`w-full bg-transparent text-[0.9375rem] outline-none placeholder:text-slate-400 ${theme === "dark" ? "text-slate-100" : "text-[#16213E]"}`}
                 />
@@ -227,7 +213,7 @@ export default function SignIn() {
 
             {/* Password */}
             <div>
-              <div className={`flex items-center gap-2.5 border rounded-lg px-4 py-3 transition-all duration-150 ${theme === "dark" ? "bg-slate-900/80 focus-within:border-[var(--brand-primary)] focus-within:bg-[var(--brand-primary)]/[0.06]" : "bg-[#F7F8FC] focus-within:border-[var(--brand-secondary)] focus-within:bg-[var(--brand-secondary)]/[0.04]"} ${errors.password ? "border-red-400" : theme === "dark" ? "border-slate-800" : "border-transparent"}`}>
+              <div className={`auth-field flex items-center gap-2.5 ${errors.password ? "has-error" : ""}`}>
                 <Lock size={16} className="text-slate-400 shrink-0" />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -253,7 +239,7 @@ export default function SignIn() {
             <button
               onClick={signIn}
               disabled={loading || googleLoading}
-              className="w-full mt-1 py-3.5 rounded-lg font-bold text-[0.9375rem] tracking-wide text-[#17283a] bg-[var(--brand-primary)] shadow-lg shadow-[rgba(247,166,43,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffc15b] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+              className="auth-submit w-full mt-1 py-3.5 rounded-lg font-bold text-[0.9375rem] transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -262,17 +248,49 @@ export default function SignIn() {
                 </span>
               ) : (
                 <>
-                  <LogIn size={16} />
-                  Login
+                  Sign in
                 </>
               )}
             </button>
 
-           
+            {emailVerificationRequired && (
+              <button
+                type="button"
+                onClick={resendVerification}
+                disabled={resendingVerification || !email.trim()}
+                className="text-sm text-[var(--brand-secondary)] font-semibold hover:text-[var(--brand-primary)] disabled:opacity-50"
+              >
+                {resendingVerification ? "Sending verification link..." : "Resend verification link"}
+              </button>
+            )}
+
           </div>
 
+          <div className="auth-divider flex items-center gap-2.5 text-[0.7rem] tracking-wide my-5">
+            <span className="flex-1 h-px" />OR<span className="flex-1 h-px" />
+          </div>
+
+          <button
+            type="button"
+            onClick={continueWithGoogle}
+            disabled={googleLoading || loading}
+            className="auth-google-button w-full py-3.5 rounded-lg font-semibold text-[0.9rem] border shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+          >
+            {googleLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className={`w-4 h-4 border-2 rounded-full animate-spin ${theme === "dark" ? "border-slate-600 border-t-slate-200" : "border-slate-300 border-t-[#16213E]"}`} />
+                Connecting...
+              </span>
+            ) : (
+              <>
+                <GoogleIcon />
+                Continue with Google
+              </>
+            )}
+          </button>
+
           {/* Footer */}
-          <p className="text-center text-sm text-slate-400 mt-6">
+          <p className="auth-footer text-center text-sm mt-6">
             Don't have an account?{" "}
             <button
               onClick={() => navigate("/signup")}

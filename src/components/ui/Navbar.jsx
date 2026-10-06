@@ -67,7 +67,7 @@ function MobileNavButton({ to, label, Icon, isActive }) {
 export default function Navbar() {
   const { isAuthenticated, theme, setTheme } = useAuth();
   const { pathname } = useLocation();
-  const isAuthPage = pathname === "/signin" || pathname === "/signup";
+  const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email";
   const links = isAuthenticated ? hostDesktopLinks : guestMainLinks;
   const mobileLinks = isAuthenticated ? hostMobileLinks : guestMainLinks;
   const authLink = isAuthenticated ? null : guestAuthLink;

@@ -198,13 +198,10 @@ export default function QuizList() {
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
           >
             <div>
-              <div className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-3 py-1 mb-2 sm:mb-3">
-                <ListChecks size={11} />
-                Quiz Bank
-              </div>
+              
               <h1 className="text-3xl sm:text-4xl font-extrabold mt-1">
                 Manage{" "}
-                <span className="bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text ">
                   Quizzes
                 </span>
               </h1>

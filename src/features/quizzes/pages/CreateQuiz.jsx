@@ -575,13 +575,10 @@ export default function CreateQuiz() {
           variants={fadeUp}
           className="mb-8"
         >
-          <div className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-3 py-1 mb-3">
-            <PlusCircle size={11} />
-            Quiz Builder
-          </div>
+          
           <h1 className="text-4xl font-extrabold mt-1">
             Create{" "}
-            <span className="bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text ">
               Quiz
             </span>
           </h1>
@@ -732,7 +729,7 @@ export default function CreateQuiz() {
                 whileTap={{ scale: 0.98 }}
                 onClick={generateQuizWithAI}
                 disabled={aiGenerating}
-                className="w-full rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 px-4 py-3 text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {aiGenerating ? (
                   <>

@@ -11,24 +11,24 @@ export default defineConfig({
         name: 'KuizRoom',
         short_name: 'KuizRoom',
         description: 'A Real-time Multiplayer Quiz Application.',
-        theme_color: '#6366F1',
-        background_color: '#1E293B',
+        theme_color: '#f0f0f0',
+        background_color: '#f0f0f0',
         display: 'standalone',
         orientation: 'portrait',
 
         icons: [
           {
-            src: '/pwa-192x192.png',
+            src: '/pwa-192x192 .png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-512x512 .png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/pwa-512x512 .png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'

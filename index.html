@@ -3,15 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="theme-color" content="#f0f0f0" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="KuizRoom is a real-time multiplayer quiz application that allows teachers, hosts, and learners to create quizzes, host live quiz sessions, and participate using a room code." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <title>KuizRoom | Real-Time Multiplayer Quiz Platform</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="startup-loader" role="status" aria-label="Loading KuizRoom">
+        <img src="/logo.png" alt="" />
+      </div>
+    </div>
+    <style>
+      #startup-loader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #f0f0f0;
+      }
+      #startup-loader img {
+        width: 96px;
+        height: 96px;
+        object-fit: contain;
+      }
+    </style>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

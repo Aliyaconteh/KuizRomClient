@@ -299,7 +299,7 @@ export default function JoinRoom() {
       )}
 
       <div
-        className={`min-h-screen bg-[#060a0f] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
+        className={`min-h-screen bg-[#060a0f] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden transition-opacity duration-700 lg:h-screen ${mounted ? "opacity-100" : "opacity-0"}`}
       >
         {/* Dot-grid background */}
         <svg aria-hidden="true" className="absolute inset-0 w-full h-full opacity-[0.035] pointer-events-none">
@@ -316,12 +316,12 @@ export default function JoinRoom() {
         <div className="absolute w-64 h-64 sm:w-[400px] sm:h-[400px] rounded-full bg-blue-500/10 blur-[90px] -bottom-24 -left-20 pointer-events-none" />
 
         {/* Card */}
-        <div className={`relative w-full max-w-sm sm:max-w-[440px] bg-[#0d131c]/90 border border-emerald-500/[0.14] rounded-3xl px-6 py-8 sm:px-8 sm:py-10 shadow-2xl transition-all duration-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}>
+        <div className={`relative w-full max-w-sm sm:max-w-[440px] bg-[#0d131c]/90 border border-emerald-500/[0.14] rounded-3xl px-6 py-8 sm:px-8 sm:py-10 shadow-2xl transition-all duration-500 lg:max-h-[calc(100vh-3rem)] lg:overflow-hidden ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}>
           {/* Top shimmer line */}
-          <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent rounded-full" />
+          <div className="absolute top-0 left-1/2 right-1/2 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent rounded-full" />
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1 mb-5">
+          <div className="inline-flex items-center gap-1 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1 mb-5">
             <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
             Live Session
           </div>
@@ -414,7 +414,7 @@ export default function JoinRoom() {
           <button
             type="button"
             onClick={() => setShowScanner(true)}
-            className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700/50 bg-slate-900/60 py-3 text-sm font-semibold text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 hover:bg-emerald-500/5 transition-all duration-200"
+            className="mt-2 w-full flex items-center justify-center gap-1 rounded-2xl border border-slate-700/50 bg-slate-900/60 py-3 text-sm font-semibold text-slate-300 hover:border-emerald-500/40 hover:text-emerald-300 hover:bg-emerald-500/5 transition-all duration-200"
           >
             <QrCode size={16} />
             Scan QR Code Instead
