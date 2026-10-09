@@ -179,7 +179,7 @@ export default function SignIn() {
     >
       {/* Sign-in artwork */}
       <div className="auth-hero">
-        <img src="/SignIn.jpeg" alt="A learner working through a question at her desk" className="auth-hero-image" />
+        <img src="/SignIn.png" alt="A learner working through a question at her desk" className="auth-hero-image" />
       </div>
 
       {/* Content */}
