@@ -32,7 +32,6 @@ const workflows = [
     path: "/quizzes/create",
     icon: Puzzle,
     action: "Start crafting",
-    color: "from-[var(--brand-secondary)] to-[var(--brand-primary)]",
   },
   {
     title: "Spin up a room",
@@ -40,7 +39,6 @@ const workflows = [
     path: "/create-room",
     icon: Joystick,
     action: "Launch room",
-    color: "from-[var(--brand-secondary)] to-[#4389c7]",
   },
   {
     title: "Hop in with code",
@@ -48,7 +46,6 @@ const workflows = [
     path: "/join-room",
     icon: Users,
     action: "Join the chaos",
-    color: "from-[var(--brand-primary)] to-[#f6c45d]",
   },
   {
     title: "See who survived",
@@ -56,7 +53,6 @@ const workflows = [
     path: "/leaderboard",
     icon: Trophy,
     action: "Gloat",
-    color: "from-[var(--brand-secondary)] to-[#4389c7]",
   },
   {
     title: "Get your AI buddy",
@@ -64,7 +60,6 @@ const workflows = [
     path: "/ai-practice",
     icon: Sparkles,
     action: "Chat with AI",
-    color: "from-[var(--brand-secondary)] to-[var(--brand-primary)]",
   },
 ];
 
@@ -83,6 +78,8 @@ const heroImages = [
   { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts", fit: "cover" },
   { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful", fit: "cover" },
   { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life", fit: "cover" },
+  { src: "/image6.jpeg", alt: "KuizRoom learning experience", label: "Learn something new", fit: "cover" },
+  { src: "/image7.png", alt: "KuizRoom quiz experience", label: "Ready for the next challenge", fit: "cover" },
 ];
 
 // -------------------------------------------------------------------
@@ -107,7 +104,6 @@ const WorkflowCard = memo(function WorkflowCard({
   icon: Icon,
   action,
   onOpen,
-  color,
 }) {
   return (
     <motion.button
@@ -119,7 +115,7 @@ const WorkflowCard = memo(function WorkflowCard({
       aria-label={`${action}: ${title}`}
     >
       <div className="mb-5 flex items-center justify-between">
-        <div className={`grid h-12 w-12 place-items-center rounded-lg bg-gradient-to-br ${color} text-white shadow-lg`}>
+        <div className="grid h-12 w-12 place-items-center rounded-lg bg-[var(--brand-secondary)] text-white shadow-lg">
           <Icon size={22} aria-hidden="true" />
         </div>
         <span className="text-3xl font-black opacity-20">✦</span>

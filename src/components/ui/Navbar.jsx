@@ -197,7 +197,7 @@ export default function Navbar() {
               to={hostFabLink.to}
               title={hostFabLink.label}
               aria-label={hostFabLink.label}
-              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--brand-primary)] text-white shadow-lg shadow-[color:rgba(247,166,43,0.25)] ring-4 ring-[var(--bg-nav)] transition-transform duration-200 hover:scale-105 active:scale-95"
+              className="group relative -mt-5 inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[var(--brand-secondary)] text-white shadow-lg shadow-[color:rgba(27,95,156,0.25)] ring-4 ring-[var(--bg-nav)] transition-transform duration-200 hover:scale-105 active:scale-95"
             >
               <Plus size={24} strokeWidth={2.5} aria-hidden="true" />
               <span className="sr-only">{hostFabLink.label}</span>

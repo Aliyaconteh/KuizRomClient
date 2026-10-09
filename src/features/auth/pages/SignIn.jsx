@@ -175,7 +175,7 @@ export default function SignIn() {
 
   return (
     <div
-      className={`auth-page min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
+      className={`auth-page auth-signin-page min-h-[100dvh] w-full flex flex-col relative transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
     >
       {/* Sign-in artwork */}
       <div className="auth-hero">

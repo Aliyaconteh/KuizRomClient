@@ -662,18 +662,64 @@ button:disabled {
 
 @media (max-width: 480px) {
   .auth-hero {
-    height: 45dvh;
-    min-height: 290px;
+    height: 30dvh;
+    min-height: 190px;
+    max-height: 250px;
   }
 
   .auth-panel {
-    margin-top: -42px;
-    padding: 76px 22px 34px;
-    border-radius: 48px 48px 0 0;
+    flex: 1 0 auto;
+    margin-top: -34px;
+    padding: 58px 22px 20px;
+    border-radius: 38px 38px 0 0;
+  }
+
+  .auth-brand {
+    top: -28px;
+    padding: 7px 18px;
+    border-width: 4px;
+    font-size: 1.1rem;
+  }
+
+  .auth-title {
+    margin-bottom: 12px !important;
+    font-size: 1.5rem;
+  }
+
+  .auth-panel-inner > .flex.flex-col {
+    gap: 10px;
   }
 
   .auth-field {
-    min-height: 58px;
+    min-height: 48px;
+    padding: 8px 14px;
+    border-radius: 16px;
+  }
+
+  .auth-submit,
+  .auth-google-button {
+    min-height: 50px;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 16px;
+  }
+
+  .auth-divider {
+    margin-top: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .auth-footer {
+    margin-top: 12px !important;
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 480px) and (min-height: 600px) {
+  .auth-signin-page .auth-hero {
+    height: 48dvh;
+    min-height: 250px;
+    max-height: 350px;
   }
 }
 
@@ -1032,9 +1078,20 @@ button.bg-gradient-to-br,
 button.bg-gradient-to-r,
 a.bg-gradient-to-br,
 a.bg-gradient-to-r {
-  background-image: var(--kuiz-gradient) !important;
+  background-color: var(--kuiz-primary) !important;
+  background-image: none !important;
   color: #ffffff !important;
   box-shadow: 0 14px 34px rgba(27, 95, 156, 0.23) !important;
+}
+
+.btn-shimmer:hover,
+.cr-btn-shine:hover,
+button.bg-gradient-to-br:hover,
+button.bg-gradient-to-r:hover,
+a.bg-gradient-to-br:hover,
+a.bg-gradient-to-r:hover {
+  background-color: #164b78 !important;
+  background-image: none !important;
 }
 
 button.border-slate-700,
@@ -1143,7 +1200,8 @@ nav.fixed .hover\:border-teal-400:hover {
 :root[data-theme='light'] button.bg-gradient-to-r,
 :root[data-theme='light'] a.bg-gradient-to-br,
 :root[data-theme='light'] a.bg-gradient-to-r {
-  background-image: var(--kuiz-gradient) !important;
+  background-color: var(--kuiz-primary) !important;
+  background-image: none !important;
   color: #ffffff !important;
   box-shadow: 0 10px 24px rgba(27, 95, 156, 0.2) !important;
 }
@@ -1196,6 +1254,35 @@ nav.fixed .hover\:border-teal-400:hover {
   background-image: none !important;
   border-color: #164b78;
   color: #ffffff !important;
+}
+
+/* Keep indigo/violet action buttons on the exact KuizRoom logo blue, in both themes. */
+:is(button, a, [role='button'])[class*='from-indigo-'],
+:is(button, a, [role='button'])[class*='to-violet-'],
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='from-indigo-'],
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='to-violet-'] {
+  background-color: var(--brand-secondary) !important;
+  background-image: none !important;
+  border-color: var(--brand-secondary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(27, 95, 156, 0.2) !important;
+}
+
+:is(button, a, [role='button'])[class*='from-indigo-']:hover,
+:is(button, a, [role='button'])[class*='to-violet-']:hover,
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='from-indigo-']:hover,
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='to-violet-']:hover {
+  background-color: #164b78 !important;
+  background-image: none !important;
+  border-color: #164b78 !important;
+}
+
+:is(button, a, [role='button'])[class*='from-indigo-']:disabled,
+:is(button, a, [role='button'])[class*='to-violet-']:disabled,
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='from-indigo-']:disabled,
+:root[data-theme='light'] :is(button, a, [role='button'])[class*='to-violet-']:disabled {
+  opacity: 0.55;
+  box-shadow: none !important;
 }
 
 

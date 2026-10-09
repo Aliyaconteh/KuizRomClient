@@ -38,7 +38,7 @@ export default function UserMenu() {
         aria-haspopup="true"
       >
         {/* Avatar */}
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--brand-secondary)] to-[var(--brand-primary)] text-white font-bold flex items-center justify-center text-xs shrink-0">
+        <div className="w-7 h-7 rounded-full bg-[var(--brand-secondary)] text-white font-bold flex items-center justify-center text-xs shrink-0">
           {user.username?.charAt(0).toUpperCase() || "U"}
         </div>
         {/* Username — hidden on very small screens */}
