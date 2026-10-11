@@ -1,139 +1,160 @@
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Users,
-  ShieldCheck,
-  Server,
-  Sparkles,
-  LifeBuoy,
-  UserX,
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const terms = [
+const sections = [
   {
-    id: "using-kuizroom",
-    title: "Using KuizRoom",
-    icon: Users,
-    text: "You may use KuizRoom to create and participate in educational quizzes, live rooms, practice activities, and project evaluation. You are responsible for the accuracy of content you create and for keeping your account credentials private.",
+    id: "about-kuizroom",
+    title: "1. About KuizRoom",
+    paragraphs: [
+      "KuizRoom is a web-based quiz application for creating quizzes and taking part in live quiz rooms. It is also being developed as part of an academic research project. Some features may change as the project is tested and improved.",
+      "These terms explain the basic rules for using the site. By using KuizRoom, you agree to follow them. If you do not agree, please stop using the service.",
+    ],
   },
   {
-    id: "fair-play",
-    title: "Fair play and acceptable content",
-    icon: ShieldCheck,
-    text: "Do not impersonate another person, disrupt a live room, attempt to manipulate scores or synchronization data, probe the service for unauthorized access, or upload content that is unlawful, harmful, or unrelated to the quiz activity. Hosts should only share content they have the right to use.",
+    id: "using-the-service",
+    title: "2. Using the service",
+    paragraphs: [
+      "Use KuizRoom only for lawful learning, practice, teaching, testing, or research activities. Follow any instructions given by the host of a quiz and do not use the service in a way that prevents other people from taking part.",
+      "You are responsible for the nickname, quiz material, and other information you submit. If a feature requires an account, keep your sign-in details private and do not use another person's account without permission.",
+    ],
   },
   {
-    id: "scoring-results",
-    title: "Scoring and live results",
-    icon: Server,
-    text: "The server is the official authority for answer validation, timing, scoring, and final results. Optimistic feedback may appear before confirmation and can be corrected when the server response arrives. Room codes and nicknames should be treated as visible to other participants in the same room.",
+    id: "rooms-and-participants",
+    title: "3. Rooms and other participants",
+    paragraphs: [
+      "A room code and nickname help participants join and identify one another during a live session. Other people in that room may be able to see your nickname, answers, score, or position on the leaderboard. Avoid using personal information as your nickname.",
+      "Do not pretend to be another participant, share a room code in a way that disrupts a session, harass other players, or deliberately interfere with a host's quiz.",
+    ],
+  },
+  {
+    id: "quiz-content",
+    title: "4. Quiz content",
+    paragraphs: [
+      "Hosts are responsible for the questions, images, documents, and other material they add to a quiz. Only upload or share material you have permission to use, and do not submit content that is unlawful, abusive, or intended to harm others.",
+      "KuizRoom does not guarantee that every user-created question is accurate, suitable, or free from mistakes. Hosts should check their quiz content before using it with a class or group.",
+    ],
+  },
+  {
+    id: "scores-and-timing",
+    title: "5. Scores, timing, and live feedback",
+    paragraphs: [
+      "KuizRoom uses server-confirmed answers and scores to determine official results. The interface may show a quick response before the server confirms it. If the confirmed result differs, the displayed feedback or score may be updated.",
+      "Network delays, device performance, connection problems, or service interruptions can affect what a participant sees and when they see it. Do not assume that a temporary display or connection issue represents the final result; check the confirmed results shown by the application.",
+    ],
   },
   {
     id: "ai-features",
-    title: "AI-assisted features",
-    icon: Sparkles,
-    text: "AI practice and quiz generation are provided as assistance, not as a substitute for teacher or expert review. AI output can be inaccurate, incomplete, or unsuitable for a particular learner. Review generated questions and explanations before using them in a live quiz.",
+    title: "6. AI-generated questions and uploaded files",
+    paragraphs: [
+      "If AI-assisted quiz generation is available, its suggestions are provided as a starting point. Generated questions and explanations may be wrong, incomplete, or unsuitable for your purpose. Review them before using them in a quiz.",
+      "Do not upload confidential, sensitive, or personal information unless you have permission and understand how the feature handles it. Processing may involve third-party services, depending on the feature being used.",
+    ],
   },
   {
-    id: "availability",
-    title: "Availability and changes",
-    icon: LifeBuoy,
-    text: "KuizRoom is a research and dissertation prototype. Features may change, be interrupted, or be removed while the system is developed and evaluated. Results, metrics, and generated content should not be treated as guaranteed or error-free.",
+    id: "research-and-data",
+    title: "7. Research and performance data",
+    paragraphs: [
+      "Some sessions may be used to evaluate how the application behaves, including response times, synchronization, score consistency, and correction of early feedback. Where research data is collected, it should be handled in line with the project's privacy notice and any applicable research requirements.",
+      "Do not use KuizRoom's results or performance measurements as the sole basis for a high-stakes decision about a person. The application is a research prototype and is not intended to replace a formal examination system.",
+    ],
   },
   {
-    id: "account-closure",
-    title: "Account closure and suspension",
-    icon: UserX,
-    text: "Access may be limited or suspended when necessary to protect users, the service, live sessions, or research data. You may stop using the service at any time and should contact the project administrator about account or data requests.",
+    id: "acceptable-use",
+    title: "8. Things you must not do",
+    paragraphs: [
+      "You must not attempt to access rooms, accounts, data, or system functions without permission; interfere with the service; manipulate scores or timing; introduce malicious code; or use automated methods to overload the application.",
+      "You must not use KuizRoom to break the law, infringe someone else's rights, or disrupt other people's learning or research activities.",
+    ],
+  },
+  {
+    id: "availability-and-suspension",
+    title: "9. Availability and access",
+    paragraphs: [
+      "KuizRoom is a developing project, so features may be changed, temporarily unavailable, or removed. We cannot promise uninterrupted access or that every result, generated question, or performance measurement will always be error-free.",
+      "Access may be restricted when reasonably necessary to protect participants, the service, or the integrity of a session. You may stop using KuizRoom at any time.",
+    ],
+  },
+  {
+    id: "external-services",
+    title: "10. External services",
+    paragraphs: [
+      "KuizRoom may rely on hosting, database, authentication, real-time communication, or AI providers to run certain features. Those services may have their own terms and privacy practices. Their availability can affect KuizRoom, and their terms may apply when you use the relevant feature.",
+    ],
+  },
+  {
+    id: "changes-and-contact",
+    title: "11. Changes and questions",
+    paragraphs: [
+      "These terms may be updated as KuizRoom develops. The date at the top of this page shows when this version was last revised. Please review the page occasionally, especially before taking part in a research session.",
+      "For questions about these terms, account access, or a data request, contact the KuizRoom project administrator using the contact details provided by the project team. Add a real project email or contact link here before publishing this page.",
+    ],
   },
 ];
 
 export default function TermsAndServices() {
   return (
     <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <div className="relative overflow-hidden">
-        {/* Soft glow background */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18),transparent_55%)]" />
+      <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
+        >
+          <ArrowLeft size={16} aria-hidden="true" />
+          Back to Home
+        </Link>
 
-        <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-24">
-          {/* Back button */}
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-card)] px-4 py-2 text-sm font-semibold text-[var(--text-secondary)] transition-colors hover:border-indigo-400 hover:text-[var(--text-primary)]"
-          >
-            <ArrowLeft size={16} aria-hidden="true" />
-            Back to Home
-          </Link>
+        <header className="mt-8 border-b border-[var(--border-color)] pb-8">
+          <p className="text-sm font-medium text-[var(--text-muted)]">
+            KuizRoom · Website terms
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            Terms of Use
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
+            These are the basic rules for using KuizRoom to create quizzes,
+            join live rooms, and take part in project testing.
+          </p>
+          <p className="mt-3 text-sm text-[var(--text-muted)]">
+            Last updated: 11 October 2026
+          </p>
+        </header>
 
-          {/* Header */}
-          <header className="mt-8 border-b border-[var(--border-color)] pb-12">
-            <div className="mb-5 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-indigo-500">
-              <CheckCircle2 size={17} aria-hidden="true" />
-              KuizRoom agreement
-            </div>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
-              Terms and Services
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
-              These terms set the ground rules for using KuizRoom as a host, player, or participant in the synchronization study.
-            </p>
-            <p className="mt-4 text-sm text-[var(--text-muted)]">Last updated: 19 August 2026</p>
-          </header>
-
-          {/* Table of contents */}
-          <nav className="my-10" aria-label="Table of contents">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-              On this page
-            </h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {terms.map(({ id, title }) => (
-                <li key={id}>
-                  <a
-                    href={`#${id}`}
-                    className="rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] transition hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-[var(--text-primary)]"
-                  >
-                    {title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Policy sections */}
-          <div className="space-y-6">
-            {terms.map(({ id, title, text, icon: Icon }) => (
-              <section
-                key={id}
-                id={id}
-                className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 transition hover:border-indigo-500/50 hover:bg-[var(--bg-card-hover)] sm:p-8"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="rounded-xl bg-indigo-500/10 p-3 text-indigo-400">
-                    <Icon size={22} aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold tracking-tight">{title}</h2>
-                    <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{text}</p>
-                  </div>
-                </div>
-              </section>
+        <nav className="border-b border-[var(--border-color)] py-6" aria-label="Table of contents">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+            Contents
+          </h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {sections.map(({ id, title }) => (
+              <li key={id}>
+                <a
+                  href={`#${id}`}
+                  className="text-sm leading-6 text-[var(--text-secondary)] underline decoration-[var(--border-color)] underline-offset-4 hover:text-[var(--text-primary)]"
+                >
+                  {title}
+                </a>
+              </li>
             ))}
-          </div>
+          </ul>
+        </nav>
 
-          {/* Warning notice */}
-          <div className="mt-8 flex gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 text-sm leading-6 text-[var(--text-secondary)]">
-            <AlertTriangle
-              className="mt-0.5 shrink-0 text-amber-400"
-              size={20}
-              aria-hidden="true"
-            />
-            <p>
-              By continuing to use KuizRoom, you acknowledge these terms. This page describes the project's current operation and is not a replacement for formal legal advice.
-            </p>
-          </div>
+        <div className="divide-y divide-[var(--border-color)]">
+          {sections.map(({ id, title, paragraphs }) => (
+            <section key={id} id={id} className="scroll-mt-8 py-7">
+              <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+              <div className="mt-3 space-y-3 text-sm leading-7 text-[var(--text-secondary)]">
+                {paragraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
+
+        <p className="mt-8 border-t border-[var(--border-color)] pt-5 text-xs leading-6 text-[var(--text-muted)]">
+          This page is a practical starting point for a student research
+          prototype, not legal advice. Before publishing, check that it matches
+          the features and data practices actually used by KuizRoom.
+        </p>
       </div>
     </main>
   );

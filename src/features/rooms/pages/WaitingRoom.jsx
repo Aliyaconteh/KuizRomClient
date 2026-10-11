@@ -169,14 +169,14 @@ export default function WaitingRoom() {
 
   return (
     <div
-      className={`min-h-screen bg-[#060a0f] text-white p-6 md:p-12 flex flex-col justify-between relative overflow-hidden transition-opacity duration-700 lg:h-screen lg:min-h-0 ${mounted ? "opacity-100" : "opacity-0"}`}
+      className={`min-h-screen bg-[#060a0f] text-white p-6 md:p-12 flex flex-col justify-between relative overflow-x-hidden transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
       
     >
       {/* Ambient blobs */}
       <div className="absolute w-[520px] h-[520px] rounded-full bg-indigo-500/8 blur-[90px] -top-32 -right-36 pointer-events-none" />
       <div className="absolute w-[380px] h-[380px] rounded-full bg-violet-500/8 blur-[80px] -bottom-20 -left-16 pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto w-full relative h-full flex flex-col lg:min-h-0">
+      <div className="max-w-5xl mx-auto w-full relative min-h-full flex flex-col">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-800 pb-6 mb-8 gap-4 lg:mb-6">
           <div>
@@ -213,7 +213,7 @@ export default function WaitingRoom() {
         </div>
 
         {/* PLAYERS LIST */}
-        <div className="bg-[#0d131c]/80 border border-slate-800 rounded-3xl p-6 md:p-8 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+        <div className="bg-[#0d131c]/80 border border-slate-800 rounded-3xl p-5 md:p-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-extrabold" >Connected Players</h2>
             <div className="flex items-center gap-2">
@@ -222,26 +222,26 @@ export default function WaitingRoom() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 lg:flex-1 lg:min-h-0 lg:overflow-hidden">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {room?.players && room.players.length > 0 ? (
               room.players.map((player, index) => (
                 <div
                   key={player.id}
-                  className="bg-slate-800/40 border border-slate-800 rounded-2xl px-5 py-4 flex justify-between items-center hover:border-slate-700 transition-all duration-300 hover:-translate-y-0.5"
+                  className="flex min-w-0 items-center justify-between gap-3 rounded-2xl border border-slate-700/80 bg-slate-800/60 px-4 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-600"
                   style={{ animation: "staggerFade 0.4s ease both", animationDelay: `${index * 0.08}s` }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${getAvatarGradient(index)} flex items-center justify-center font-bold text-sm text-white shadow-lg`}>
-                      {player.username.slice(0, 2).toUpperCase()}
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${getAvatarGradient(index)} text-sm font-bold text-white shadow-lg`}>
+                      {(player.username || "P").slice(0, 2).toUpperCase()}
                     </div>
-                    <div>
-                      <p className="font-semibold text-slate-100">{player.username}</p>
+                    <div className="min-w-0">
+                      <p className="break-words text-base font-semibold leading-snug text-white">{player.username || "Player"}</p>
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5 flex items-center gap-1">
                         {player.isHost ? <><Crown size={10} className="text-amber-400" /> Host</> : "Player"}
                       </p>
                     </div>
                   </div>
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500" style={{ animation: "pulseRing 2s infinite" }} />
+                  <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500" style={{ animation: "pulseRing 2s infinite" }} />
                 </div>
               ))
             ) : (

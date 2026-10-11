@@ -105,6 +105,78 @@ function QuizSelect({ quizzes, value, onChange, disabled }) {
   );
 }
 
+function ResearchSelect({ label, value, options, onChange }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const selected = options.find((option) => option.value === value);
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
+        {label}
+      </div>
+      <button
+        type="button"
+        role="combobox"
+        aria-label={label}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((current) => !current)}
+        className={`flex w-full min-w-0 items-center justify-between gap-2 rounded-xl border-[1.5px] bg-[#0f1720] px-3 sm:px-4 py-3 text-left text-sm sm:text-[0.9375rem] text-slate-100 outline-none transition-all duration-150 ${
+          open ? "border-indigo-500 bg-indigo-500/[0.05] ring-2 ring-indigo-500/10" : "border-slate-700/50"
+        }`}
+      >
+        <span className="truncate">{selected?.label}</span>
+        <ChevronDown size={16} className={`shrink-0 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          aria-label={label}
+          className="absolute left-0 right-0 top-full z-30 mt-1.5 max-h-48 overflow-y-auto rounded-xl border border-slate-700/60 bg-[#0f1720] py-1 shadow-xl shadow-black/50"
+        >
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={value === option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`w-full px-3 sm:px-4 py-2.5 text-left text-sm transition-colors ${
+                value === option.value
+                  ? "bg-indigo-500/15 font-semibold text-indigo-300"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── main ──────────────────────────────────────────────────────────────────────
 export default function CreateRoom() {
   const navigate       = useNavigate();
@@ -369,10 +441,7 @@ export default function CreateRoom() {
             className="text-[2rem] font-extrabold text-slate-100 leading-tight mb-1.5"
             
           >
-            Create a{" "}
-            <em className="not-italic bg-gradient-to-br from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-              Room
-            </em>
+            Create a Room
           </h1>
           <p className="text-sm text-slate-500 mb-8">Set up a quiz room and invite your players</p>
 
@@ -430,34 +499,26 @@ export default function CreateRoom() {
 
             {/* research configuration */}
             <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
-                  Sync Strategy
-                </div>
-                <select
-                  value={syncMode}
-                  onChange={(e) => setSyncMode(e.target.value)}
-                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
-                >
-                  <option value="server">Server-Authoritative</option>
-                  <option value="optimistic">Optimistic</option>
-                </select>
-              </div>
-              <div>
-                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
-                  Network Delay
-                </div>
-                <select
-                  value={delayLevel}
-                  onChange={(e) => setDelayLevel(e.target.value)}
-                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
-                >
-                  <option value="low">0 ms</option>
-                  <option value="medium">200 ms</option>
-                  <option value="high">600 ms</option>
-                  <option value="custom">Custom</option>
-                </select>
-              </div>
+              <ResearchSelect
+                label="Sync Strategy"
+                value={syncMode}
+                onChange={setSyncMode}
+                options={[
+                  { value: "server", label: "Server-Authoritative" },
+                  { value: "optimistic", label: "Optimistic" },
+                ]}
+              />
+              <ResearchSelect
+                label="Network Delay"
+                value={delayLevel}
+                onChange={setDelayLevel}
+                options={[
+                  { value: "low", label: "0 ms" },
+                  { value: "medium", label: "200 ms" },
+                  { value: "high", label: "600 ms" },
+                  { value: "custom", label: "Custom" },
+                ]}
+              />
             </div>
 
             {delayLevel === "custom" && (

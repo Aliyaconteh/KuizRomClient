@@ -1,23 +1,6 @@
-import { useEffect, useState, memo, useCallback } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import {
-  BarChart3,
-  CheckCircle2,
-  Clock3,
-  Database,
-  Download,
-  Radio,
-  ShieldCheck,
-  Sparkles,
-  Trophy,
-  Users,
-  ArrowRight,
-  Laugh,
-  Puzzle,
-  Joystick,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import { ArrowRight, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/ui/Footer";
 import { useToast } from "../components/ui/ToastContext";
@@ -27,49 +10,54 @@ import { useToast } from "../components/ui/ToastContext";
 // -------------------------------------------------------------------
 const workflows = [
   {
-    title: "Whip up a quiz",
-    text: "Throw in questions, options, and weird wrong answers. Set a timer, then hit the road.",
+    title: "Create a quiz",
+    text: "Write your questions and answer options, set a timer for each one, and save the quiz to use whenever you like.",
     path: "/quizzes/create",
-    icon: Puzzle,
-    action: "Start crafting",
+    action: "Create a quiz",
   },
   {
-    title: "Spin up a room",
-    text: "Pick your quiz, get a room code, and watch the lobby fill with eager players.",
+    title: "Open a room",
+    text: "Choose one of your quizzes and you get a room code. Share it and players show up in the lobby.",
     path: "/create-room",
-    icon: Joystick,
-    action: "Launch room",
+    action: "Open a room",
   },
   {
-    title: "Hop in with code",
-    text: "Enter the code, pick a silly username, and you're in. No email, no fuss.",
+    title: "Join with a code",
+    text: "Type in the room code and pick a username. You don't need an account or an email address.",
     path: "/join-room",
-    icon: Users,
-    action: "Join the chaos",
+    action: "Join a room",
   },
   {
-    title: "See who survived",
-    text: "After the final buzzer, check the leaderboard and laugh at your friends' scores.",
+    title: "Check the leaderboard",
+    text: "When the last question closes, everyone sees the final scores and where they ended up.",
     path: "/leaderboard",
-    icon: Trophy,
-    action: "Gloat",
+    action: "View leaderboard",
   },
   {
-    title: "Get your AI buddy",
-    text: "Stuck on a question? Open the AI tutor – it explains like a clever friend.",
+    title: "Practise with the AI tutor",
+    text: "Stuck on a question? Ask the tutor to explain it step by step, then try again.",
     path: "/ai-practice",
-    icon: Sparkles,
-    action: "Chat with AI",
+    action: "Open AI tutor",
   },
 ];
 
 const features = [
-  { icon: Radio, title: "Live, instant rooms", text: "Everything moves via websockets – questions, timers, and scores update in real time." },
-  { icon: ShieldCheck, title: "Server's the boss", text: "The backend checks every answer and scores you fairly – no cheating!" },
-  { icon: Clock3, title: "Feedback that's snappy", text: "You see your own answer immediately, while we double-check behind the scenes." },
-  { icon: Database, title: "Every quiz saved", text: "All quizzes, rooms, and results live safely in Supabase – you can always revisit." },
-  { icon: BarChart3, title: "Synchronisation insights", text: "We compare server-authoritative and optimistic updates so you see what's really going on." },
-  { icon: CheckCircle2, title: "One-stop demo", text: "Create, join, play, and review – all from this same dashboard. No wandering." },
+  {
+    title: "Everyone plays at once",
+    text: "Questions, timers and scores update live for every player in the room.",
+  },
+  {
+    title: "Scores you can trust",
+    text: "The server checks every answer, so the leaderboard is the same for everyone.",
+  },
+  {
+    title: "Instant feedback",
+    text: "You see your own result as soon as you answer, before the server confirms it.",
+  },
+  {
+    title: "Your quizzes are saved",
+    text: "Quizzes, rooms and results are stored, so you can come back and reuse them.",
+  },
 ];
 
 const heroImages = [
@@ -83,72 +71,34 @@ const heroImages = [
 ];
 
 // -------------------------------------------------------------------
-//  Animation variants
+//  Components
 // -------------------------------------------------------------------
-const popIn = {
-  hidden: { opacity: 0, scale: 0.9, y: 30 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", bounce: 0.4, duration: 0.6 } },
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
-};
-
-// -------------------------------------------------------------------
-//  Memoised components
-// -------------------------------------------------------------------
-const WorkflowCard = memo(function WorkflowCard({
-  title,
-  text,
-  icon: Icon,
-  action,
-  onOpen,
-}) {
+function WorkflowCard({ title, text, action, onOpen }) {
   return (
-    <motion.button
+    <button
+      type="button"
       onClick={onOpen}
-      variants={popIn}
-      whileHover={{ scale: 1.03, rotate: -1 }}
-      whileTap={{ scale: 0.97, rotate: 1 }}
-      className="group relative flex h-full flex-col rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left transition-colors hover:border-[var(--border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
+      className="group flex h-full w-full flex-col rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 text-left transition duration-200 hover:-translate-y-1 hover:border-[var(--border-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]"
       aria-label={`${action}: ${title}`}
     >
-      <div className="mb-5 flex items-center justify-between">
-        <div className="grid h-12 w-12 place-items-center rounded-lg bg-[var(--brand-secondary)] text-white shadow-lg">
-          <Icon size={22} aria-hidden="true" />
-        </div>
-        <span className="text-3xl font-black opacity-20">✦</span>
-      </div>
-
       <h3 className="font-display text-2xl font-bold text-[var(--text-primary)]">{title}</h3>
       <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
-
-      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)] transition-colors group-hover:text-[var(--brand-accent)]">
+      <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)]">
         {action}
-        <ArrowRight size={16} className="transition-transform group-hover:translate-x-2 group-hover:-rotate-6" />
+        <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
       </span>
-    </motion.button>
+    </button>
   );
-});
+}
 
-const FeatureCard = memo(function FeatureCard({ icon: Icon, title, text }) {
+function FeatureCard({ title, text }) {
   return (
-    <motion.div
-      variants={popIn}
-      whileHover={{ y: -4 }}
-      className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6 transition-colors hover:bg-[var(--bg-card-hover)]"
-    >
-      <div className="mb-4 flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-lg bg-[var(--bg-secondary)] text-[var(--brand-primary)]">
-          <Icon size={20} aria-hidden="true" />
-        </div>
-        <h3 className="font-display text-lg font-bold text-[var(--text-primary)]">{title}</h3>
-      </div>
-      <p className="text-sm leading-6 text-[var(--text-muted)]">{text}</p>
-    </motion.div>
+    <div className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] p-6">
+      <h3 className="font-display text-lg font-bold text-[var(--text-primary)]">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{text}</p>
+    </div>
   );
-});
+}
 
 // -------------------------------------------------------------------
 //  Home page
@@ -157,7 +107,6 @@ export default function Home() {
   const navigate = useNavigate();
   const { addToast } = useToast();
   const prefersReducedMotion = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
   const [activeHeroImage, setActiveHeroImage] = useState(0);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(() => {
@@ -167,11 +116,6 @@ export default function Home() {
       window.navigator.standalone === true
     );
   });
-
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 30);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     if (prefersReducedMotion) return undefined;
@@ -200,7 +144,6 @@ export default function Home() {
     };
   }, []);
 
-  const handleNavigation = useCallback((path) => () => navigate(path), [navigate]);
   const showHeroImage = (direction) => {
     setActiveHeroImage((current) => (current + direction + heroImages.length) % heroImages.length);
   };
@@ -222,184 +165,175 @@ export default function Home() {
     setInstallPrompt(null);
   };
 
-  const heroOpacity = mounted ? "opacity-100" : "opacity-0";
-  const heroTransition = prefersReducedMotion ? "transition-none" : "transition-opacity duration-1000";
-
   return (
-    <main className="relative overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <div>
-        {/* HERO */}
-        <section id="hero" className="relative flex min-h-[min(760px,calc(100svh-4rem))] items-center border-b border-[var(--border-color)] px-4 py-14 sm:px-6 lg:py-20">
-          <div className={`mx-auto grid w-full max-w-7xl items-center gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 ${heroOpacity} ${heroTransition}`}>
-            <div className="max-w-2xl">
-              <div className="mb-7 flex items-center gap-3">
-                <img src="/logo.png" alt="KuizRoom logo" className="h-14 w-14 rounded-lg bg-white object-contain p-1 shadow-md sm:h-16 sm:w-16" />
-                <div>
-                  <p className="text-xl font-extrabold tracking-tight"><span className="text-[var(--brand-primary)]">Kuiz</span><span className="text-[var(--brand-secondary)]">Room</span></p>
-                  <p className="text-xs font-semibold uppercase text-[var(--text-muted)]">Live quiz arena</p>
-                </div>
-              </div>
-              <div className="mb-5 inline-flex items-center gap-2 border-l-2 border-[var(--brand-primary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-secondary)]">
-                <span className="h-2 w-2 rounded-full bg-[var(--brand-success)]" />
-                Play together, learn in real time
-              </div>
+    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      {/* Hero */}
+      <section
+        id="hero"
+        className="flex min-h-0 items-start border-b border-[var(--border-color)] px-4 py-8 sm:min-h-[min(760px,calc(100svh-4rem))] sm:items-center sm:px-6 sm:py-14 lg:py-20"
+      >
+        <div className="mx-auto grid w-full max-w-7xl min-w-0 items-center gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+          <div className="w-full min-w-0 max-w-2xl">
+            <div className="mb-7 flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="KuizRoom logo"
+                className="h-14 w-14 rounded-lg bg-white object-contain p-1 shadow-md sm:h-16 sm:w-16"
+              />
+              <p className="text-xl font-extrabold tracking-tight">
+                <span className="text-[var(--brand-primary)]">Kuiz</span>
+                <span className="text-[var(--brand-secondary)]">Room</span>
+              </p>
+            </div>
 
-            <h1 className="font-display text-5xl font-black leading-[1.04] sm:text-6xl lg:text-7xl text-[var(--text-primary)]">
-              Learn. <span className="text-[var(--brand-primary)]">Laugh.</span><br />Compete.
+            <h1 className="font-display text-[clamp(2.4rem,12vw,3.75rem)] font-black leading-[0.95] tracking-tight sm:text-7xl lg:text-[clamp(3.75rem,6vw,6rem)]">
+              <span className="block">
+                Learn. <span className="text-[var(--brand-primary)]">Laugh.</span>
+              </span>
+              <span className="block">Compete.</span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-7 text-[var(--text-secondary)] sm:text-lg sm:leading-8">
-              The multiplayer quiz platform that feels like a game night with your
-              loudest friends. Create a quiz, grab a room code, and watch the
-              leaderboard erupt. 
+            <p className="mt-4 max-w-xl text-base leading-7 text-[var(--text-secondary)] sm:mt-6 sm:text-lg sm:leading-8">
+              Write a quiz, share the room code, and everyone answers on their own
+              device while the scores update on screen. Players join with just a
+              username.
             </p>
 
-            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-              <motion.button
-                onClick={handleNavigation("/quizzes/create")}
-                whileHover={{ scale: 1.05, rotate: -1 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-lg bg-[var(--brand-primary)] px-7 py-3.5 font-bold text-[#17283a] shadow-lg shadow-[rgba(247,166,43,0.2)] transition hover:-translate-y-0.5 hover:bg-[#ffc15b]"
+            <div className="mt-6 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={() => navigate("/quizzes/create")}
+                className="w-full rounded-lg bg-[var(--brand-primary)] px-7 py-3.5 font-bold text-[#17283a] transition hover:-translate-y-0.5 hover:bg-[#ffc15b] sm:w-auto"
               >
-                Make a quiz
-              </motion.button>
+                Create a quiz
+              </button>
 
-              <motion.button
-                onClick={handleNavigation("/join-room")}
-                whileHover={{ scale: 1.05, rotate: 1 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-3.5 font-bold text-[var(--text-primary)] transition-colors hover:border-[var(--brand-secondary)] hover:text-[var(--brand-secondary)]"
+              <button
+                type="button"
+                onClick={() => navigate("/join-room")}
+                className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] px-7 py-3.5 font-bold text-[var(--text-primary)] transition-colors hover:border-[var(--brand-secondary)] hover:text-[var(--brand-secondary)] sm:w-auto"
               >
                 Join a room
-              </motion.button>
+              </button>
 
               {!isInstalled && (
-                <motion.button
+                <button
+                  type="button"
                   onClick={handleInstall}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-semibold text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)]"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3.5 font-semibold text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-secondary)] sm:w-auto"
                 >
-                  <Download size={18} />
+                  <Download size={18} aria-hidden="true" />
                   Install app
-                </motion.button>
+                </button>
               )}
             </div>
-            </div>
-            <div className="relative mx-auto w-full max-w-[520px] lg:justify-self-end">
-              <div className="relative aspect-[1.13/1] overflow-hidden border border-[var(--border-color)] bg-[var(--app-surface)] shadow-[0_24px_60px_rgba(17,48,78,0.16)]">
-                {heroImages.map((image, index) => (
-                  <img
-                    key={image.src}
-                    src={image.src}
-                    alt={image.alt}
-                    aria-hidden={index !== activeHeroImage}
-                    className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${image.fit === "contain" ? "bg-white object-contain p-5 sm:p-8" : "object-cover"} ${index === activeHeroImage ? "opacity-100" : "opacity-0"}`}
-                  />
-                ))}
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-[#0c1422]/90 via-[#0c1422]/45 to-transparent px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
-                  <div aria-live="polite" aria-atomic="true">
-                    <p className="text-[10px] font-bold uppercase text-white/70">KuizRoom</p>
-                    <p className="mt-1 text-lg font-bold text-white sm:text-xl">{heroImages[activeHeroImage].label}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    <button type="button" onClick={() => showHeroImage(-1)} aria-label="Show previous image" className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15">
-                      <ChevronLeft size={18} aria-hidden="true" />
-                    </button>
-                    <button type="button" onClick={() => showHeroImage(1)} aria-label="Show next image" className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15">
-                      <ChevronRight size={18} aria-hidden="true" />
-                    </button>
-                  </div>
+          </div>
+
+          <div className="relative mx-auto w-full min-w-0 max-w-[520px] lg:justify-self-end">
+            <div className="relative aspect-[1.13/1] overflow-hidden border border-[var(--border-color)] bg-[var(--app-surface)] shadow-[0_24px_60px_rgba(17,48,78,0.16)]">
+              {heroImages.map((image, index) => (
+                <img
+                  key={image.src}
+                  src={image.src}
+                  alt={image.alt}
+                  aria-hidden={index !== activeHeroImage}
+                  className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
+                    image.fit === "contain" ? "bg-white object-contain p-5 sm:p-8" : "object-cover"
+                  } ${index === activeHeroImage ? "opacity-100" : "opacity-0"}`}
+                />
+              ))}
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-[#0c1422]/90 via-[#0c1422]/45 to-transparent px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
+                <div aria-live="polite" aria-atomic="true">
+                  <p className="text-[10px] font-bold uppercase text-white/70">KuizRoom</p>
+                  <p className="mt-1 text-lg font-bold text-white sm:text-xl">
+                    {heroImages[activeHeroImage].label}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => showHeroImage(-1)}
+                    aria-label="Show previous image"
+                    className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15"
+                  >
+                    <ChevronLeft size={18} aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => showHeroImage(1)}
+                    aria-label="Show next image"
+                    className="grid h-9 w-9 place-items-center border border-white/25 bg-black/20 text-white transition hover:bg-white/15"
+                  >
+                    <ChevronRight size={18} aria-hidden="true" />
+                  </button>
                 </div>
               </div>
-              <div className="mt-3 flex items-center justify-center gap-2" role="group" aria-label="Choose homepage image">
-                {heroImages.map((image, index) => (
-                  <button
-                    key={image.src}
-                    type="button"
-                    onClick={() => setActiveHeroImage(index)}
-                    aria-label={`Show image ${index + 1}: ${image.label}`}
-                    aria-current={index === activeHeroImage ? "true" : undefined}
-                    className={`h-1.5 transition-all ${index === activeHeroImage ? "w-8 bg-[var(--brand-primary)]" : "w-4 bg-[var(--app-text-muted)]/50 hover:bg-[var(--brand-secondary)]"}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* About */}
-        <section id="about" className="border-y border-[var(--border-color)] bg-[var(--bg-secondary)] py-14">
-          <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 text-center sm:px-6">
-            <div className="flex items-center gap-3 text-[var(--brand-primary)]">
-              <Laugh size={28} />
-              <p className="font-display text-lg font-bold uppercase tracking-widest">Why KuizRoom?</p>
-            </div>
-            <p className="max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
-              Because learning shouldn't feel like a lecture. KuizRoom combines live
-              quiz battles, instant feedback, and a bit of friendly trash-talking.
-              It's built to show how real-time sync works – but honestly, we just
-              wanted a reason to throw a quiz party.
-            </p>
-          </div>
-        </section>
-
-        {/* Workflows */}
-        <motion.section
-          id="workflows"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={prefersReducedMotion ? {} : staggerContainer}
-          className="mx-auto max-w-7xl px-4 py-20 sm:px-6"
-        >
-          <div className="mb-10">
-            <p className="font-display text-sm font-bold uppercase tracking-widest text-[var(--brand-secondary)]">
-              The flow
-            </p>
-            <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">
-              Your quiz night, step by step
-            </h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {workflows.map((item, index) => (
-              <div key={item.title} className={`${index === 0 ? "md:col-span-2 xl:col-span-1" : ""} ${index === 3 ? "xl:col-span-2" : ""}`}>
-                <WorkflowCard {...item} onOpen={handleNavigation(item.path)} />
-              </div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Features */}
-        <motion.section
-          id="features"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={prefersReducedMotion ? {} : staggerContainer}
-          className="border-t border-[var(--border-color)] bg-[var(--bg-secondary)]"
-        >
-          <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-            <div className="mb-12 text-center">
-              <p className="font-display text-sm font-bold uppercase tracking-widest text-[var(--brand-primary)]">
-                Under the hood
-              </p>
-              <h2 className="mt-2 font-display text-4xl font-black text-[var(--text-primary)]">
-                Engineered for fun, built for speed
-              </h2>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <FeatureCard key={feature.title} {...feature} />
+            <div className="mt-3 flex items-center justify-center gap-2" role="group" aria-label="Choose homepage image">
+              {heroImages.map((image, index) => (
+                <button
+                  key={image.src}
+                  type="button"
+                  onClick={() => setActiveHeroImage(index)}
+                  aria-label={`Show image ${index + 1}: ${image.label}`}
+                  aria-current={index === activeHeroImage ? "true" : undefined}
+                  className={`h-1.5 transition-all ${
+                    index === activeHeroImage
+                      ? "w-8 bg-[var(--brand-primary)]"
+                      : "w-4 bg-[var(--app-text-muted)]/50 hover:bg-[var(--brand-secondary)]"
+                  }`}
+                />
               ))}
             </div>
           </div>
-        </motion.section>
+        </div>
+      </section>
 
-        <Footer />
-      </div>
+      {/* About */}
+      <section id="about" className="border-b border-[var(--border-color)] bg-[var(--bg-secondary)] py-14">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 className="font-display text-3xl font-black">Quizzes that don't feel like a test</h2>
+          <p className="mt-4 text-base leading-7 text-[var(--text-secondary)]">
+            KuizRoom is for the kind of quiz where people shout answers across the
+            room. Everyone plays at the same time, you see scores change as
+            answers come in, and there's an AI tutor for when a question needs
+            explaining. It also works as a working example of real-time syncing
+            between players and a server.
+          </p>
+        </div>
+      </section>
+
+      {/* Workflows */}
+      <section id="workflows" className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <h2 className="mb-10 font-display text-4xl font-black">How it works</h2>
+
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {workflows.map((item, index) => (
+            <div
+              key={item.title}
+              className={`${index === 0 ? "md:col-span-2 xl:col-span-1" : ""} ${index === 3 ? "xl:col-span-2" : ""}`}
+            >
+              <WorkflowCard {...item} onOpen={() => navigate(item.path)} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="border-t border-[var(--border-color)] bg-[var(--bg-secondary)]">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <h2 className="mb-10 font-display text-4xl font-black">What you get</h2>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature) => (
+              <FeatureCard key={feature.title} {...feature} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </main>
   );
 }

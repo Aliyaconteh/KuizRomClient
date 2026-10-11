@@ -118,40 +118,31 @@ export default function SyncAnalysis() {
         {/* Header & Controls */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10" style={{ animation: "slideUp 0.5s ease both" }}>
           <div>
-            <div className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-sky-400 bg-sky-500/10 border border-sky-500/20 rounded-full px-3 py-1 mb-3">
-              <Activity size={11} />
-              Dissertation Research Dashboard
-            </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold mt-1 tracking-tight">
-              Synchronization{" "}
-              <span className="bg-gradient-to-br from-sky-400 to-indigo-400 bg-clip-text text-transparent">
-                Empirical Evaluation
-              </span>
-            </h1>
+           
             <p className="text-slate-400 mt-3 max-w-2xl text-sm leading-relaxed">
               Comparative analysis of Server-Authoritative vs Optimistic Client-Side Update models under simulated network delays (0ms, 50ms, 100ms, 200ms).
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid w-full grid-cols-1 gap-3 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
             <button
               onClick={fetchOverview}
               disabled={loading}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-2 border border-slate-700/60 transition"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700/60 bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-200 transition hover:bg-slate-700 sm:w-auto"
             >
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
               Refresh Metrics
             </button>
             <button
               onClick={() => handleExport("csv")}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-bold flex items-center gap-2 border border-indigo-500/40 transition"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 px-4 py-2.5 text-xs font-bold text-indigo-300 transition hover:bg-indigo-600/30 sm:w-auto"
             >
               <Download size={14} />
               Export CSV Dataset
             </button>
             <button
               onClick={() => handleExport("json")}
-              className="px-4 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold flex items-center gap-2 border border-emerald-500/40 transition"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-600/20 px-4 py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-600/30 sm:w-auto"
             >
               <Download size={14} />
               Export JSON
@@ -238,15 +229,15 @@ export default function SyncAnalysis() {
         {/* Strategy Comparison Cards */}
         <div className="grid lg:grid-cols-2 gap-6 mb-10">
           {/* Server-Authoritative */}
-          <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:border-slate-700">
+          <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 md:p-8 transition-all duration-300 hover:border-slate-700">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <div className="w-11 h-11 shrink-0 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
                   <Server size={22} className="text-indigo-400" />
                 </div>
-                <div>
-                  <h2 className="text-xl font-extrabold">Server-Authoritative</h2>
-                  <span className="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Strict Consistency</span>
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl font-extrabold">Server-Authoritative</h2>
+                  <span className="text-[0.65rem] sm:text-xs text-indigo-400 font-semibold uppercase tracking-wider">Strict Consistency</span>
                 </div>
               </div>
             </div>
@@ -255,47 +246,47 @@ export default function SyncAnalysis() {
               The server acts as the single source of truth. Every answer submission is validated server-side and points are calculated centrally before updating the client UI.
             </p>
 
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-indigo-400">{serverMetrics.count ? `${serverMetrics.averageLatencyMs} ms` : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Avg Perceived Latency</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-6">
+              <div className="bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-indigo-400">{serverMetrics.count ? `${serverMetrics.averageLatencyMs} ms` : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Avg Perceived Latency</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">{serverMetrics.count ? serverMetrics.reconciliations : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Reconciliations</p>
+              <div className="bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-emerald-400">{serverMetrics.count ? serverMetrics.reconciliations : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Reconciliations</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">{serverMetrics.count ? `${serverMetrics.consistencyPct}%` : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Consistency</p>
+              <div className="col-span-2 sm:col-span-1 bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-emerald-400">{serverMetrics.count ? `${serverMetrics.consistencyPct}%` : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Consistency</p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>Predictive Rollback Risk:</span>
-                <span className="font-bold text-emerald-400">{serverMetrics.count ? "No prediction rollback recorded" : "No data"}</span>
+            <div className="grid gap-2">
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>Predictive Rollback Risk</span>
+                <span className="mt-1 block font-bold text-emerald-400 sm:mt-0 sm:text-right">{serverMetrics.count ? "No prediction rollback recorded" : "No data"}</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>Cheating Resistance:</span>
-                <span className="font-bold text-emerald-400">Server validates submitted answers</span>
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>Cheating Resistance</span>
+                <span className="mt-1 block font-bold text-emerald-400 sm:mt-0 sm:text-right">Server validates submitted answers</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>Network Latency Impact:</span>
-                <span className="font-bold text-amber-400">Directly perceived by player</span>
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>Network Latency Impact</span>
+                <span className="mt-1 block font-bold text-amber-400 sm:mt-0 sm:text-right">Directly perceived by player</span>
               </div>
             </div>
           </div>
 
           {/* Optimistic */}
-          <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 md:p-8 transition-all duration-300 hover:border-slate-700">
+          <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 md:p-8 transition-all duration-300 hover:border-slate-700">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <div className="w-11 h-11 shrink-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                   <Zap size={22} className="text-emerald-400" />
                 </div>
-                <div>
-                  <h2 className="text-xl font-extrabold">Optimistic Updates</h2>
-                  <span className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Client predicts before confirmation</span>
+                <div className="min-w-0">
+                  <h2 className="text-lg sm:text-xl font-extrabold">Optimistic Updates</h2>
+                  <span className="text-[0.65rem] sm:text-xs text-emerald-400 font-semibold uppercase tracking-wider">Client predicts before confirmation</span>
                 </div>
               </div>
             </div>
@@ -304,43 +295,43 @@ export default function SyncAnalysis() {
               The client predicts answer score immediately upon submission for fluid UI response, then reconciles asynchronously when the server broadcasts authoritative state.
             </p>
 
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-emerald-400">{optMetrics.count ? `${optMetrics.averageLatencyMs} ms` : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Avg Perceived Latency</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-6">
+              <div className="bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-emerald-400">{optMetrics.count ? `${optMetrics.averageLatencyMs} ms` : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Avg Perceived Latency</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-amber-400">{optMetrics.count ? optMetrics.reconciliations : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Reconciliations</p>
+              <div className="bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-amber-400">{optMetrics.count ? optMetrics.reconciliations : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Reconciliations</p>
               </div>
-              <div className="bg-slate-800/40 rounded-xl p-3 text-center border border-slate-800">
-                <p className="text-lg font-black text-sky-400">{optMetrics.count ? `${optMetrics.consistencyPct}%` : "No data"}</p>
-                <p className="text-[0.65rem] text-slate-500 font-semibold uppercase tracking-wide mt-0.5">Consistency</p>
+              <div className="col-span-2 sm:col-span-1 bg-slate-800/40 rounded-xl p-2.5 sm:p-3 text-center border border-slate-800">
+                <p className="whitespace-nowrap text-base sm:text-lg font-black text-sky-400">{optMetrics.count ? `${optMetrics.consistencyPct}%` : "No data"}</p>
+                <p className="text-[0.6rem] sm:text-[0.65rem] leading-tight text-slate-500 font-semibold uppercase tracking-wide mt-1">Consistency</p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>UI Responsiveness:</span>
-                <span className="font-bold text-emerald-400">Client updates before server confirmation</span>
+            <div className="grid gap-2">
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>UI Responsiveness</span>
+                <span className="mt-1 block font-bold text-emerald-400 sm:mt-0 sm:text-right">Client updates before server confirmation</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>Reconciliation Overhead:</span>
-                <span className="font-bold text-amber-400">Minimal (Event diff check)</span>
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>Reconciliation Overhead</span>
+                <span className="mt-1 block font-bold text-amber-400 sm:mt-0 sm:text-right">Minimal (Event diff check)</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-300">
-                <span>Fault Tolerance on High Delay:</span>
-                <span className="font-bold text-emerald-400">Smooth user experience</span>
+              <div className="rounded-lg bg-slate-800/30 p-3 text-xs text-slate-300 sm:flex sm:items-center sm:justify-between sm:gap-4">
+                <span>Fault Tolerance on High Delay</span>
+                <span className="mt-1 block font-bold text-emerald-400 sm:mt-0 sm:text-right">Smooth user experience</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Empirical Delay Benchmark Visualization */}
-        <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 md:p-8 mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-extrabold flex items-center gap-2">
+        <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 md:p-8 mb-10">
+          <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-extrabold flex items-center gap-2">
                 <BarChart2 size={20} className="text-sky-400" />
                 Latency Comparison by Simulated Delay
               </h2>
@@ -358,7 +349,7 @@ export default function SyncAnalysis() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="grid gap-3 sm:gap-5 sm:grid-cols-2">
             {["0ms", "50ms", "100ms", "200ms"].map((tier) => {
               const data = delayData[tier] || { serverLatency: null, optimisticLatency: null, consistencyPct: null, sampleCount: 0 };
               const sLat = Number(data.serverLatency || 0);
@@ -368,35 +359,41 @@ export default function SyncAnalysis() {
               const oWidth = data.optimisticLatency === null ? 0 : Math.min(100, Math.max(3, (oLat / maxScale) * 100));
 
               return (
-                <div key={tier} className="bg-slate-900/60 rounded-xl p-4 border border-slate-800/80">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-bold text-white">Network Delay: {tier}</span>
-                    <span className="text-xs font-semibold text-slate-400">{data.sampleCount == null ? "Sample count unavailable" : data.sampleCount ? <>Consistency: <strong className="text-emerald-400">{data.consistencyPct}%</strong></> : "No database observations"}</span>
+                <div key={tier} className="min-w-0 bg-slate-900/60 rounded-xl p-3 sm:p-4 border border-slate-800/80">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <span className="rounded-lg bg-slate-800 px-2.5 py-1 text-sm font-bold text-white">Delay: {tier}</span>
+                    <span className="rounded-lg bg-slate-800/70 px-2.5 py-1 text-[11px] font-semibold text-slate-400">
+                      {data.sampleCount == null ? "Samples unavailable" : data.sampleCount ? <>Consistency <strong className="ml-1 text-emerald-400">{data.consistencyPct}%</strong></> : "No observations"}
+                    </span>
                   </div>
 
                   {/* Server Authoritative Bar */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <span className="w-24 text-[11px] font-semibold text-indigo-300 shrink-0">Server Model:</span>
-                      <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="mb-1.5 flex items-center justify-between gap-2">
+                        <span className="text-xs font-semibold text-indigo-300">Server Model</span>
+                        <span className="text-xs font-bold text-indigo-300">{data.serverLatency === null ? "--" : `${sLat} ms`}</span>
+                      </div>
+                      <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
                         <div
                           className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                           style={{ width: `${sWidth}%` }}
                         />
                       </div>
-                      <span className="w-16 text-right text-xs font-bold text-indigo-300 shrink-0">{data.serverLatency === null ? "--" : `${sLat} ms`}</span>
                     </div>
 
                     {/* Optimistic Bar */}
-                    <div className="flex items-center gap-3">
-                      <span className="w-24 text-[11px] font-semibold text-emerald-300 shrink-0">Optimistic:</span>
-                      <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">
+                    <div>
+                      <div className="mb-1.5 flex items-center justify-between gap-2">
+                        <span className="text-xs font-semibold text-emerald-300">Optimistic</span>
+                        <span className="text-xs font-bold text-emerald-300">{data.optimisticLatency === null ? "--" : `${oLat} ms`}</span>
+                      </div>
+                      <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-800">
                         <div
                           className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                           style={{ width: `${oWidth}%` }}
                         />
                       </div>
-                      <span className="w-16 text-right text-xs font-bold text-emerald-300 shrink-0">{data.optimisticLatency === null ? "--" : `${oLat} ms`}</span>
                     </div>
                   </div>
                 </div>

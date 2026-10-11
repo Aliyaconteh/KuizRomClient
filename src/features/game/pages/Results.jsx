@@ -110,10 +110,8 @@ export default function Results() {
         <div className="text-center mb-8" style={{ animation: "slideUp 0.5s ease both" }}>
           <p className="text-slate-500 uppercase tracking-[0.12em] text-sm font-semibold">Room {roomCode}</p>
           <h1 className="text-4xl md:text-5xl font-extrabold mt-2">
-            Game{" "}
-            <span className="bg-gradient-to-br from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Results
-            </span>
+            Game Results
+            
           </h1>
         </div>
 
@@ -159,11 +157,11 @@ export default function Results() {
         )}
 
         {/* Action Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4">
-          <div className="flex items-center gap-2">
+        <div className="mb-6 grid grid-cols-1 gap-2 rounded-2xl border border-slate-800 bg-[#0d131c]/80 p-3 sm:grid-cols-2 sm:p-4 lg:flex lg:items-center lg:justify-between">
+          <div className="contents">
             <button
               onClick={() => setShowReview(!showReview)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border transition ${
+              className={`flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-bold transition sm:col-span-2 lg:w-auto ${
                 showReview 
                   ? "bg-indigo-600 text-white border-indigo-500" 
                   : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
@@ -175,10 +173,10 @@ export default function Results() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="contents">
             <button
               onClick={handleExportLeaderboardCSV}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 border border-slate-700 transition"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 text-xs font-bold text-slate-200 transition hover:bg-slate-700 lg:w-auto"
               title="Export leaderboard as CSV"
             >
               <FileSpreadsheet size={14} className="text-emerald-400" />
@@ -186,7 +184,7 @@ export default function Results() {
             </button>
             <button
               onClick={handleExportSyncCSV}
-              className="px-3.5 py-2 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 text-xs font-bold flex items-center gap-1.5 border border-indigo-500/30 transition"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/15 px-3 py-2.5 text-xs font-bold text-indigo-300 transition hover:bg-indigo-500/25 lg:w-auto"
               title="Export synchronization research metrics"
             >
               <Activity size={14} className="text-indigo-400" />

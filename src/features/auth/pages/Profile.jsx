@@ -14,9 +14,11 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profileLoading, setProfileLoading] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [stats, setStats] = useState({
     gamesPlayed: 0,
+    gamesHosted: 0,
     quizzesCreated: 0,
     wins: 0,
     podiums: 0,
@@ -85,6 +87,7 @@ export default function Profile() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setShowPasswordForm(false);
       addToast("Password updated", { type: "success" });
     } catch (error) {
       addToast(error.message || "Unable to change password", { type: "error" });
@@ -106,14 +109,23 @@ export default function Profile() {
         </button>
 
         {/* User Stats Overview Cards */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
               <Gamepad2 size={15} className="text-blue-400" />
               Games Played
             </div>
             <p className="text-2xl font-black text-white">{statsLoading ? "..." : stats.gamesPlayed}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Multiplayer sessions</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Sessions you joined</p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+              <Gamepad2 size={15} className="text-sky-400" />
+              Games Hosted
+            </div>
+            <p className="text-2xl font-black text-sky-400">{statsLoading ? "..." : stats.gamesHosted}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">Completed rooms you hosted</p>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
@@ -151,15 +163,14 @@ export default function Profile() {
                 {initials}
               </div>
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-slate-400">Account</p>
-                <h1 className="text-2xl font-semibold">Your profile</h1>
+               
                 <p className="text-sm text-slate-400">Manage your identity and appearance</p>
               </div>
             </div>
 
             <form className="mt-8 space-y-5" onSubmit={handleProfileSave}>
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-300">Display name</label>
+                <label className="mb-2 block text-sm font-medium text-slate-300">Name</label>
                 <input
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
@@ -187,42 +198,57 @@ export default function Profile() {
 
           <div className="space-y-6">
             <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
-              <div className="flex items-center gap-2">
-                <Lock size={18} className="text-blue-400" />
-                <h2 className="text-xl font-semibold">Change password</h2>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Lock size={18} className="text-blue-400" />
+                  <h2 className="text-xl font-semibold">Password</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordForm((visible) => !visible)}
+                  aria-expanded={showPasswordForm}
+                  className="rounded-xl border border-slate-700 bg-slate-950/80 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-blue-500 hover:text-white"
+                >
+                  {showPasswordForm ? "Cancel" : "Change password"}
+                </button>
               </div>
 
-              <form className="mt-6 space-y-4" onSubmit={handlePasswordChange}>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
-                  placeholder="Current password"
-                />
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
-                  placeholder="New password"
-                />
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
-                  placeholder="Confirm password"
-                />
+              {showPasswordForm && (
+                <form className="mt-6 space-y-4" onSubmit={handlePasswordChange}>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(event) => setCurrentPassword(event.target.value)}
+                    autoComplete="current-password"
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
+                    placeholder="Current password"
+                  />
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(event) => setNewPassword(event.target.value)}
+                    autoComplete="new-password"
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
+                    placeholder="New password"
+                  />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    autoComplete="new-password"
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
+                    placeholder="Confirm password"
+                  />
 
-                <button
-                  type="submit"
-                  disabled={passwordLoading}
-                  className="w-full rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 font-semibold text-slate-100 transition hover:border-blue-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {passwordLoading ? "Updating..." : "Change password"}
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-950/90 px-4 py-3 font-semibold text-slate-100 transition hover:border-blue-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {passwordLoading ? "Updating..." : "Update password"}
+                  </button>
+                </form>
+              )}
             </section>
           </div>
         </div>

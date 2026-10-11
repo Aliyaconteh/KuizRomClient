@@ -328,10 +328,7 @@ export default function JoinRoom() {
 
           {/* Heading */}
           <h1 className="text-[1.75rem] sm:text-[2rem] font-extrabold text-slate-100 leading-tight mb-1.5">
-            Join a{" "}
-            <em className="not-italic bg-gradient-to-br from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-              Room
-            </em>
+            Join a Room
           </h1>
           <p className="text-sm text-slate-500 mb-7 sm:mb-8">
             Enter the 6-character code or scan the host's QR code

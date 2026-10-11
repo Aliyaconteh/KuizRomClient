@@ -595,7 +595,7 @@ export default function CreateQuiz() {
         {/* Title input */}
         <motion.div
           variants={fadeUp}
-          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 mb-5"
+          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 mb-5"
         >
           <label className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2 block">
             Quiz Title
@@ -625,14 +625,14 @@ export default function CreateQuiz() {
         {/* AI Generation Section */}
         <motion.div
           variants={fadeUp}
-          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 mb-5"
+          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 mb-5"
         >
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-violet-500/15 border border-violet-500/25 flex items-center justify-center">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-violet-500/25 bg-violet-500/15">
                 <Sparkles size={16} className="text-violet-400" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-semibold text-slate-200">Generate with AI</p>
                 <p className="text-xs text-slate-500 mt-1">
                   Upload a document or enter a topic and create a quiz automatically
@@ -642,36 +642,36 @@ export default function CreateQuiz() {
             <button
               type="button"
               onClick={clearAITool}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-indigo-500 hover:text-indigo-300 transition"
+              className="w-full rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-indigo-500 hover:text-indigo-300 sm:w-auto"
             >
               Reset
             </button>
           </div>
 
-          <div className="mb-4 flex flex-wrap items-center gap-3">
-            <div className="inline-flex rounded-2xl border border-slate-800 bg-slate-950/40 p-1">
+          <div className="mb-4 grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+            <div className="grid w-full grid-cols-2 rounded-2xl border border-slate-800 bg-slate-950/40 p-1 sm:inline-flex sm:w-auto">
               <button
                 type="button"
                 onClick={() => setAiMode("document")}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${aiMode === "document" ? "bg-indigo-500/15 text-indigo-300" : "text-slate-400 hover:text-slate-200"}`}
+                className={`rounded-xl px-3 py-2 text-sm font-semibold transition sm:px-4 ${aiMode === "document" ? "bg-indigo-500/15 text-indigo-300" : "text-slate-400 hover:text-slate-200"}`}
               >
                 Upload file
               </button>
               <button
                 type="button"
                 onClick={() => setAiMode("topic")}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold transition ${aiMode === "topic" ? "bg-indigo-500/15 text-indigo-300" : "text-slate-400 hover:text-slate-200"}`}
+                className={`rounded-xl px-3 py-2 text-sm font-semibold transition sm:px-4 ${aiMode === "topic" ? "bg-indigo-500/15 text-indigo-300" : "text-slate-400 hover:text-slate-200"}`}
               >
                 Topic only
               </button>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs leading-relaxed text-slate-500">
               Use a study file, or let the AI generate questions from a topic like a chapter, concept, or subject.
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 mb-4">
-            <div className={aiMode === "topic" ? "sm:col-span-2" : ""}>
+          <div className="mb-4 grid min-w-0 gap-4 sm:grid-cols-2">
+            <div className={`min-w-0 ${aiMode === "topic" ? "sm:col-span-2" : ""}`}>
               <label className="text-xs font-semibold text-slate-400 mb-1.5 flex items-center gap-1.5">
                 {aiMode === "document" ? <Upload size={12} /> : <FileText size={12} />}
                 {aiMode === "document" ? "Document" : "Topic / focus area"}
@@ -681,7 +681,7 @@ export default function CreateQuiz() {
                   type="file"
                   accept=".pdf,.docx,.txt"
                   onChange={(e) => setAiFile(e.target.files?.[0] || null)}
-                  className={inputClass(false)}
+                  className={`${inputClass(false)} min-w-0`}
                 />
               ) : (
                 <textarea
@@ -789,16 +789,16 @@ export default function CreateQuiz() {
         {/* Bulk Import Section (CSV / JSON) */}
         <motion.div
           variants={fadeUp}
-          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-6 mb-5"
+          className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-4 sm:p-6 mb-5"
         >
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-emerald-500/25 bg-emerald-500/15">
                 <FileSpreadsheet size={16} className="text-emerald-400" />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-200">Bulk Import Questions (CSV / JSON)</p>
-                <p className="text-xs text-slate-500 mt-1">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold leading-snug text-slate-200">Bulk Import Questions (CSV / JSON)</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">
                   Upload formatted CSV or JSON files to load multiple questions at once
                 </p>
               </div>
@@ -806,7 +806,7 @@ export default function CreateQuiz() {
             <button
               type="button"
               onClick={() => setShowImport(!showImport)}
-              className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 hover:border-emerald-500 hover:text-emerald-300 transition"
+              className="w-full rounded-xl border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:border-emerald-500 hover:text-emerald-300 sm:w-auto"
             >
               {showImport ? "Collapse" : "Expand Import"}
             </button>
@@ -891,13 +891,13 @@ export default function CreateQuiz() {
         {/* Bottom actions */}
         <motion.div
           variants={fadeUp}
-          className="flex flex-wrap gap-3 mt-6"
+          className="mt-6 grid grid-cols-1 gap-3 sm:flex sm:flex-wrap"
         >
           <MotionButton
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setQuestions((items) => [...items, emptyQuestion()])}
-            className="rounded-2xl border-2 border-dashed border-slate-700 hover:border-indigo-500/50 px-5 py-3 font-bold text-slate-400 hover:text-indigo-400 transition-colors duration-200 flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-700 px-5 py-3 font-bold text-slate-400 transition-colors duration-200 hover:border-indigo-500/50 hover:text-indigo-400 sm:w-auto"
           >
             <PlusCircle size={16} />
             Add Question
@@ -907,7 +907,7 @@ export default function CreateQuiz() {
             whileTap={{ scale: 0.98 }}
             onClick={saveQuiz}
             disabled={saving}
-            className="rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 px-6 py-3 font-bold shadow-[0_4px_16px_rgba(99,102,241,0.25)] hover:shadow-[0_6px_24px_rgba(99,102,241,0.35)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 px-6 py-3 font-bold shadow-[0_4px_16px_rgba(99,102,241,0.25)] transition-all duration-200 hover:shadow-[0_6px_24px_rgba(99,102,241,0.35)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-none sm:w-auto"
           >
             {saving ? (
               <>

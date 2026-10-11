@@ -67,17 +67,11 @@ export default function Leaderboard() {
       <div className="max-w-3xl mx-auto relative">
         {/* Header */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold tracking-[0.12em] uppercase text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1 mb-3">
-            <Trophy size={11} />
-            Scores
-          </div>
+         
           <h1
             className="text-4xl font-extrabold mt-1"
           >
-            Room{" "}
-            <span className="bg-gradient-to-br from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Leaderboard
-            </span>
+            Room Leaderboard
           </h1>
         </div>
 
