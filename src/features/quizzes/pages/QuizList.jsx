@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Loader2,
+  Eye,
   Trash2,
   PlusCircle,
   ListChecks,
@@ -31,6 +32,7 @@ const staggerContainer = {
 // ═══════════════════════════════
 const QuizCard = memo(function QuizCard({
   quiz,
+  onView,
   onDelete,
   onUseRoom,
   deletingId,
@@ -70,12 +72,21 @@ const QuizCard = memo(function QuizCard({
           )}
         </button>
       </div>
-      <button
-        onClick={() => onUseRoom(quiz.id)}
-        className="mt-4 w-full rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-bold hover:opacity-90 active:scale-[0.98] transition-all"
-      >
-        Use for Room
-      </button>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          onClick={() => onView(quiz.id)}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/80 px-3 py-2.5 text-sm font-bold text-slate-200 transition hover:border-indigo-500/50 hover:bg-slate-700"
+        >
+          <Eye size={16} />
+          View
+        </button>
+        <button
+          onClick={() => onUseRoom(quiz.id)}
+          className="rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 px-3 py-2.5 text-sm font-bold hover:opacity-90 active:scale-[0.98] transition-all"
+        >
+          Use for Room
+        </button>
+      </div>
     </motion.div>
   );
 });
@@ -142,6 +153,10 @@ export default function QuizList() {
 
   const handleUseRoom = useCallback(
     (quizId) => navigate(`/create-room?quizId=${encodeURIComponent(quizId)}`),
+    [navigate]
+  );
+  const handleViewQuiz = useCallback(
+    (quizId) => navigate(`/quizzes/${encodeURIComponent(quizId)}`),
     [navigate]
   );
 
@@ -238,6 +253,7 @@ export default function QuizList() {
                 <QuizCard
                   key={quiz.id}
                   quiz={quiz}
+                  onView={handleViewQuiz}
                   onDelete={handleDeleteQuiz}
                   onUseRoom={handleUseRoom}
                   deletingId={deletingId}

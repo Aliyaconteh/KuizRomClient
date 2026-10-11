@@ -173,19 +173,7 @@ export default function Home() {
         className="flex min-h-0 items-start border-b border-[var(--border-color)] px-4 py-8 sm:min-h-[min(760px,calc(100svh-4rem))] sm:items-center sm:px-6 sm:py-14 lg:py-20"
       >
         <div className="mx-auto grid w-full max-w-7xl min-w-0 items-center gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-          <div className="w-full min-w-0 max-w-2xl">
-            <div className="mb-7 flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="KuizRoom logo"
-                className="h-14 w-14 rounded-lg bg-white object-contain p-1 shadow-md sm:h-16 sm:w-16"
-              />
-              <p className="text-xl font-extrabold tracking-tight">
-                <span className="text-[var(--brand-primary)]">Kuiz</span>
-                <span className="text-[var(--brand-secondary)]">Room</span>
-              </p>
-            </div>
-
+          <div className="w-full min-w-0 max-w-2xl -translate-y-2 sm:-translate-y-3">
             <h1 className="font-display text-[clamp(2.4rem,12vw,3.75rem)] font-black leading-[0.95] tracking-tight sm:text-7xl lg:text-[clamp(3.75rem,6vw,6rem)]">
               <span className="block">
                 Learn. <span className="text-[var(--brand-primary)]">Laugh.</span>

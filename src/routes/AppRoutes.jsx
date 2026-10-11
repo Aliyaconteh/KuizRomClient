@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Home from "../pages/Home";
 import MainLayout from "../layouts/MainLayout";
@@ -16,10 +16,12 @@ import Results from "../features/game/pages/Results";
 import SyncAnalysis from "../features/sync/pages/SyncAnalysis";
 import Leaderboard from "../features/leaderboard/pages/Leaderboard";
 import QuizList from "../features/quizzes/pages/QuizList";
+import QuizDetails from "../features/quizzes/pages/QuizDetails";
 import CreateQuiz from "../features/quizzes/pages/CreateQuiz";
 import AIPractice from "../features/ai/pages/AIPractice";
 import PrivacyPolicy from "../pages/privacy-Policy";
 import TermsAndServices from "../pages/Terms and Services";
+import NotFound from "../pages/NotFound";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -86,9 +88,11 @@ export default function AppRoutes() {
 
         <Route path="/quizzes/create" element={<RequireAuth><CreateQuiz /></RequireAuth>} />
 
+        <Route path="/quizzes/:quizId" element={<RequireAuth><QuizDetails /></RequireAuth>} />
+
         <Route path="/ai-practice" element={<RequireAuth><AIPractice /></RequireAuth>} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
       </MainLayout>
