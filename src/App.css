@@ -661,16 +661,37 @@ button:disabled {
 }
 
 @media (max-width: 480px) {
+  .auth-signup-page {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .auth-signin-page {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
   .auth-hero {
     height: 30dvh;
     min-height: 190px;
     max-height: 250px;
   }
 
+  .auth-signup-page .auth-hero {
+    flex: 1 1 auto;
+    max-height: none;
+  }
+
+  .auth-signin-page .auth-hero {
+    flex: 1 1 auto;
+    max-height: none;
+  }
+
   .auth-panel {
-    flex: 1 0 auto;
-    margin-top: -34px;
-    padding: 58px 22px 20px;
+    flex: 0 0 auto;
+    height: auto;
+    margin-top: -20px;
+    padding: 30px 22px 10px;
     border-radius: 38px 38px 0 0;
   }
 
@@ -719,7 +740,7 @@ button:disabled {
   .auth-signin-page .auth-hero {
     height: 48dvh;
     min-height: 250px;
-    max-height: 350px;
+    max-height: none;
   }
 }
 

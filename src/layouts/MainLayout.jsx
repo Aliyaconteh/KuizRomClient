@@ -6,6 +6,7 @@ import Navbar from "../components/ui/Navbar";
 export default function MainLayout({ children }) {
   const { pathname } = useLocation();
   const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email";
+  const isFullHeightAuthPage = pathname === "/signin" || pathname === "/signup";
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function MainLayout({ children }) {
   }, []);
 
   return (
-    <div className={`min-h-screen bg-[var(--app-surface)] text-[var(--app-text)] transition-colors duration-300 ${isAuthPage ? "" : "pb-24 lg:pb-0"}`}>
+    <div className={`${isFullHeightAuthPage ? "" : "min-h-screen"} bg-[var(--app-surface)] text-[var(--app-text)] transition-colors duration-300 ${isAuthPage ? "" : "pb-24 lg:pb-0"}`}>
       {/* Offline banner */}
       {isOffline && (
         <div className="bg-red-600 text-white text-center px-4 py-2 text-sm font-semibold flex items-center justify-center gap-2 z-50 relative">
