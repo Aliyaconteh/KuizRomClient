@@ -59,7 +59,7 @@ export default function QuizDetails() {
   };
 
   return (
-    <main className="min-h-screen bg-[#060a0f] px-4 py-8 text-white sm:px-6 sm:py-10">
+    <main className="quiz-details-page min-h-screen bg-[#060a0f] px-4 py-8 text-white sm:px-6 sm:py-10">
       <div className="mx-auto max-w-4xl">
         <button
           type="button"
@@ -139,16 +139,18 @@ export default function QuizDetails() {
                   {quiz.questions.map((question, index) => (
                     <article
                       key={question.id || `${question.question}-${index}`}
-                      className="rounded-2xl border border-slate-800 bg-[#0d131c]/80 p-5 sm:p-6"
+                      className="rounded-2xl border border-slate-800 bg-[#0d131c]/80 p-4 sm:p-6"
                     >
-                      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-                        <h3 className="flex min-w-0 flex-1 gap-3 text-base font-bold leading-6 sm:text-lg">
+                      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <h3 className="flex min-w-0 items-start gap-3 text-base font-bold leading-7 sm:flex-1 sm:text-lg">
                           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-indigo-500/15 text-sm font-extrabold text-indigo-300">
                             {index + 1}
                           </span>
-                          <span className="whitespace-pre-wrap">{question.question}</span>
+                          <span className="quiz-details-question-text min-w-0 break-words">
+                            {question.question}
+                          </span>
                         </h3>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-300">
+                        <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-300 sm:mt-0.5">
                           <Clock3 size={13} />
                           {question.time_limit ?? 15} sec
                         </span>
@@ -160,18 +162,18 @@ export default function QuizDetails() {
                           return (
                             <div
                               key={`${option}-${optionIndex}`}
-                              className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 text-sm ${
+                              className={`quiz-details-option flex min-w-0 items-start gap-2 rounded-xl border px-3 py-3 text-sm leading-5 ${
                                 isCorrect
-                                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                                  ? "quiz-details-correct border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
                                   : "border-slate-800 bg-slate-900/50 text-slate-300"
                               }`}
                             >
-                              <span className="font-bold text-slate-500">
+                              <span className="quiz-details-option-label shrink-0 font-bold text-slate-500">
                                 {String.fromCharCode(65 + optionIndex)}.
                               </span>
-                              <span className="min-w-0 flex-1 break-words">{option}</span>
+                              <span className="min-w-0 flex-1 break-words [overflow-wrap:anywhere]">{option}</span>
                               {isCorrect && (
-                                <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-emerald-300">
+                                <span className="quiz-details-correct-label inline-flex shrink-0 items-center gap-1 text-xs font-bold text-emerald-300">
                                   <Check size={14} />
                                   Correct
                                 </span>

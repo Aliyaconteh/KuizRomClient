@@ -1177,6 +1177,30 @@ nav.fixed .hover\:border-teal-400:hover {
   background: var(--kuiz-surface) !important;
 }
 
+:root[data-theme='light'] .quiz-details-page .quiz-details-question-text {
+  color: #102132 !important;
+}
+
+:root[data-theme='light'] .quiz-details-page .quiz-details-option {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+:root[data-theme='light'] .quiz-details-page .quiz-details-option-label {
+  color: #475569 !important;
+}
+
+:root[data-theme='light'] .quiz-details-page .quiz-details-option.quiz-details-correct {
+  background: #ecfdf5 !important;
+  border-color: #86efac !important;
+  color: #166534 !important;
+}
+
+:root[data-theme='light'] .quiz-details-page .quiz-details-correct-label {
+  color: #15803d !important;
+}
+
 /* Final light-mode tokens keep legacy Tailwind accents in the KuizRoom palette. */
 :root[data-theme='light'] {
   --app-bg: #f7f3ee;

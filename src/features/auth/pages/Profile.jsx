@@ -27,6 +27,7 @@ export default function Profile() {
     history: []
   });
   const [statsLoading, setStatsLoading] = useState(true);
+  const [showAllHistory, setShowAllHistory] = useState(false);
 
   const initials = useMemo(() => {
     if (!user?.username) return "U";
@@ -265,7 +266,7 @@ export default function Profile() {
 
           {stats.history && stats.history.length > 0 ? (
             <div className="space-y-2.5">
-              {stats.history.map((game, idx) => (
+              {(showAllHistory ? stats.history : stats.history.slice(0, 3)).map((game, idx) => (
                 <div
                   key={game.id || idx}
                   className="flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4 transition hover:border-slate-700"
@@ -288,6 +289,16 @@ export default function Profile() {
                   </div>
                 </div>
               ))}
+              {stats.history.length > 3 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllHistory((visible) => !visible)}
+                  aria-expanded={showAllHistory}
+                  className="w-full rounded-xl border border-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-indigo-500/60 hover:text-white"
+                >
+                  {showAllHistory ? "Show less" : `See more (${stats.history.length - 3})`}
+                </button>
+              )}
             </div>
           ) : (
             <div className="py-8 text-center text-slate-500 text-sm">
