@@ -1,26 +1,26 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
-import Home from "../pages/Home";
+import Home from "../../features/home/pages/Home";
 import MainLayout from "../layouts/MainLayout";
-import SignIn from "../features/auth/pages/SignIn";
-import SignUp from "../features/auth/pages/SignUp";
-import VerifyEmail from "../features/auth/pages/VerifyEmail";
-import Profile from "../features/auth/pages/Profile";
-import RequireAuth from "../features/auth/RequireAuth";
-import CreateRoom from "../features/rooms/pages/CreateRoom";
-import JoinRoom from "../features/rooms/pages/JoinRoom";
-import WaitingRoom from "../features/rooms/pages/WaitingRoom";
-import GameRoom from "../features/game/pages/GameRoom";
-import Results from "../features/game/pages/Results";
-import SyncAnalysis from "../features/sync/pages/SyncAnalysis";
-import Leaderboard from "../features/leaderboard/pages/Leaderboard";
-import QuizList from "../features/quizzes/pages/QuizList";
-import QuizDetails from "../features/quizzes/pages/QuizDetails";
-import CreateQuiz from "../features/quizzes/pages/CreateQuiz";
-import AIPractice from "../features/ai/pages/AIPractice";
-import PrivacyPolicy from "../pages/privacy-Policy";
-import TermsAndServices from "../pages/Terms and Services";
+import SignIn from "../../features/auth/pages/SignIn";
+import SignUp from "../../features/auth/pages/SignUp";
+import VerifyEmail from "../../features/auth/pages/VerifyEmail";
+import Profile from "../../features/auth/pages/Profile";
+import RequireAuth from "../../features/auth/RequireAuth";
+import CreateRoom from "../../features/rooms/pages/CreateRoom";
+import JoinRoom from "../../features/rooms/pages/JoinRoom";
+import WaitingRoom from "../../features/rooms/pages/WaitingRoom";
+import GameRoom from "../../features/game/pages/GameRoom";
+import Results from "../../features/game/pages/Results";
+import SyncAnalysis from "../../features/sync/pages/SyncAnalysis";
+import Leaderboard from "../../features/leaderboard/pages/Leaderboard";
+import QuizList from "../../features/quizzes/pages/QuizList";
+import QuizDetails from "../../features/quizzes/pages/QuizDetails";
+import CreateQuiz from "../../features/quizzes/pages/CreateQuiz";
+import AIPractice from "../../features/ai/pages/AIPractice";
+import PrivacyPolicy from "../../features/legal/pages/PrivacyPolicy";
+import TermsAndServices from "../../features/legal/pages/TermsAndServices";
 import NotFound from "../pages/NotFound";
 
 function ScrollToTop() {

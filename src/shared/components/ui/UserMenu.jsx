@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "./ToastContext";
 import { ChevronDown, LogOut, Plus, Activity, UserCircle, Sparkles } from "lucide-react";
 

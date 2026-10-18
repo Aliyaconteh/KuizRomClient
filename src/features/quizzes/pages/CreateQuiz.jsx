@@ -16,9 +16,9 @@ import {
   FileSpreadsheet,
   Download
 } from "lucide-react";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 // ══════════════════════════════════════════════
 //  Reusable components

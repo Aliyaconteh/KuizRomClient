@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Crown, Play, Wifi } from "lucide-react";
-import { socket } from "../../../services/socket/socket";
-import { useRoom } from "../../../context/RoomContext";
-import { apiUrl } from "../../../config/api";
-import { useToast } from "../../../components/ui/ToastContext";
-import { useAuth } from "../../../context/AuthContext";
+import { socket } from "../../../shared/services/socket/socket";
+import { useRoom } from "../../../app/contexts/RoomContext";
+import { apiUrl } from "../../../shared/config/api";
+import { useToast } from "../../../shared/components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 const avatarGradients = [
   "from-blue-500 to-indigo-600",
@@ -96,7 +96,8 @@ export default function WaitingRoom() {
       socket.emit("game:join", {
         roomCode,
         username: localStorage.getItem("username") || "Guest",
-        playerId: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`
+        playerId: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`,
+        guestToken: localStorage.getItem(`guestToken:${roomCode}`)
       });
       navigate(`/game/${roomCode}`);
     };
@@ -111,8 +112,12 @@ export default function WaitingRoom() {
       roomCode,
       player: {
         id: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`,
-        username: localStorage.getItem("username") || "Guest"
+        username: localStorage.getItem("username") || "Guest",
+        guestToken: localStorage.getItem(`guestToken:${roomCode}`)
       }
+    }, (response) => {
+      if (response?.guestToken) localStorage.setItem(`guestToken:${roomCode}`, response.guestToken);
+      if (response?.player?.user_id) localStorage.setItem("playerId", response.player.user_id);
     });
 
     return () => {

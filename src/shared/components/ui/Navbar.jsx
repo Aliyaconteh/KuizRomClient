@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
 import UserMenu from "./UserMenu";
 
 const hostDesktopLinks = [

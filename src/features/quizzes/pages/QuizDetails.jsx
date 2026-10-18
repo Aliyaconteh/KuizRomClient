@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CalendarDays, Check, Clock3, Loader2, Play, FileText } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 function formatCreatedAt(value) {
   if (!value) return "Not available";

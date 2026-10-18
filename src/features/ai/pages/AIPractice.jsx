@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUp, BookOpen, Brain, Lightbulb, Loader2, Sparkles, Target, Trash2 } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 const starterMessages = [
   {

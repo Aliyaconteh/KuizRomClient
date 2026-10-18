@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { MailCheck } from "lucide-react";
-import { apiUrl } from "../../../config/api";
-import { readJsonResponse } from "../../../services/api/apiClient";
+import { apiUrl } from "../../../shared/config/api";
+import { readJsonResponse } from "../../../shared/services/api/apiClient";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();

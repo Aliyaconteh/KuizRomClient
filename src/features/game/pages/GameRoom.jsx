@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Clock, Flag, Zap, Server, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
-import { socket } from "../../../services/socket/socket";
-import ScoreBoard from "../../../components/game/ScoreBoard";
-import { useGame } from "../../../context/GameContext";
-import { useToast } from "../../../components/ui/ToastContext";
-import { useRoom } from "../../../context/RoomContext";
-import { useAuth } from "../../../context/AuthContext";
+import { socket } from "../../../shared/services/socket/socket";
+import ScoreBoard from "../../../shared/components/game/ScoreBoard";
+import { useGame } from "../../../app/contexts/GameContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
+import { useRoom } from "../../../app/contexts/RoomContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -48,6 +48,10 @@ export default function GameRoom() {
   const [roomDelayMs, setRoomDelayMs] = useState(0);
   const [reconciliationCount, setReconciliationCount] = useState(0);
   const clientTimestampRef = useRef(null);
+  const previousRoundRef = useRef(null);
+  const [rankChanges, setRankChanges] = useState({});
+  const [leaderChange, setLeaderChange] = useState(null);
+  const [previousLeaderboard, setPreviousLeaderboard] = useState([]);
   const { addToast } = useToast();
 
   const username = useMemo(() => localStorage.getItem("username") || "Guest", []);
@@ -59,9 +63,21 @@ export default function GameRoom() {
   }, []);
 
   useEffect(() => {
+    previousRoundRef.current = null;
+    setRankChanges({});
+    setLeaderChange(null);
+    setPreviousLeaderboard([]);
+  }, [roomCode]);
+
+  useEffect(() => {
     if (!socket.connected) socket.connect();
 
-    socket.emit("game:join", { roomCode, username, playerId });
+    socket.emit("game:join", {
+      roomCode,
+      username,
+      playerId,
+      guestToken: localStorage.getItem(`guestToken:${roomCode}`)
+    });
 
     const handleQuestion = (data) => {
       setLeaderboardPhase(false);
@@ -84,15 +100,79 @@ export default function GameRoom() {
     };
 
     const handleTimer = (data) => setTimeRemaining(data.time);
-    const handleLeaderboard = (data) => setLeaderboard(data.players || data.leaderboard || []);
+    const handleLeaderboard = (data) => {
+      const players = data.players || data.leaderboard || [];
+      setLeaderboard(players);
+      if (!previousRoundRef.current && players.length) {
+        previousRoundRef.current = new Map(players.map((player, index) => [
+          player.id || player.playerId || player.username,
+          {
+            rank: Number(player.rank) || index + 1,
+            score: Number(player.score || 0),
+            username: player.username || player.playerId || "Player"
+          }
+        ]));
+      }
+    };
     const handleAnswerResult = (data) => {
       if (data && data.revealedCorrectAnswer) {
         // Option to display revealed correct answer if broadcasted
       }
     };
-    const handleQuestionEnded = (data) => { 
-      setLeaderboard(data.leaderboard || []); 
-      setLeaderboardPhase(true); 
+    const handleQuestionEnded = (data) => {
+      const roundLeaderboard = data.leaderboard || [];
+      const sortedLeaderboard = [...roundLeaderboard].sort((a, b) => {
+        const scoreDifference = Number(b.score || 0) - Number(a.score || 0);
+        return scoreDifference || Number(a.rank || 0) - Number(b.rank || 0);
+      });
+      const currentRanks = new Map();
+      const changes = {};
+
+      sortedLeaderboard.forEach((player, index) => {
+        const playerKey = player.id || player.playerId || player.username;
+        const rank = Number(player.rank) || index + 1;
+        currentRanks.set(playerKey, {
+          rank,
+          score: Number(player.score || 0),
+          username: player.username || player.playerId || "Player"
+        });
+
+        const previous = previousRoundRef.current?.get(playerKey);
+        if (previous) {
+          const movement = previous.rank - rank;
+          const scoreDelta = Number(player.score || 0) - previous.score;
+          if (movement !== 0 || scoreDelta !== 0) {
+            changes[playerKey] = { movement, scoreDelta };
+          }
+        }
+      });
+
+      const previousLeader = [...(previousRoundRef.current?.entries() || [])]
+        .find(([, player]) => player.rank === 1)?.[0];
+      const currentLeader = sortedLeaderboard[0];
+      const currentLeaderId = currentLeader?.id || currentLeader?.playerId || currentLeader?.username;
+      setPreviousLeaderboard(
+        [...(previousRoundRef.current?.entries() || [])].map(([playerId, player]) => ({
+          id: playerId,
+          playerId,
+          username: player.username,
+          score: player.score,
+          rank: player.rank
+        }))
+      );
+      setLeaderChange(
+        previousLeader && currentLeaderId && previousLeader !== currentLeaderId
+          ? {
+              id: currentLeaderId,
+              username: currentLeader.username || currentLeader.playerId || "A player"
+            }
+          : null
+      );
+
+      previousRoundRef.current = currentRanks;
+      setRankChanges(changes);
+      setLeaderboard(roundLeaderboard);
+      setLeaderboardPhase(true);
     };
 
     const handleConfirmed = (data) => {
@@ -331,7 +411,14 @@ export default function GameRoom() {
 
           {leaderboardPhase ? (
             <div className="py-12">
-              <ScoreBoard players={leaderboard || []} />
+              <ScoreBoard
+                players={leaderboard || []}
+                rankChanges={rankChanges}
+                currentPlayerName={username}
+                questionNumber={questionNumber}
+                leaderChange={leaderChange}
+                previousPlayers={previousLeaderboard}
+              />
             </div>
           ) : currentQuestion ? (
             <div key={questionKey} style={{ animation: "slideUp 0.4s ease both" }}>
@@ -405,6 +492,3 @@ export default function GameRoom() {
     </div>
   );
 }
-
-
-

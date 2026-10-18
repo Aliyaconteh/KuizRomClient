@@ -1,8 +1,8 @@
-import { GameProvider } from "../context/GameContext";
-import { AuthProvider } from "../context/AuthContext";
-import { SocketProvider } from "../context/SocketContext";
-import { RoomProvider } from "../context/RoomContext";
-import ToastProvider from "../components/ui/ToastProvider";
+import { GameProvider } from "./contexts/GameContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { SocketProvider } from "./contexts/SocketContext";
+import { RoomProvider } from "./contexts/RoomContext";
+import ToastProvider from "../shared/components/ui/ToastProvider";
 
 export default function Providers({ children }) {
   return (

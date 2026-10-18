@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Lock, UserCircle, Trophy, Award, Gamepad2, Layers } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -72,7 +72,7 @@ export default function Profile() {
     }
 
     if (newPassword.length < 6) {
-      addToast("New password must be at least 6 characters", { type: "error" });
+      addToast("New password must be at least 8 characters", { type: "error" });
       return;
     }
 

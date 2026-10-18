@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Trophy, Users, Star, ArrowLeft, Crown, Medal, BookOpen, CheckCircle, ChevronDown, ChevronUp, FileSpreadsheet, Activity } from "lucide-react";
-import { useGame } from "../../../context/GameContext";
-import { apiUrl } from "../../../config/api";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useGame } from "../../../app/contexts/GameContext";
+import { apiUrl } from "../../../shared/config/api";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 const rankStyles = [
   { bg: "bg-amber-500/15", border: "border-amber-500/30", text: "text-amber-400", badge: "bg-amber-500/20", icon: Crown },

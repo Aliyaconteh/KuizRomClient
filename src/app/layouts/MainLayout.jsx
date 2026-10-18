@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { WifiOff } from "lucide-react";
-import Navbar from "../components/ui/Navbar";
+import Navbar from "../../shared/components/ui/Navbar";
 
 export default function MainLayout({ children }) {
   const { pathname } = useLocation();

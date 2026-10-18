@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../components/ui/Footer";
-import { useToast } from "../components/ui/ToastContext";
+import Footer from "../../../shared/components/ui/Footer";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 // -------------------------------------------------------------------
 //  Data

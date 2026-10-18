@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import App from "./app/App";
 import Providers from "./app/providers";
-import "./App.css";
+import "./app/styles/App.css";
 
 import { registerSW } from "virtual:pwa-register";
 

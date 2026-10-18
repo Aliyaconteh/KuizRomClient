@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import { Check, ChevronDown, Copy, Link2, LogIn, PlusCircle, Wifi, WifiOff } from "lucide-react";
-import { socket } from "../../../services/socket/socket";
-import { useRoom } from "../../../context/RoomContext";
-import { useToast } from "../../../components/ui/ToastContext";
-import Skeleton from "../../../components/ui/Skeleton";
-import { useAuth } from "../../../context/AuthContext";
+import { socket } from "../../../shared/services/socket/socket";
+import { useRoom } from "../../../app/contexts/RoomContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
+import Skeleton from "../../../shared/components/ui/Skeleton";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 // ── dot-grid SVG background (matches JoinRoom) ───────────────────────────────
 function BackgroundGrid() {

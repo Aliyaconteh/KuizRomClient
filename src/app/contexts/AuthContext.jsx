@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useCallback, useEffect } from "react";
-import { apiRequest } from "../services/api/apiClient";
-import { logger } from "../utils/apiLogger";
+import { apiRequest } from "../../shared/services/api/apiClient";
+import { logger } from "../../shared/utils/apiLogger";
 
 const AuthContext = createContext();
 const STORAGE_KEY = "kuizroom_host_auth";

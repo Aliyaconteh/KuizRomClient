@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserPlus, Eye, EyeOff, User, Mail, Lock, ShieldCheck, MailCheck } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { apiUrl } from "../../../config/api";
-import { readJsonResponse } from "../../../services/api/apiClient";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { apiUrl } from "../../../shared/config/api";
+import { readJsonResponse } from "../../../shared/services/api/apiClient";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function SignUp() {
     if (!email.trim()) e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(email)) e.email = "Enter a valid email";
     if (!password) e.password = "Password is required";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    else if (password.length < 8) e.password = "Password must be at least 8 characters";
     if (password !== confirm) e.confirm = "Passwords do not match";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -166,7 +166,7 @@ export default function SignUp() {
                 <Lock size={16} className="text-slate-400 shrink-0" />
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="At least 6 characters"
+                  placeholder="At least 8 characters"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
                   className={`w-full bg-transparent text-[0.9375rem] outline-none placeholder:text-slate-400 ${theme === "dark" ? "text-slate-100" : "text-[#16213E]"}`}

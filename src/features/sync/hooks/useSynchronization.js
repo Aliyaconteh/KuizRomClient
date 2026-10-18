@@ -1,5 +1,5 @@
-import { useGame } from "../context/GameContext";
-import { useSocket } from "../context/SocketContext";
+import { useGame } from "../../../app/contexts/GameContext";
+import { useSocket } from "../../../app/contexts/SocketContext";
 import { useState, useCallback, useRef, useEffect } from "react";
 
 /**

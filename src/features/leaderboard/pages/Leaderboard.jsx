@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Trophy, Search, Crown, Medal, Hash } from "lucide-react";
-import { apiUrl } from "../../../config/api";
-import { useToast } from "../../../components/ui/ToastContext";
-import Skeleton from "../../../components/ui/Skeleton";
+import { apiUrl } from "../../../shared/config/api";
+import { useToast } from "../../../shared/components/ui/ToastContext";
+import Skeleton from "../../../shared/components/ui/Skeleton";
 
 const rankStyles = [
   { bg: "bg-amber-500/15", border: "border-amber-500/30", text: "text-amber-400", badge: "bg-amber-500/20", icon: Crown },

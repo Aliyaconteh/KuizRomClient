@@ -3,9 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import jsQR from "jsqr";
 import { QrCode, X, Camera, CameraOff } from "lucide-react";
 
-import { socket } from "../../../services/socket/socket";
-import { useRoom } from "../../../context/RoomContext";
-import { useToast } from "../../../components/ui/ToastContext";
+import { socket } from "../../../shared/services/socket/socket";
+import { useRoom } from "../../../app/contexts/RoomContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 // ── segmented 6-slot room code input ─────────────────────────────────────────
 function RoomCodeInput({ value, onChange }) {
@@ -271,6 +271,8 @@ export default function JoinRoom() {
         setLoading(false);
         if (!response.success) { addToast(response.message, { type: "error" }); return; }
         const code = response.room.room_code || response.room.roomCode;
+        if (response.guestToken) localStorage.setItem(`guestToken:${code}`, response.guestToken);
+        if (response.player?.user_id) localStorage.setItem("playerId", response.player.user_id);
         setRoom({ code, name: response.room.room_name, syncMode: response.room.sync_mode, isHost: false });
         navigate(`/waiting-room/${code}`);
       }

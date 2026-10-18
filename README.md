@@ -16,3 +16,20 @@ npm run dev
 ```
 
 Environment variables belong in `.env`, which is ignored by Git.
+
+## Source structure
+
+The client uses an app / feature / shared layout:
+
+```text
+src/
+|-- app/          Application entry, global providers, routes, layouts, and styles
+|-- assets/       Images, icons, and sounds used by the client
+|-- features/     Feature-owned pages and logic (auth, rooms, quizzes, game, etc.)
+|-- shared/       Reusable UI components, configuration, integrations, and utilities
+|-- main.jsx      Vite entry point
+```
+
+Keep feature-specific screens and logic inside their feature folder. Put reusable
+cross-feature code in `shared/`, and use `app/` to compose providers, layouts, and
+routes. Global application state providers live in `app/contexts/`.

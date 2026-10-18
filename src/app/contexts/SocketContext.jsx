@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
-import { socket as sharedSocket } from "../services/socket/socket";
+import { socket as sharedSocket } from "../../shared/services/socket/socket";
 
 const SocketContext = createContext();
 

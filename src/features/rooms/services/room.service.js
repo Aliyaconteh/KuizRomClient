@@ -1,4 +1,4 @@
-import { socket } from "../../../services/socket/socket";
+import { socket } from "../../../shared/services/socket/socket";
 
 export const createRoom = (payload, callback) => {
   socket.emit("room:create", payload, callback);

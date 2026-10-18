@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { apiUrl } from "../../../config/api";
-import { readJsonResponse } from "../../../services/api/apiClient";
-import { supabase } from "../../../services/supabase/supabaseClient";
-import { useToast } from "../../../components/ui/ToastContext";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { apiUrl } from "../../../shared/config/api";
+import { readJsonResponse } from "../../../shared/services/api/apiClient";
+import { supabase } from "../../../shared/services/supabase/supabaseClient";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 function GoogleIcon() {
   return (

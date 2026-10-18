@@ -10,9 +10,9 @@ import {
   AlertTriangle,
   Plus
 } from "lucide-react";
-import { useAuth } from "../../../context/AuthContext";
-import { useToast } from "../../../components/ui/ToastContext";
-import Skeleton from "../../../components/ui/Skeleton";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import { useToast } from "../../../shared/components/ui/ToastContext";
+import Skeleton from "../../../shared/components/ui/Skeleton";
 
 // ═══════════════════════════════
 //  Animation variants (respects motion preference)

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Server, Zap, Clock, RefreshCw, Activity, Download, BarChart2, CheckCircle, Search } from "lucide-react";
-import { apiUrl } from "../../../config/api";
-import { useToast } from "../../../components/ui/ToastContext";
+import { apiUrl } from "../../../shared/config/api";
+import { useToast } from "../../../shared/components/ui/ToastContext";
 
 const DELAY_BUCKETS = ["0ms", "50ms", "100ms", "200ms"];
 
