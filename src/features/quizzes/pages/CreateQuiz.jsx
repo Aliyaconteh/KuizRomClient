@@ -114,7 +114,8 @@ const ErrorBanner = memo(function ErrorBanner({ message }) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="mb-6 flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3"
+      className="quiz-error-banner mb-6 flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3"
+      role="alert"
     >
       <AlertTriangle size={16} className="text-red-400 mt-0.5 shrink-0" />
       <p className="text-sm text-red-400">{message}</p>
@@ -155,7 +156,7 @@ const QuestionCard = memo(function QuestionCard({
         {!isOnly && (
           <button
             onClick={() => removeQuestion(index)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-red-950/50 border border-red-900/50 text-red-300 hover:bg-red-900/70 px-3 py-2 text-sm font-semibold transition-all duration-200"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 border border-red-700 text-white hover:bg-red-700 hover:border-red-800 px-3 py-2 text-sm font-semibold transition-all duration-200"
             aria-label="Remove question"
           >
             <Trash2 size={13} />
@@ -752,7 +753,7 @@ export default function CreateQuiz() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-3 text-sm text-indigo-200 flex items-center gap-2"
+                className="quiz-ai-success mb-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-3 text-sm text-indigo-200 flex items-center gap-2"
               >
                 <CheckCircle2 size={14} className="text-indigo-400" />
                 {aiStatus}
@@ -763,7 +764,7 @@ export default function CreateQuiz() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-200 flex items-center gap-2"
+                className="quiz-ai-error mb-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-200 flex items-center gap-2"
               >
                 <AlertTriangle size={14} className="text-red-400" />
                 {aiError}
@@ -774,7 +775,7 @@ export default function CreateQuiz() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="rounded-xl border border-slate-700/60 bg-slate-950/40 px-4 py-3 text-sm text-slate-300"
+                className="quiz-ai-description rounded-xl border border-slate-700/60 bg-slate-950/40 px-4 py-3 text-sm text-slate-300"
               >
                 <p className="font-semibold text-slate-100 mb-2 flex items-center gap-1.5">
                   <FileText size={12} />
@@ -847,14 +848,14 @@ export default function CreateQuiz() {
                 </div>
 
                 {importStatus && (
-                  <div className="mb-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5 text-xs text-emerald-300 flex items-center gap-2">
+                  <div className="quiz-import-success mb-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-2.5 text-xs text-emerald-300 flex items-center gap-2">
                     <CheckCircle2 size={14} className="text-emerald-400" />
                     {importStatus}
                   </div>
                 )}
 
                 {importError && (
-                  <div className="mb-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-2.5 text-xs text-red-300 flex items-center gap-2">
+                  <div className="quiz-import-error mb-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-2.5 text-xs text-red-300 flex items-center gap-2">
                     <AlertTriangle size={14} className="text-red-400" />
                     {importError}
                   </div>
