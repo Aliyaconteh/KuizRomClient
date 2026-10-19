@@ -7,6 +7,7 @@ import { useGame } from "../../../app/contexts/GameContext";
 import { useToast } from "../../../shared/components/ui/ToastContext";
 import { useRoom } from "../../../app/contexts/RoomContext";
 import { useAuth } from "../../../app/contexts/AuthContext";
+import { apiUrl } from "../../../shared/config/api";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -32,7 +33,7 @@ export default function GameRoom() {
     setClientPredictedScore,
     setServerScore
   } = useGame();
-  const { room } = useRoom();
+  const { room, setRoom } = useRoom();
   const { user } = useAuth();
 
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -70,9 +71,43 @@ export default function GameRoom() {
   }, [roomCode]);
 
   useEffect(() => {
-    if (!socket.connected) socket.connect();
+    let cancelled = false;
 
-    socket.emit("game:join", {
+    fetch(apiUrl(`/api/rooms/${roomCode}`))
+      .then((response) => {
+        if (!response.ok) throw new Error("Room not found");
+        return response.json();
+      })
+      .then((response) => {
+        if (!response.success || cancelled) return;
+        const roomData = response.data.room;
+        setRoom((previousRoom) => ({
+          ...previousRoom,
+          id: roomData.id,
+          roomCode: roomData.room_code,
+          roomName: roomData.room_name,
+          quizId: roomData.quiz_id,
+          status: roomData.status,
+          syncMode: roomData.sync_mode,
+          delayLevel: roomData.delay_level,
+          delayMs: roomData.delay_ms,
+          hostId: roomData.host_id
+        }));
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error("Error loading game room:", err);
+          setError(err.message);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [roomCode, setRoom]);
+
+  useEffect(() => {
+    const joinGame = () => socket.emit("game:join", {
       roomCode,
       username,
       playerId,
@@ -225,6 +260,8 @@ export default function GameRoom() {
       setAnswerStatus("idle");
     };
 
+    const handleConnect = () => joinGame();
+
     socket.on("game:question", handleQuestion);
     socket.on("game:timer", handleTimer);
     socket.on("game:leaderboard", handleLeaderboard);
@@ -238,8 +275,16 @@ export default function GameRoom() {
     socket.on("submission_rejected", handleRejected);
     socket.on("game:finished", handleFinished);
     socket.on("error", handleError);
+    socket.on("connect", handleConnect);
+
+    if (socket.connected) {
+      handleConnect();
+    } else if (!socket.active) {
+      socket.connect();
+    }
 
     return () => {
+      socket.off("connect", handleConnect);
       socket.off("game:question", handleQuestion);
       socket.off("game:timer", handleTimer);
       socket.off("game:leaderboard", handleLeaderboard);

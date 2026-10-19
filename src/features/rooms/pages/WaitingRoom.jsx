@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Crown, Play, Wifi } from "lucide-react";
 import { socket } from "../../../shared/services/socket/socket";
@@ -33,6 +33,7 @@ export default function WaitingRoom() {
   const [error, setError] = useState("");
   const [starting, setStarting] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const startRequestedRef = useRef(false);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 30);
@@ -40,12 +41,15 @@ export default function WaitingRoom() {
   }, []);
 
   useEffect(() => {
-    fetch(apiUrl(`/api/rooms/${roomCode}`))
+    let isMounted = true;
+
+    const loadRoom = () => fetch(apiUrl(`/api/rooms/${roomCode}`))
       .then((res) => {
         if (!res.ok) throw new Error("Room not found");
         return res.json();
       })
       .then((response) => {
+        if (!isMounted) return;
         if (response.success) {
           const roomData = response.data.room;
           const dbPlayers = response.data.players || [];
@@ -62,6 +66,7 @@ export default function WaitingRoom() {
             roomCode: roomData.room_code,
             roomName: roomData.room_name,
             quizId: roomData.quiz_id,
+            status: roomData.status,
             syncMode: roomData.sync_mode,
             delayLevel: roomData.delay_level,
             delayMs: roomData.delay_ms,
@@ -69,14 +74,39 @@ export default function WaitingRoom() {
             hostId: roomData.host_id,
             isHost: Boolean(user?.id && user.id === roomData.host_id)
           });
+          if (roomData.status === "active") {
+            navigate(`/game/${roomCode}`, { replace: true });
+          }
         }
         setLoading(false);
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.error("Error loading waiting room:", err);
         setError(err.message);
         setLoading(false);
       });
+
+    const joinRoom = () => {
+      socket.emit("join-room", {
+        roomCode,
+        player: {
+          id: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`,
+          username: localStorage.getItem("username") || "Guest",
+          guestToken: localStorage.getItem(`guestToken:${roomCode}`)
+        }
+      }, (response) => {
+        if (response?.guestToken) localStorage.setItem(`guestToken:${roomCode}`, response.guestToken);
+        if (response?.player?.user_id) localStorage.setItem("playerId", response.player.user_id);
+      });
+    };
+
+    let hasConnectedOnce = socket.connected;
+    const handleConnect = () => {
+      joinRoom();
+      if (hasConnectedOnce) loadRoom();
+      hasConnectedOnce = true;
+    };
 
     const handleRoomUpdate = (updatedRoom) => {
       const hostId = updatedRoom.hostId || updatedRoom.host_id;
@@ -93,40 +123,31 @@ export default function WaitingRoom() {
     };
 
     const handleRoomStarted = () => {
-      socket.emit("game:join", {
-        roomCode,
-        username: localStorage.getItem("username") || "Guest",
-        playerId: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`,
-        guestToken: localStorage.getItem(`guestToken:${roomCode}`)
-      });
       navigate(`/game/${roomCode}`);
     };
 
     socket.on("room:update", handleRoomUpdate);
     socket.on("room:started", handleRoomStarted);
+    socket.on("connect", handleConnect);
 
-    if (!socket.connected) {
+    loadRoom();
+    if (socket.connected) {
+      handleConnect();
+    } else if (!socket.active) {
       socket.connect();
     }
-    socket.emit("join-room", {
-      roomCode,
-      player: {
-        id: localStorage.getItem("playerId") || socket.id || `player_${Date.now()}`,
-        username: localStorage.getItem("username") || "Guest",
-        guestToken: localStorage.getItem(`guestToken:${roomCode}`)
-      }
-    }, (response) => {
-      if (response?.guestToken) localStorage.setItem(`guestToken:${roomCode}`, response.guestToken);
-      if (response?.player?.user_id) localStorage.setItem("playerId", response.player.user_id);
-    });
 
     return () => {
+      isMounted = false;
       socket.off("room:update", handleRoomUpdate);
       socket.off("room:started", handleRoomStarted);
+      socket.off("connect", handleConnect);
     };
   }, [navigate, roomCode, setRoom, user?.id]);
 
   const handleStartQuiz = async () => {
+    if (startRequestedRef.current) return;
+    startRequestedRef.current = true;
     setStarting(true);
     try {
       const res = await authFetch("/api/rooms/start", {
@@ -135,15 +156,26 @@ export default function WaitingRoom() {
         body: JSON.stringify({ roomCode })
       });
       const result = res;
-      if (result.success) {
-        socket.emit("start-game", { roomCode, quizId: room?.quizId });
+      if (result.success && result.data?.status === "active") {
+        socket.emit("start-game", { roomCode, quizId: room?.quizId }, (startResult) => {
+          if (startResult?.success) {
+            navigate(`/game/${roomCode}`);
+            return;
+          }
+
+          startRequestedRef.current = false;
+          setStarting(false);
+          addToast(startResult?.message || "Failed to initialize the quiz", { type: "error" });
+        });
       } else {
+        startRequestedRef.current = false;
+        setStarting(false);
         addToast(result.message || "Failed to start quiz", { type: "error" });
       }
     } catch (err) {
-      addToast("Error starting quiz: " + err.message, { type: "error" });
-    } finally {
+      startRequestedRef.current = false;
       setStarting(false);
+      addToast("Error starting quiz: " + err.message, { type: "error" });
     }
   };
 
