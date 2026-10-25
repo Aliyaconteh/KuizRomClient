@@ -3,9 +3,9 @@ import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 
 import { ArrowDown, ArrowUp, Flame, Minus, Sparkles, Trophy } from "lucide-react";
 
 const rankStyles = [
-  { bg: "bg-amber-500/15", border: "border-amber-500/30", text: "text-amber-400", label: "1st" },
-  { bg: "bg-slate-400/15", border: "border-slate-400/30", text: "text-slate-300", label: "2nd" },
-  { bg: "bg-orange-600/15", border: "border-orange-600/30", text: "text-orange-400", label: "3rd" },
+  { row: "leaderboard-row--first", text: "leaderboard-rank--first", label: "1st" },
+  { row: "leaderboard-row--second", text: "leaderboard-rank--second", label: "2nd" },
+  { row: "leaderboard-row--third", text: "leaderboard-rank--third", label: "3rd" },
 ];
 
 function AnimatedScore({ score }) {
@@ -58,9 +58,9 @@ export default function ScoreBoard({
     .find((change) => change?.movement > 0);
 
   return (
-    <div>
+    <div className="leaderboard">
       <div className="flex items-center gap-2 mb-5">
-        <Trophy size={18} className="text-amber-400" />
+        <Trophy size={18} className="leaderboard-trophy" />
         <div>
           <h2 className="text-xl font-extrabold">Live Leaderboard</h2>
           {questionNumber > 0 && (
@@ -74,15 +74,15 @@ export default function ScoreBoard({
       {leaderChange && (
         <div
           aria-live="polite"
-          className="mb-4 flex items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm font-bold text-amber-200"
+          className="leaderboard-callout leaderboard-callout--leader mb-4 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold"
         >
-          <Flame size={17} className="shrink-0 text-orange-400" />
+          <Flame size={17} className="shrink-0 leaderboard-flame" />
           <span>{leaderChange.username} takes the lead!</span>
         </div>
       )}
 
       {currentPlayerChange && (
-        <div className="mb-4 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-300">
+        <div className="leaderboard-callout leaderboard-callout--movement mb-4 rounded-xl px-4 py-3 text-sm font-semibold">
           You moved up {currentPlayerChange.movement}{" "}
           {currentPlayerChange.movement === 1 ? "place" : "places"} this round!
         </div>
@@ -106,55 +106,45 @@ export default function ScoreBoard({
               key={playerKey}
               layout="position"
               initial={false}
-              animate={{
-                opacity: 1,
-                ...(isNewLeader
-                  ? { backgroundColor: "rgba(245, 158, 11, 0.16)" }
-                  : change?.movement > 0
-                    ? { backgroundColor: "rgba(16, 185, 129, 0.11)" }
-                    : change?.movement < 0
-                      ? { backgroundColor: "rgba(244, 63, 94, 0.08)" }
-                      : {})
-              }}
+              animate={{ opacity: 1 }}
               transition={prefersReducedMotion
                 ? { duration: 0 }
                 : {
                     layout: { type: "spring", stiffness: 360, damping: 32 },
-                    backgroundColor: { duration: 0.45 },
                     opacity: { duration: 0.2 }
                   }}
-              className={`flex items-center justify-between rounded-xl px-4 py-3 border ${
+              className={`leaderboard-row flex items-center justify-between rounded-xl px-4 py-3 border ${
                 rank
-                  ? `${rank.bg} ${rank.border}`
+                  ? rank.row
                   : "bg-slate-800/60 border-slate-700/50"
-              } ${isNewLeader ? "ring-1 ring-amber-300/50 shadow-[0_0_24px_rgba(245,158,11,0.18)]" : ""} ${
-                change?.movement > 0 ? "border-emerald-400/50" : ""
-              } ${change?.movement < 0 ? "border-rose-400/40" : ""}`}
+              } ${isNewLeader ? "leaderboard-row--new-leader ring-1 ring-amber-300/50" : ""} ${
+                change?.movement > 0 ? "leaderboard-row--up" : ""
+              } ${change?.movement < 0 ? "leaderboard-row--down" : ""}`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 {rank ? (
                   <span className={`text-xs font-bold ${rank.text} w-6 text-center`}>{rank.label}</span>
                 ) : (
-                  <span className="text-xs font-bold text-slate-500 w-6 text-center">{index + 1}</span>
+                  <span className="leaderboard-rank--other w-6 text-center text-xs font-bold">{index + 1}</span>
                 )}
-                <span className="min-w-0 truncate font-semibold text-slate-100">
+                <span className="leaderboard-player min-w-0 truncate font-semibold">
                   {player.username || player.playerId || "Player"}
                 </span>
                 {isCurrentPlayer && (
-                  <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-300">
+                  <span className="leaderboard-you rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
                     You
                   </span>
                 )}
-                {isNewLeader && <Sparkles size={15} className="text-amber-300" aria-label="New leader" />}
+                {isNewLeader && <Sparkles size={15} className="leaderboard-sparkles" aria-label="New leader" />}
               </div>
               <div className="flex shrink-0 items-center gap-3">
                 {change && (
                   <span
                     className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${
                       change.movement > 0
-                        ? "bg-emerald-500/15 text-emerald-300"
+                        ? "leaderboard-change--up"
                         : change.movement < 0
-                          ? "bg-rose-500/15 text-rose-300"
+                          ? "leaderboard-change--down"
                           : "bg-slate-700/70 text-slate-300"
                     }`}
                     title={change.movement
@@ -170,7 +160,7 @@ export default function ScoreBoard({
                     )}
                   </span>
                 )}
-                <span className={`font-black tabular-nums ${rank ? rank.text : "text-emerald-400"}`}>
+                <span className={`leaderboard-score font-black tabular-nums ${rank ? rank.text : "text-emerald-400"}`}>
                   <AnimatedScore score={player.score} />
                 </span>
               </div>
