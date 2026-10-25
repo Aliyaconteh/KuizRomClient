@@ -12,21 +12,20 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
     "@tailwindcss/vite": "^4.3.0",
-    "axios": "^1.16.1",
     "framer-motion": "^12.42.2",
     "jsqr": "^1.4.0",
     "lucide-react": "^1.16.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "^7.15.1",
+    "react-router-dom": "^7.18.2",
     "socket.io-client": "^4.8.3",
     "tailwindcss": "^4.3.0",
     "users": "^2.0.0",
     "zap": "^2.1.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.1",
     "@eslint/js": "^10.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/react": "^19.2.14",
