@@ -198,7 +198,6 @@ export default function CreateRoom() {
   const [mounted,        setMounted]        = useState(false);
   const [syncMode,       setSyncMode]       = useState("server");
   const [delayLevel,     setDelayLevel]     = useState("low");
-  const [customDelayMs,  setCustomDelayMs]  = useState(200);
 
   const joinUrl = createdRoomCode
     ? `${window.location.origin}/join-room?roomCode=${encodeURIComponent(createdRoomCode)}`
@@ -268,7 +267,7 @@ export default function CreateRoom() {
           roomName: roomName.trim(),
           syncMode,
           delayLevel,
-          delayMs: delayLevel === "custom" ? Number(customDelayMs) : null,
+          delayMs: null,
         }),
       });
       const result = res;
@@ -514,28 +513,12 @@ export default function CreateRoom() {
                 onChange={setDelayLevel}
                 options={[
                   { value: "low", label: "0 ms" },
-                  { value: "medium", label: "200 ms" },
-                  { value: "high", label: "600 ms" },
-                  { value: "custom", label: "Custom" },
+                  { value: "medium", label: "50 ms" },
+                  { value: "high", label: "100 ms" },
+                  { value: "custom", label: "200 ms" },
                 ]}
               />
             </div>
-
-            {delayLevel === "custom" && (
-              <div>
-                <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-slate-500 mb-2">
-                  Custom Delay (ms)
-                </div>
-                <input
-                  type="number"
-                  min="0"
-                  max="5000"
-                  value={customDelayMs}
-                  onChange={(e) => setCustomDelayMs(e.target.value)}
-                  className="w-full bg-[#0f1720] border-[1.5px] border-slate-700/50 rounded-xl px-4 py-3 text-slate-100 text-[0.9375rem] outline-none transition-all duration-150 focus:border-indigo-500 focus:bg-indigo-500/[0.05] focus:ring-2 focus:ring-indigo-500/10"
-                />
-              </div>
-            )}
 
             {/* submit */}
             <button

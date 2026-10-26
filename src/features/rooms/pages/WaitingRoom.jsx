@@ -241,7 +241,7 @@ export default function WaitingRoom() {
           </div>
           <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-5 transition-all duration-300 hover:border-slate-700">
             <span className="text-slate-500 text-xs uppercase font-semibold tracking-wide block mb-1">Simulated Delay</span>
-            <span className="text-lg font-bold text-amber-400">{room?.delayLevel === "custom" ? `${room?.delayMs} ms` : room?.delayLevel || "None"}</span>
+            <span className="text-lg font-bold text-amber-400">{Number(room?.delayMs ?? 0)} ms</span>
           </div>
           <div className="bg-[#0d131c]/80 border border-slate-800 rounded-2xl p-5 transition-all duration-300 hover:border-slate-700">
             <span className="text-slate-500 text-xs uppercase font-semibold tracking-wide block mb-1">Players Connected</span>
