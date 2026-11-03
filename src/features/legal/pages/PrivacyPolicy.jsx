@@ -98,7 +98,6 @@ const sections = [
     id: "contact",
     title: "12. Contact Information",
     paragraphs: [
-      "For questions, concerns, or requests relating to this Privacy Policy or the handling of personal information, please contact the KuizRoom project administrator through the official contact channel provided by the project team.",
       "KuizRoom is an academic software development and research project.",
     ],
   },
@@ -172,23 +171,37 @@ export default function PrivacyPolicy() {
               </h2>
 
               <div className="mt-3 space-y-4 text-sm leading-7 text-[var(--text-secondary)]">
-                {section.paragraphs.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+                {section.id === "contact" ? (
+                  <>
+                    <p>
+                      For questions, concerns, or requests relating to this
+                      Privacy Policy, your account, or your personal
+                      information, contact the KuizRoom project administrator
+                      at{" "}
+                      <a
+                        href="mailto:officialkuizroom@gmail.com"
+                        className="underline underline-offset-4 hover:text-[var(--text-primary)]"
+                      >
+                        officialkuizroom@gmail.com
+                      </a>
+                      .
+                    </p>
+                    {section.paragraphs.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
+                  </>
+                ) : (
+                  section.paragraphs.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))
+                )}
               </div>
             </section>
           ))}
         </div>
 
         <footer className="mt-4 border-t border-[var(--border-color)] pt-6">
-          <p className="text-sm leading-6 text-[var(--text-muted)]">
-            By using KuizRoom, you acknowledge that you have had the
-            opportunity to read this Privacy Policy. This policy should
-            be reviewed whenever the application's data collection,
-            storage, or processing practices change.
-          </p>
-
-          <p className="mt-4 text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-[var(--text-muted)]">
             © {new Date().getFullYear()} KuizRoom. All rights reserved.
           </p>
         </footer>

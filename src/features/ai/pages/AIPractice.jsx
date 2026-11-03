@@ -1,6 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowUp, BookOpen, Brain, Lightbulb, Loader2, Sparkles, Target, Trash2 } from "lucide-react";
+import {
+  ArrowUp,
+  BookOpen,
+  Brain,
+  FileText,
+  Lightbulb,
+  Loader2,
+  MessageSquare,
+  Paperclip,
+  PanelLeft,
+  Plus,
+  Sparkles,
+  Target,
+  X
+} from "lucide-react";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "../../../shared/components/ui/ToastContext";
 
@@ -16,6 +30,8 @@ const starterMessages = [
 
 const CHAT_STORAGE_KEY = "kuizroom_ai_practice_chat";
 const CHAT_DRAFT_KEY = "kuizroom_ai_practice_draft";
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
+const ACCEPTED_FILE_TYPES = ".pdf,.docx,.txt";
 const suggestedPrompts = [
   { icon: BookOpen, title: "Explain a concept", prompt: "Explain a difficult concept to me in simple steps, with an example." },
   { icon: Brain, title: "Quiz me", prompt: "Give me a short practice quiz and wait for my answer after each question." },
@@ -27,6 +43,31 @@ const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } }
 };
+
+function loadChatHistory() {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(CHAT_STORAGE_KEY) || "null");
+    if (Array.isArray(stored)) {
+      const messages = stored.filter((item) => item?.role && item?.content);
+      if (!messages.length) return [];
+      const firstUserMessage = messages.find((item) => item.role === "user");
+      return [{
+        id: "previous-chat",
+        title: firstUserMessage?.content?.split("\n")[0]?.slice(0, 60) || "Previous conversation",
+        updatedAt: Date.now(),
+        messages
+      }];
+    }
+
+    return Array.isArray(stored?.conversations)
+      ? stored.conversations.filter((chat) => chat?.id && Array.isArray(chat.messages))
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 function renderFormattedReply(content) {
   const text = String(content || "")
@@ -72,18 +113,9 @@ export default function AIPractice() {
   const { authFetch } = useAuth();
   const { addToast } = useToast();
   const prefersReducedMotion = useReducedMotion();
-  const [messages, setMessages] = useState(() => {
-    if (typeof window === "undefined") return starterMessages;
-    try {
-      const stored = window.localStorage.getItem(CHAT_STORAGE_KEY);
-      if (!stored) return starterMessages;
-      const parsed = JSON.parse(stored);
-      if (!Array.isArray(parsed) || parsed.length === 0) return starterMessages;
-      return parsed.filter((item) => item && typeof item === "object" && item.role && item.content) || starterMessages;
-    } catch {
-      return starterMessages;
-    }
-  });
+  const instanceId = useId();
+  const [chatHistory, setChatHistory] = useState(loadChatHistory);
+  const [activeChatId, setActiveChatId] = useState(() => loadChatHistory()[0]?.id || null);
   const [draft, setDraft] = useState(() => {
     if (typeof window === "undefined") return "";
     try {
@@ -94,12 +126,31 @@ export default function AIPractice() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const endRef = useRef(null);
   const composerRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const chatSequenceRef = useRef(0);
+  const activeChat = chatHistory.find((chat) => chat.id === activeChatId);
+  const messages = activeChat?.messages || starterMessages;
   const conversationMessages = messages.filter(
     (message) => !(message.role === "assistant" && message.id === 1)
   );
   const isWelcome = conversationMessages.length === 0;
+
+  const updateChat = (chatId, nextMessages) => {
+    setChatHistory((current) => {
+      const existing = current.find((chat) => chat.id === chatId);
+      const firstUserMessage = nextMessages.find((message) => message.role === "user");
+      const updatedChat = {
+        id: chatId,
+        title: existing?.title || firstUserMessage?.content?.split("\n")[0]?.slice(0, 60) || "New conversation",
+        messages: nextMessages
+      };
+      return [updatedChat, ...current.filter((chat) => chat.id !== chatId)];
+    });
+  };
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
@@ -114,11 +165,11 @@ export default function AIPractice() {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+      window.localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify({ conversations: chatHistory }));
     } catch {
-      // Ignore storage failures and keep the chat usable.
+      addToast("Could not save chat history in this browser.", { type: "error" });
     }
-  }, [messages]);
+  }, [chatHistory, addToast]);
 
   useEffect(() => {
     try {
@@ -129,38 +180,73 @@ export default function AIPractice() {
   }, [draft]);
 
   const resetChat = () => {
-    setMessages(starterMessages);
+    setActiveChatId(null);
     setDraft("");
     setError("");
-    try {
-      window.localStorage.removeItem(CHAT_STORAGE_KEY);
-      window.localStorage.removeItem(CHAT_DRAFT_KEY);
-    } catch {
-      // Ignore storage failures on reset.
+    setSelectedFile(null);
+    setSidebarOpen(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    window.localStorage.removeItem(CHAT_DRAFT_KEY);
+  };
+
+  const selectFile = (file) => {
+    if (!file) return;
+    const extension = file.name.split(".").pop()?.toLowerCase();
+    if (!["pdf", "docx", "txt"].includes(extension)) {
+      addToast("Choose a PDF, DOCX, or TXT file.", { type: "error" });
+      return;
     }
+    if (file.size > MAX_FILE_SIZE) {
+      addToast("The file must be 20 MB or smaller.", { type: "error" });
+      return;
+    }
+    setSelectedFile(file);
   };
 
   const sendMessage = async (text) => {
     const messageText = (text ?? draft).trim();
-    if (!messageText || loading) {
-      return;
-    }
+    if ((!messageText && !selectedFile) || loading) return;
 
-    const messageId = messages.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-    const nextMessages = [...messages, { id: messageId, role: "user", content: messageText }];
-    setMessages(nextMessages);
+    const chatId = activeChatId || `chat-${instanceId}-${chatSequenceRef.current++}`;
+    const existingMessages = conversationMessages;
+    const messageId = existingMessages.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+    const userContent = [
+      selectedFile ? `Attached file: ${selectedFile.name}` : "",
+      messageText || (selectedFile ? "Please review this file and help me understand its contents." : "")
+    ].filter(Boolean).join("\n");
+    const nextMessages = [...existingMessages, { id: messageId, role: "user", content: userContent }];
+    const fileToUpload = selectedFile;
+    setActiveChatId(chatId);
+    updateChat(chatId, nextMessages);
     setDraft("");
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setLoading(true);
     setError("");
 
     try {
+      let body;
+      let headers;
+      if (fileToUpload) {
+        body = new FormData();
+        body.append("document", fileToUpload);
+        body.append("message", messageText || "Please review this file and help me understand its contents.");
+        body.append("history", JSON.stringify(existingMessages.map((item) => ({
+          role: item.role,
+          content: item.content
+        }))));
+      } else {
+        headers = { "Content-Type": "application/json" };
+        body = JSON.stringify({
+          message: messageText,
+          history: existingMessages.map((item) => ({ role: item.role, content: item.content }))
+        });
+      }
+
       const response = await authFetch("/api/ai/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: messageText,
-          history: messages.map((item) => ({ role: item.role, content: item.content }))
-        })
+        headers,
+        body
       });
 
       const payload = response;
@@ -168,15 +254,12 @@ export default function AIPractice() {
         throw new Error(payload.message || "AI chat failed.");
       }
 
-      setMessages((current) => [
-        ...current,
-        { id: messageId + 1, role: "assistant", content: payload.data.reply }
-      ]);
+      updateChat(chatId, [...nextMessages, { id: messageId + 1, role: "assistant", content: payload.data.reply }]);
     } catch (err) {
       setError(err.message);
       addToast(err.message, { type: "error" });
-      setMessages((current) => [
-        ...current,
+      updateChat(chatId, [
+        ...nextMessages,
         {
           id: messageId + 1,
           role: "assistant",
@@ -193,16 +276,25 @@ export default function AIPractice() {
       initial={prefersReducedMotion ? {} : "hidden"}
       animate="visible"
       variants={fadeUp}
-      className="relative min-h-screen overflow-hidden bg-[#050914] px-4 py-5 text-white sm:px-6 lg:px-8"
+      className="relative flex h-[calc(100svh-8.5rem)] min-h-[480px] flex-col overflow-hidden bg-[#050914] px-3 py-3 text-white sm:px-5 sm:py-4 lg:h-[calc(100svh-4rem)] lg:px-8"
     >
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-[420px] w-[420px] rounded-full bg-amber-500/5 blur-3xl" />
       </div>
 
-      <div className="mx-auto flex min-h-[calc(100svh-2.5rem)] max-w-5xl flex-col">
-        <header className="mb-4 flex items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col">
+        <header className="mb-3 flex shrink-0 items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
           <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen((open) => !open)}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-300 transition hover:text-white lg:hidden"
+              aria-label="Toggle chat history"
+              aria-expanded={sidebarOpen}
+            >
+              <PanelLeft size={17} />
+            </button>
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#1b5f9c] text-white shadow-lg shadow-blue-950/30">
               <Sparkles size={19} />
             </div>
@@ -215,26 +307,76 @@ export default function AIPractice() {
             type="button"
             onClick={resetChat}
             className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm font-semibold text-slate-300 transition hover:border-blue-500/60 hover:text-white sm:px-4"
-            aria-label="Clear chat"
+            aria-label="Start a new chat"
           >
-            <Trash2 size={15} />
+            <Plus size={15} />
             <span className="hidden sm:inline">New chat</span>
           </button>
         </header>
 
-        <motion.section
-          variants={fadeUp}
-          className="mx-auto flex min-h-[72vh] w-full max-w-4xl flex-1 flex-col overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-950/60 shadow-2xl shadow-black/20 backdrop-blur-xl"
-          aria-label="AI tutor conversation"
-        >
+        <div className="relative flex min-h-0 flex-1 gap-3">
+          {sidebarOpen && (
+            <button
+              type="button"
+              className="absolute inset-0 z-20 bg-black/60 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close chat history"
+            />
+          )}
+          <aside
+            className={`absolute inset-y-0 left-0 z-30 flex w-72 flex-col rounded-2xl border border-slate-800 bg-[#080e1b] p-3 shadow-2xl transition-transform lg:static lg:z-auto lg:w-64 lg:shrink-0 lg:translate-x-0 lg:shadow-none ${
+              sidebarOpen ? "translate-x-0" : "-translate-x-[110%] lg:translate-x-0"
+            }`}
+            aria-label="Chat history"
+          >
+            <button
+              type="button"
+              onClick={resetChat}
+              className="mb-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-blue-500/60 hover:bg-slate-800"
+            >
+              <Plus size={16} />
+              New chat
+            </button>
+            <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Recent chats</p>
+            <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
+              {chatHistory.map((chat) => (
+                <button
+                  key={chat.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveChatId(chat.id);
+                    setDraft("");
+                    setError("");
+                    setSelectedFile(null);
+                    setSidebarOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                    chat.id === activeChatId ? "bg-slate-800 text-white" : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
+                  }`}
+                >
+                  <MessageSquare size={15} className="shrink-0" />
+                  <span className="truncate">{chat.title}</span>
+                </button>
+              ))}
+              {chatHistory.length === 0 && (
+                <p className="px-2 py-3 text-xs leading-5 text-slate-500">Your conversations will appear here.</p>
+              )}
+            </div>
+          </aside>
+
+          <motion.section
+            variants={fadeUp}
+            className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-950/60 shadow-2xl shadow-black/20 backdrop-blur-xl"
+            aria-label="AI tutor conversation"
+          >
           <div
-            className="flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8"
+            className="min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain px-4 py-5 sm:px-8 sm:py-7"
             role="log"
             aria-live="polite"
             aria-relevant="additions"
           >
             {isWelcome ? (
-              <div className="mx-auto flex min-h-[52vh] max-w-2xl flex-col items-center justify-center text-center">
+              <div className="mx-auto flex min-h-full max-w-2xl flex-col items-center justify-center py-6 text-center">
                 <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl border border-blue-400/20 bg-blue-500/10 text-blue-300">
                   <Sparkles size={26} />
                 </div>
@@ -324,9 +466,44 @@ export default function AIPractice() {
             </div>
           )}
 
-          <div className="border-t border-slate-800/80 bg-slate-950/50 p-3 sm:p-5">
+          <div className="shrink-0 border-t border-slate-800/80 bg-slate-950/95 p-3 sm:p-5">
             <div className="rounded-[1.5rem] border border-slate-700/70 bg-slate-900/90 p-2.5 shadow-2xl shadow-black/20 backdrop-blur-sm transition focus-within:border-blue-500/60 focus-within:ring-2 focus-within:ring-blue-500/10">
+              {selectedFile && (
+                <div className="mb-2 flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-xs text-slate-300">
+                  <FileText size={15} className="shrink-0 text-blue-300" />
+                  <span className="min-w-0 flex-1 truncate">{selectedFile.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="rounded-md p-1 text-slate-400 hover:text-white"
+                    aria-label="Remove attached file"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              )}
               <div className="flex items-end gap-2.5">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={ACCEPTED_FILE_TYPES}
+                  className="hidden"
+                  aria-label="Upload a document"
+                  onChange={(event) => selectFile(event.target.files?.[0])}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                  className="mb-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-800 hover:text-white disabled:opacity-50"
+                  aria-label="Attach a PDF, DOCX, or TXT file"
+                  title="Attach a PDF, DOCX, or TXT file"
+                >
+                  <Paperclip size={17} />
+                </button>
                 <textarea
                   ref={composerRef}
                   rows={1}
@@ -346,7 +523,7 @@ export default function AIPractice() {
                 <button
                   type="button"
                   onClick={() => sendMessage()}
-                  disabled={loading || !draft.trim()}
+                  disabled={loading || (!draft.trim() && !selectedFile)}
                   aria-label="Send message"
                   className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#1b5f9c] text-white transition hover:bg-[#164b78] disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
                 >
@@ -359,7 +536,8 @@ export default function AIPractice() {
               </p>
             </div>
           </div>
-        </motion.section>
+          </motion.section>
+        </div>
       </div>
     </motion.main>
   );

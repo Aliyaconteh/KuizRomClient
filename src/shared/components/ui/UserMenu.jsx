@@ -27,6 +27,8 @@ export default function UserMenu() {
   };
 
   if (!user) return null;
+  const isHost = user.role === "host";
+  const canViewAnalysis = isHost || user.role === "researcher";
 
   return (
     <div className="relative" ref={ref}>
@@ -72,29 +74,34 @@ export default function UserMenu() {
             </button>
 
 
-            <button
-              onClick={() => { navigate("/create-room"); setOpen(false); }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
-            >
-              <Plus size={15} />
-              <span>Create Room</span>
-            </button>
+            {isHost && (
+              <>
+                <button
+                  onClick={() => { navigate("/create-room"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <Plus size={15} />
+                  <span>Create Room</span>
+                </button>
+                <button
+                  onClick={() => { navigate("/ai-practice"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <Sparkles size={15} />
+                  <span>AI Tutor</span>
+                </button>
+              </>
+            )}
 
-            <button
-              onClick={() => { navigate("/sync-analysis"); setOpen(false); }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
-            >
-              <Activity size={15} />
-              <span>Analysis</span>
-            </button>
-
-            <button
-              onClick={() => { navigate("/ai-practice"); setOpen(false); }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
-            >
-              <Sparkles size={15} />
-              <span>AI Tutor</span>
-            </button>
+            {canViewAnalysis && (
+              <button
+                onClick={() => { navigate("/sync-analysis"); setOpen(false); }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+              >
+                <Activity size={15} />
+                <span>Analysis</span>
+              </button>
+            )}
 
             <div className="border-t border-slate-700/50 my-1" />
 

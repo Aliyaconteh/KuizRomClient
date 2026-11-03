@@ -35,7 +35,10 @@ export function AuthProvider({ children }) {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed?.token && parsed?.user) {
-          setUser(parsed.user);
+          const user = parsed.user.email?.trim().toLowerCase() === "officialkuizroom@gmail.com"
+            ? { ...parsed.user, role: "researcher" }
+            : { ...parsed.user, role: parsed.user.role || "host" };
+          setUser(user);
           setToken(parsed.token);
           setIsAuthenticated(true);
         }

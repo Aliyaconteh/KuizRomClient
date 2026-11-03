@@ -1,68 +1,37 @@
 import { useEffect, useState, useCallback } from "react";
 import { Server, Zap, Clock, RefreshCw, Activity, Download, BarChart2, CheckCircle, Search } from "lucide-react";
-import { apiUrl } from "../../../shared/config/api";
+import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "../../../shared/components/ui/ToastContext";
 
 const DELAY_BUCKETS = ["0ms", "50ms", "100ms", "200ms"];
 
-function attachObservedDelayCounts(summary, logs) {
-  if (!Array.isArray(logs)) return summary;
-
-  const counts = Object.fromEntries(DELAY_BUCKETS.map((bucket) => [bucket, { server: 0, optimistic: 0, total: 0 }]));
-
-  (logs || []).forEach((log) => {
-    const delayMs = Number(log.artificial_delay_ms || 0);
-    const bucket = delayMs >= 150 ? "200ms" : delayMs >= 75 ? "100ms" : delayMs >= 25 ? "50ms" : "0ms";
-    const mode = String(log.sync_mode || "server").toLowerCase().includes("optimistic") ? "optimistic" : "server";
-    counts[bucket][mode] += 1;
-    counts[bucket].total += 1;
-  });
-
-  return {
-    ...summary,
-    byDelay: Object.fromEntries(DELAY_BUCKETS.map((bucket) => {
-      const metrics = summary.byDelay?.[bucket] || {};
-      const observed = counts[bucket];
-      return [bucket, {
-        ...metrics,
-        serverLatency: observed.server ? metrics.serverLatency ?? null : null,
-        optimisticLatency: observed.optimistic ? metrics.optimisticLatency ?? null : null,
-        consistencyPct: observed.total ? metrics.consistencyPct ?? null : null,
-        sampleCount: observed.total
-      }];
-    }))
-  };
-}
-
 export default function SyncAnalysis() {
+  const { authFetch, user } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState(null);
   const [roomFilter, setRoomFilter] = useState("");
   const [selectedRoomData, setSelectedRoomData] = useState(null);
   const [roomLoading, setRoomLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const { addToast } = useToast();
+  const isResearcher = user?.role === "researcher";
 
   const fetchOverview = useCallback(async () => {
     try {
       setLoading(true);
-      const [overviewResponse, logsResponse] = await Promise.all([
-        fetch(apiUrl("/api/sync/overview")),
-        fetch(apiUrl("/api/sync/export?format=json"))
-      ]);
-      const [overviewJson, logsJson] = await Promise.all([
-        overviewResponse.json(),
-        logsResponse.json()
-      ]);
+      const overviewJson = await authFetch("/api/sync/overview");
       if (overviewJson.success && overviewJson.data) {
-        setOverview(attachObservedDelayCounts(overviewJson.data, logsJson.success ? logsJson.data : null));
+        setOverview(overviewJson.data);
+      } else {
+        throw new Error(overviewJson.message || "Unable to load synchronization analysis.");
       }
     } catch (err) {
-      console.error("Failed to load sync overview:", err);
+      addToast(err.message || "Failed to load synchronization analysis.", { type: "error" });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast, authFetch]);
 
   const handleSearchRoom = async (e) => {
     e?.preventDefault();
@@ -72,15 +41,12 @@ export default function SyncAnalysis() {
     }
     try {
       setRoomLoading(true);
-      const res = await fetch(apiUrl(`/api/sync/${roomFilter.trim().toUpperCase()}/summary`));
-      const json = await res.json();
+      const json = await authFetch(`/api/sync/${roomFilter.trim().toUpperCase()}/summary`);
       if (json.success && json.data) {
-        const logsResponse = await fetch(apiUrl(`/api/sync/export/${roomFilter.trim().toUpperCase()}?format=json`));
-        const logsJson = await logsResponse.json();
-        setSelectedRoomData(attachObservedDelayCounts(json.data, logsJson.success ? logsJson.data : null));
+        setSelectedRoomData(json.data);
         addToast(`Loaded empirical metrics for room ${roomFilter.trim().toUpperCase()}`, { type: "success" });
       } else {
-        addToast("No logs found for this room code", { type: "error" });
+        throw new Error(json.message || "No logs found for this room code.");
       }
     } catch (err) {
       addToast(err.message || "Failed to find room logs", { type: "error" });
@@ -89,10 +55,28 @@ export default function SyncAnalysis() {
     }
   };
 
-  const handleExport = (format = "csv") => {
+  const handleExport = async (format = "csv") => {
     const code = roomFilter.trim().toUpperCase();
     const endpoint = code ? `/api/sync/export/${code}?format=${format}` : `/api/sync/export?format=${format}`;
-    window.open(apiUrl(endpoint), "_blank");
+    try {
+      setExporting(true);
+      const payload = await authFetch(endpoint);
+      const content = format === "json" ? JSON.stringify(payload.data, null, 2) : payload;
+      const blob = new Blob([content], { type: format === "json" ? "application/json" : "text/csv" });
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = `sync-analysis-${code || (isResearcher ? "all-games" : "my-games")}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+      addToast("Synchronization records exported.", { type: "success" });
+    } catch (err) {
+      addToast(err.message || "Failed to export synchronization records.", { type: "error" });
+    } finally {
+      setExporting(false);
+    }
   };
 
   useEffect(() => {
@@ -119,8 +103,13 @@ export default function SyncAnalysis() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10" style={{ animation: "slideUp 0.5s ease both" }}>
           <div>
            
+            <h1 className="text-3xl font-black tracking-tight text-white">
+            Synchronization Analysis
+            </h1>
             <p className="text-slate-400 mt-3 max-w-2xl text-sm leading-relaxed">
-              Comparative analysis of Server-Authoritative vs Optimistic Client-Side Update models under simulated network delays (0ms, 50ms, 100ms, 200ms).
+            {isResearcher
+              ? "Inspect synchronization summaries and exported records across all games, comparing latency, score consistency, and reconciliation by strategy and delay condition."
+              : "Inspect synchronization summaries and exported records for games you created, comparing latency, score consistency, and reconciliation by strategy and delay condition."}
             </p>
           </div>
 
@@ -135,17 +124,19 @@ export default function SyncAnalysis() {
             </button>
             <button
               onClick={() => handleExport("csv")}
+              disabled={exporting}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-600/20 px-4 py-2.5 text-xs font-bold text-indigo-300 transition hover:bg-indigo-600/30 sm:w-auto"
             >
               <Download size={14} />
-              Export CSV Dataset
+              {exporting ? "Exporting..." : "Export CSV Dataset"}
             </button>
             <button
               onClick={() => handleExport("json")}
+              disabled={exporting}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-600/20 px-4 py-2.5 text-xs font-bold text-emerald-300 transition hover:bg-emerald-600/30 sm:w-auto"
             >
               <Download size={14} />
-              Export JSON
+              {exporting ? "Exporting..." : "Export JSON"}
             </button>
           </div>
         </div>
@@ -159,7 +150,7 @@ export default function SyncAnalysis() {
                 type="text"
                 value={roomFilter}
                 onChange={(e) => setRoomFilter(e.target.value)}
-                placeholder="Filter by Room Code (e.g., AB12CD)..."
+                placeholder="Filter by room code..."
                 className="w-full bg-slate-900 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-indigo-500"
               />
             </div>
@@ -181,7 +172,7 @@ export default function SyncAnalysis() {
                 onClick={() => { setSelectedRoomData(null); setRoomFilter(""); }}
                 className="text-xs text-slate-400 hover:text-white underline"
               >
-                Clear Filter (View Global Data)
+                Clear Filter ({isResearcher ? "View All Games" : "View My Games"})
               </button>
             </div>
           )}
@@ -350,7 +341,7 @@ export default function SyncAnalysis() {
           </div>
 
           <div className="grid gap-3 sm:gap-5 sm:grid-cols-2">
-            {["0ms", "50ms", "100ms", "200ms"].map((tier) => {
+            {DELAY_BUCKETS.map((tier) => {
               const data = delayData[tier] || { serverLatency: null, optimisticLatency: null, consistencyPct: null, sampleCount: 0 };
               const sLat = Number(data.serverLatency || 0);
               const oLat = Number(data.optimisticLatency || 0);
@@ -379,6 +370,26 @@ export default function SyncAnalysis() {
                           className="h-full bg-indigo-500 rounded-full transition-all duration-500"
                           style={{ width: `${sWidth}%` }}
                         />
+                      </div>
+                      <div className="mt-4 grid grid-cols-2 gap-2">
+                        <div className="rounded-lg border border-indigo-500/10 bg-indigo-500/5 p-2.5 text-xs">
+                          <p className="font-semibold text-indigo-300">Server-authoritative</p>
+                          <p className="mt-1 text-slate-400">
+                            Consistency: <strong className="text-emerald-300">{data.serverConsistencyPct == null ? "--" : `${data.serverConsistencyPct}%`}</strong>
+                          </p>
+                          <p className="mt-1 text-slate-400">
+                            Reconciliations: <strong className="text-slate-200">{data.serverReconciliations ?? 0}</strong>
+                          </p>
+                        </div>
+                        <div className="rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-2.5 text-xs">
+                          <p className="font-semibold text-emerald-300">Optimistic</p>
+                          <p className="mt-1 text-slate-400">
+                            Consistency: <strong className="text-emerald-300">{data.optimisticConsistencyPct == null ? "--" : `${data.optimisticConsistencyPct}%`}</strong>
+                          </p>
+                          <p className="mt-1 text-slate-400">
+                            Reconciliations: <strong className="text-slate-200">{data.optimisticReconciliations ?? 0}</strong>
+                          </p>
+                        </div>
                       </div>
                     </div>
 

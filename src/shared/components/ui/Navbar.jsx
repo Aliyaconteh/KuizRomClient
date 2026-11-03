@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn } from "lucide-react";
+import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn, Activity } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import UserMenu from "./UserMenu";
@@ -28,6 +28,10 @@ const guestMainLinks = [
 
 const guestAuthLink = { to: "/signin", label: "Sign In", icon: LogIn };
 const hostFabLink = { to: "/quizzes/create", label: "Create Quiz" };
+const researcherLinks = [
+  { to: "/", label: "Home", icon: Home },
+  { to: "/sync-analysis", label: "Analysis", icon: Activity },
+];
 
 function MobileNavButton({ to, label, Icon, isActive }) {
   const [showLabel, setShowLabel] = useState(false);
@@ -65,11 +69,13 @@ function MobileNavButton({ to, label, Icon, isActive }) {
 }
 
 export default function Navbar() {
-  const { isAuthenticated, theme, setTheme } = useAuth();
+  const { isAuthenticated, theme, setTheme, user } = useAuth();
   const { pathname } = useLocation();
   const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email";
-  const links = isAuthenticated ? hostDesktopLinks : guestMainLinks;
-  const mobileLinks = isAuthenticated ? hostMobileLinks : guestMainLinks;
+  const isHost = isAuthenticated && user?.role === "host";
+  const isResearcher = isAuthenticated && user?.role === "researcher";
+  const links = isHost ? hostDesktopLinks : isResearcher ? researcherLinks : guestMainLinks;
+  const mobileLinks = isHost ? hostMobileLinks : isResearcher ? researcherLinks : guestMainLinks;
   const authLink = isAuthenticated ? null : guestAuthLink;
 
   // --- Hide/show the mobile bottom nav based on scroll direction ---
@@ -192,7 +198,7 @@ export default function Navbar() {
           ))}
 
           {/* Big centered "Host a Quiz" FAB */}
-          {isAuthenticated && (
+          {isHost && (
             <NavLink
               to={hostFabLink.to}
               title={hostFabLink.label}

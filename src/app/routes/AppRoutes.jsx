@@ -71,7 +71,7 @@ export default function AppRoutes() {
 
         <Route
           path="/sync-analysis"
-          element={<SyncAnalysis />}
+          element={<RequireAuth allowedRoles={["host", "researcher"]}><SyncAnalysis /></RequireAuth>}
         />
 
         <Route
