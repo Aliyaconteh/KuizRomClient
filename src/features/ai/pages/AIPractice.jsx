@@ -13,6 +13,7 @@ import {
   Plus,
   Sparkles,
   Target,
+  Trash2,
   X
 } from "lucide-react";
 import { useAuth } from "../../../app/contexts/AuthContext";
@@ -71,28 +72,37 @@ function loadChatHistory() {
 
 function renderFormattedReply(content) {
   const text = String(content || "")
+    .replace(/\r\n/g, "\n")
     .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/__([^_]+)__/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
     .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\d+[.)]\s+/gm, "")
+    .replace(/(?<!\w)\*(?!\s)([^*]+?)(?<!\s)\*(?!\w)/g, "$1")
+    .replace(/(?<!\w)\*(?!\s)/g, "")
+    .replace(/\*(?=\s|$)/g, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+\n/g, "\n")
     .trim();
+
   if (!text) return null;
 
-  const blocks = text.replace(/\r\n/g, "\n").split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  const blocks = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
 
   return blocks.map((block, blockIndex) => {
     const lines = block.split("\n").map((line) => line.trim()).filter(Boolean);
-    const bulletLines = lines.every((line) => /^([*-]|\d+[.)])\s+/.test(line));
+    const bulletLines = lines.length > 1 && lines.every((line) => /^[A-Za-z0-9].+/.test(line));
 
     if (bulletLines) {
-      const Tag = /^\d+[.)]\s+/.test(lines[0]) ? "ol" : "ul";
       return (
-        <Tag key={`${blockIndex}-${block}`} className="ml-4 space-y-1.5 pl-4">
+        <ul key={`${blockIndex}-${block}`} className="ml-4 list-disc space-y-1.5 pl-4">
           {lines.map((line, lineIndex) => (
             <li key={`${blockIndex}-${lineIndex}`} className="leading-6">
-              {line.replace(/^([*-]|\d+[.)])\s+/, "")}
+              {line}
             </li>
           ))}
-        </Tag>
+        </ul>
       );
     }
 
@@ -126,6 +136,7 @@ export default function AIPractice() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [retryRequest, setRetryRequest] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const endRef = useRef(null);
@@ -183,10 +194,32 @@ export default function AIPractice() {
     setActiveChatId(null);
     setDraft("");
     setError("");
+    setRetryRequest(null);
     setSelectedFile(null);
     setSidebarOpen(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
     window.localStorage.removeItem(CHAT_DRAFT_KEY);
+  };
+
+  const deleteChat = (chatId) => {
+    setChatHistory((current) => {
+      const next = current.filter((chat) => chat.id !== chatId);
+
+      if (chatId === activeChatId) {
+        setActiveChatId(next[0]?.id ?? null);
+      }
+
+      if (!next.length) {
+        setDraft("");
+        setError("");
+        setRetryRequest(null);
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        window.localStorage.removeItem(CHAT_DRAFT_KEY);
+      }
+
+      return next;
+    });
   };
 
   const selectFile = (file) => {
@@ -203,19 +236,26 @@ export default function AIPractice() {
     setSelectedFile(file);
   };
 
-  const sendMessage = async (text) => {
-    const messageText = (text ?? draft).trim();
-    if ((!messageText && !selectedFile) || loading) return;
+  const sendMessage = async (text, retry = null) => {
+    if (loading) return;
+    const messageText = retry?.messageText ?? (text ?? draft).trim();
+    const fileToUpload = retry ? retry.fileToUpload : selectedFile;
+    if (!messageText && !fileToUpload) return;
 
-    const chatId = activeChatId || `chat-${instanceId}-${chatSequenceRef.current++}`;
-    const existingMessages = conversationMessages;
-    const messageId = existingMessages.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
-    const userContent = [
-      selectedFile ? `Attached file: ${selectedFile.name}` : "",
-      messageText || (selectedFile ? "Please review this file and help me understand its contents." : "")
-    ].filter(Boolean).join("\n");
-    const nextMessages = [...existingMessages, { id: messageId, role: "user", content: userContent }];
-    const fileToUpload = selectedFile;
+    const chatId = retry?.chatId || activeChatId || `chat-${instanceId}-${chatSequenceRef.current++}`;
+    const existingMessages = retry?.existingMessages || conversationMessages;
+    const messageId = retry?.messageId || existingMessages.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+    const nextMessages = retry?.nextMessages || [
+      ...existingMessages,
+      {
+        id: messageId,
+        role: "user",
+        content: [
+          fileToUpload ? `Attached file: ${fileToUpload.name}` : "",
+          messageText || (fileToUpload ? "Please review this file and help me understand its contents." : "")
+        ].filter(Boolean).join("\n")
+      }
+    ];
     setActiveChatId(chatId);
     updateChat(chatId, nextMessages);
     setDraft("");
@@ -223,6 +263,7 @@ export default function AIPractice() {
     if (fileInputRef.current) fileInputRef.current.value = "";
     setLoading(true);
     setError("");
+    if (!retry) setRetryRequest(null);
 
     try {
       let body;
@@ -255,17 +296,11 @@ export default function AIPractice() {
       }
 
       updateChat(chatId, [...nextMessages, { id: messageId + 1, role: "assistant", content: payload.data.reply }]);
+      setRetryRequest(null);
     } catch (err) {
       setError(err.message);
-      addToast(err.message, { type: "error" });
-      updateChat(chatId, [
-        ...nextMessages,
-        {
-          id: messageId + 1,
-          role: "assistant",
-          content: "I could not answer that right now. Please try again in a moment."
-        }
-      ]);
+      updateChat(chatId, nextMessages);
+      setRetryRequest({ messageText, fileToUpload, chatId, existingMessages, nextMessages, messageId });
     } finally {
       setLoading(false);
     }
@@ -340,23 +375,40 @@ export default function AIPractice() {
             <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Recent chats</p>
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
               {chatHistory.map((chat) => (
-                <button
+                <div
                   key={chat.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveChatId(chat.id);
-                    setDraft("");
-                    setError("");
-                    setSelectedFile(null);
-                    setSidebarOpen(false);
-                  }}
-                  className={`flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                  className={`group flex w-full items-center gap-2 rounded-xl px-2 py-2.5 text-sm transition ${
                     chat.id === activeChatId ? "bg-slate-800 text-white" : "text-slate-400 hover:bg-slate-900 hover:text-slate-200"
                   }`}
                 >
-                  <MessageSquare size={15} className="shrink-0" />
-                  <span className="truncate">{chat.title}</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveChatId(chat.id);
+                      setDraft("");
+                      setError("");
+                      setRetryRequest(null);
+                      setSelectedFile(null);
+                      setSidebarOpen(false);
+                    }}
+                    className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                  >
+                    <MessageSquare size={15} className="shrink-0" />
+                    <span className="truncate">{chat.title}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      deleteChat(chat.id);
+                    }}
+                    className="rounded-lg p-1.5 text-slate-400 opacity-80 transition hover:bg-slate-700 hover:text-white"
+                    aria-label={`Delete ${chat.title}`}
+                    title="Delete chat history"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               ))}
               {chatHistory.length === 0 && (
                 <p className="px-2 py-3 text-xs leading-5 text-slate-500">Your conversations will appear here.</p>
@@ -421,7 +473,7 @@ export default function AIPractice() {
                       <div
                         className={`rounded-3xl border px-4 py-3 text-sm ${
                           message.role === "user"
-                            ? "border-blue-400/20 bg-blue-500/10 text-blue-50"
+                              ? "border-[#1b5f9c] bg-[#1b5f9c] text-white"
                             : "border-slate-700/70 bg-slate-900/90 text-slate-100"
                         }`}
                       >
@@ -461,8 +513,21 @@ export default function AIPractice() {
           </div>
 
           {error && (
-            <div className="border-t border-red-500/20 bg-red-500/5 px-5 py-3 text-sm text-red-200">
-              {error}
+            <div className="flex shrink-0 items-center justify-between gap-3 border-t border-red-900 bg-[#7f1d1d] px-5 py-3 text-sm text-white" role="alert">
+              <p>{error}</p>
+              {retryRequest && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError("");
+                    sendMessage(retryRequest.messageText, retryRequest);
+                  }}
+                  disabled={loading}
+                  className="shrink-0 rounded-lg border border-white/40 px-3 py-1.5 font-semibold text-white transition hover:bg-white/10 disabled:opacity-50"
+                >
+                  Retry
+                </button>
+              )}
             </div>
           )}
 

@@ -8,6 +8,8 @@ export default function Profile() {
   const navigate = useNavigate();
   const { user, updateProfile, changePassword, authFetch, token } = useAuth();
   const { addToast } = useToast();
+  const isResearcher = user?.role === "researcher"
+    || user?.email?.trim().toLowerCase() === "officialkuizroom@gmail.com";
 
   const [username, setUsername] = useState(user?.username || "");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -110,33 +112,39 @@ export default function Profile() {
         </button>
 
         {/* User Stats Overview Cards */}
-        <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <section className={`grid grid-cols-2 gap-4 ${isResearcher ? "sm:grid-cols-2" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
               <Gamepad2 size={15} className="text-blue-400" />
               Games Played
             </div>
             <p className="text-2xl font-black text-white">{statsLoading ? "..." : stats.gamesPlayed}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Sessions you joined</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {isResearcher ? "Completed games across the system" : "Sessions you joined"}
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-              <Gamepad2 size={15} className="text-sky-400" />
-              Games Hosted
-            </div>
-            <p className="text-2xl font-black text-sky-400">{statsLoading ? "..." : stats.gamesHosted}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Completed rooms you hosted</p>
-          </div>
+          {!isResearcher && (
+            <>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                  <Gamepad2 size={15} className="text-sky-400" />
+                  Games Hosted
+                </div>
+                <p className="text-2xl font-black text-sky-400">{statsLoading ? "..." : stats.gamesHosted}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">Completed rooms you hosted</p>
+              </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-              <Trophy size={15} className="text-amber-400" />
-              Victories
-            </div>
-            <p className="text-2xl font-black text-amber-400">{statsLoading ? "..." : stats.wins}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">1st place finishes</p>
-          </div>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                  <Trophy size={15} className="text-amber-400" />
+                  Victories
+                </div>
+                <p className="text-2xl font-black text-amber-400">{statsLoading ? "..." : stats.wins}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">1st place finishes</p>
+              </div>
+            </>
+          )}
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
@@ -144,17 +152,21 @@ export default function Profile() {
               Quizzes Created
             </div>
             <p className="text-2xl font-black text-violet-400">{statsLoading ? "..." : stats.quizzesCreated}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Custom question sets</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {isResearcher ? "Quizzes available across the system" : "Custom question sets"}
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
-              <Award size={15} className="text-emerald-400" />
-              Avg Score
+          {!isResearcher && (
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <Award size={15} className="text-emerald-400" />
+                Avg Score
+              </div>
+              <p className="text-2xl font-black text-emerald-400">{statsLoading ? "..." : stats.avgScore}</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Points per match</p>
             </div>
-            <p className="text-2xl font-black text-emerald-400">{statsLoading ? "..." : stats.avgScore}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Points per match</p>
-          </div>
+          )}
         </section>
 
         <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
@@ -254,7 +266,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Game History Panel */}
+        {!isResearcher && (
         <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -306,6 +318,7 @@ export default function Profile() {
             </div>
           )}
         </section>
+        )}
       </div>
     </div>
   );

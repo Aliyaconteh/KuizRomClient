@@ -1,4 +1,5 @@
-import { ShieldCheck } from "lucide-react";
+
+import { ShieldCheck, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -15,9 +16,19 @@ export default function Footer() {
             </span>
             KuizRoom
           </Link>
+
           <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
             A real-time multiplayer quiz system for live learning, fair scoring, and synchronization research.
           </p>
+
+          <a
+            href="mailto:officialkizroom@gmail.com"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-indigo-500"
+          >
+            <Mail size={16} aria-hidden="true" />
+            officialkizroom@gmail.com
+          </a>
+
           <p className="mt-4 text-xs text-[var(--text-muted)]">
             © {new Date().getFullYear()} KuizRoom. Built for learning and evaluation.
           </p>
@@ -33,6 +44,7 @@ export default function Footer() {
           >
             Privacy Policy
           </Link>
+
           <Link
             className="transition-colors hover:text-[var(--text-primary)]"
             to="/terms-and-services"

@@ -114,15 +114,15 @@ const sections = [
     id: "changes",
     title: "13. Changes to These Terms",
     paragraphs: [
-      "These Terms of Use may be revised as KuizRoom develops, new features are introduced, or operational requirements change.",
-      "Updated terms will be published on this page with a revised date. Continued use of the platform after changes take effect constitutes acceptance of the updated terms, to the extent permitted by applicable law.",
+      "This version reflects the current rules for KuizRoom. The date at the top of this page shows when this version was last revised.",
+      "Please review this page periodically, especially before taking part in a research session or continuing to use the platform after a significant update.",
     ],
   },
   {
     id: "contact",
     title: "14. Contact Information",
     paragraphs: [
-      "For questions, concerns, or clarification regarding these Terms of Use, users may contact the KuizRoom project administrator through the official contact details provided by the project team.",
+      "For questions, concerns, or requests regarding these Terms of Use, account access, or a data request, contact the KuizRoom project administrator.",
       "KuizRoom is an academic software development and research project.",
     ],
   },
@@ -197,9 +197,29 @@ export default function TermsAndServices() {
               </h2>
 
               <div className="mt-3 space-y-4 text-sm leading-7 text-[var(--text-secondary)]">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
+                {id === "contact" ? (
+                  <>
+                    <p>
+                      For questions, concerns, or requests regarding these Terms of Use, account access, or a data request, contact the KuizRoom project administrator at{" "}
+                      <a
+                        href="mailto:officialkuizroom@gmail.com"
+                        className="underline underline-offset-4 hover:text-[var(--text-primary)]"
+                      >
+                        officialkuizroom@gmail.com
+                      </a>
+                      .
+                    </p>
+                    {paragraphs
+                      .filter((paragraph) => !paragraph.toLowerCase().includes("contact the kuizroom project administrator"))
+                      .map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
+                  </>
+                ) : (
+                  paragraphs.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))
+                )}
               </div>
             </section>
           ))}

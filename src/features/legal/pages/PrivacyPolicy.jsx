@@ -90,14 +90,15 @@ const sections = [
     id: "policy-changes",
     title: "11. Changes to This Privacy Policy",
     paragraphs: [
-      "This Privacy Policy may be updated when new features are introduced, existing functionality changes, or improvements are made to the application's data-handling practices.",
-      "Any revised version will be published on this page together with an updated revision date. Users are encouraged to review this page periodically.",
+      "This version reflects the current privacy practices for KuizRoom. The date at the top of this page shows when this version was last revised.",
+      "Please review this page periodically, especially before taking part in a research session or continuing to use the platform after a significant change in how information is handled.",
     ],
   },
   {
     id: "contact",
     title: "12. Contact Information",
     paragraphs: [
+      "For questions about this Privacy Policy, account access, or a data request, contact the KuizRoom project administrator.",
       "KuizRoom is an academic software development and research project.",
     ],
   },
@@ -186,9 +187,11 @@ export default function PrivacyPolicy() {
                       </a>
                       .
                     </p>
-                    {section.paragraphs.map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
+                    {section.paragraphs
+                      .filter((paragraph) => !paragraph.toLowerCase().includes("contact the kuizroom project administrator"))
+                      .map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
                   </>
                 ) : (
                   section.paragraphs.map((paragraph, index) => (
