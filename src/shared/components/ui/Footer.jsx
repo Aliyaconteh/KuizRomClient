@@ -26,7 +26,7 @@ export default function Footer() {
             className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-indigo-500"
           >
             <Mail size={16} aria-hidden="true" />
-            officialkizroom@gmail.com
+            officialkuizroom@gmail.com
           </a>
 
           <p className="mt-4 text-xs text-[var(--text-muted)]">
