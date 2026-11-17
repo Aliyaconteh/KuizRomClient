@@ -61,13 +61,12 @@ const features = [
 ];
 
 const heroImages = [
-  { src: "/Image1.jpeg", alt: "KuizRoom question mark logo", label: "Curiosity starts here", fit: "contain" },
-  { src: "/image2.jpeg", alt: "Learners connected through a shared digital classroom", label: "Learn together", fit: "cover" },
-  { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts", fit: "cover" },
-  { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful", fit: "cover" },
-  { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life", fit: "cover" },
-  { src: "/image6.jpeg", alt: "KuizRoom learning experience", label: "Learn something new", fit: "cover" },
-  { src: "/image7.png", alt: "KuizRoom quiz experience", label: "Ready for the next challenge", fit: "cover" },
+  { src: "/image2.jpeg", alt: "Learners connected through a shared digital classroom", label: "Learn together" },
+  { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts" },
+  { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful" },
+  { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life" },
+  { src: "/image6.jpeg", alt: "Students learning together in a bright classroom", label: "Learn something new" },
+  { src: "/image7.png", alt: "A colorful collaborative learning space", label: "Ready for the next challenge" },
 ];
 
 // -------------------------------------------------------------------
@@ -123,7 +122,7 @@ export default function Home() {
       setActiveHeroImage((current) => (current + 1) % heroImages.length);
     }, 5000);
     return () => window.clearInterval(interval);
-  }, [prefersReducedMotion]);
+  }, [activeHeroImage, prefersReducedMotion]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event) => {
@@ -166,14 +165,14 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <main className="home-page bg-[var(--bg-primary)] text-[var(--text-primary)]">
       {/* Hero */}
       <section
         id="hero"
-        className="flex min-h-0 items-start border-b border-[var(--border-color)] px-4 py-8 sm:min-h-[min(760px,calc(100svh-4rem))] sm:items-center sm:px-6 sm:py-14 lg:py-20"
+        className="hero-section relative flex items-start overflow-hidden border-b border-[var(--border-color)] px-4 pb-8 pt-0 sm:px-6 sm:pb-14 lg:items-center lg:pb-0"
       >
-        <div className="mx-auto grid w-full max-w-7xl min-w-0 items-center gap-6 sm:gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
-          <div className="w-full min-w-0 max-w-2xl -translate-y-2 sm:-translate-y-3">
+        <div className="hero-content mx-auto grid w-full max-w-7xl min-w-0 items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-0">
+          <div className="hero-copy w-full min-w-0 max-w-2xl -translate-y-2 sm:-translate-y-3">
             <h1 className="font-display text-[clamp(2.4rem,12vw,3.75rem)] font-black leading-[0.95] tracking-tight sm:text-7xl lg:text-[clamp(3.75rem,6vw,6rem)]">
               <span className="block">
                 Learn. <span className="text-[var(--brand-primary)]">Laugh.</span>
@@ -217,23 +216,23 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full min-w-0 max-w-[520px] lg:justify-self-end">
-            <div className="relative aspect-[1.13/1] overflow-hidden border border-[var(--border-color)] bg-[var(--app-surface)] shadow-[0_24px_60px_rgba(17,48,78,0.16)]">
+          <div className="hero-carousel relative mx-auto w-full min-w-0 max-w-[520px] lg:justify-self-end">
+            <div className="hero-carousel__frame relative aspect-[1.13/1] overflow-hidden bg-[var(--bg-primary)]">
               {heroImages.map((image, index) => (
                 <img
                   key={image.src}
                   src={image.src}
                   alt={image.alt}
                   aria-hidden={index !== activeHeroImage}
-                  className={`absolute inset-0 h-full w-full transition-opacity duration-700 ${
-                    image.fit === "contain" ? "bg-white object-contain p-5 sm:p-8" : "object-cover"
-                  } ${index === activeHeroImage ? "opacity-100" : "opacity-0"}`}
+                  className={`hero-carousel__image absolute inset-0 h-full w-full object-cover ${
+                    index === activeHeroImage ? "is-active" : ""
+                  }`}
                 />
               ))}
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-[#0c1422]/90 via-[#0c1422]/45 to-transparent px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
+              <div className="hero-carousel__caption absolute inset-x-0 bottom-0 z-10 flex items-end justify-between gap-3 bg-gradient-to-t from-[#0c1422]/90 via-[#0c1422]/45 to-transparent px-4 pb-4 pt-14 sm:px-5 sm:pb-5">
                 <div aria-live="polite" aria-atomic="true">
                   <p className="text-[10px] font-bold uppercase text-white/70">KuizRoom</p>
-                  <p className="mt-1 text-lg font-bold text-white sm:text-xl">
+                  <p key={activeHeroImage} className="hero-carousel__label mt-1 text-lg font-bold text-white sm:text-xl">
                     {heroImages[activeHeroImage].label}
                   </p>
                 </div>
@@ -258,7 +257,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-3 flex items-center justify-center gap-2" role="group" aria-label="Choose homepage image">
+            <div className="hero-carousel__dots mt-3 flex items-center justify-center gap-2" role="group" aria-label="Choose homepage image">
               {heroImages.map((image, index) => (
                 <button
                   key={image.src}
