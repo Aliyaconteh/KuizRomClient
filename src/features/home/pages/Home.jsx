@@ -61,12 +61,12 @@ const features = [
 ];
 
 const heroImages = [
-  { src: "/image2.jpeg", alt: "Learners connected through a shared digital classroom", label: "Learn together" },
-  { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts" },
-  { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful" },
-  { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life" },
-  { src: "/image6.jpeg", alt: "Students learning together in a bright classroom", label: "Learn something new" },
-  { src: "/image7.png", alt: "A colorful collaborative learning space", label: "Ready for the next challenge" },
+  { src: "/image2.jpeg", alt: "Learners connected through a shared digital classroom", label: "Learn together", aspectRatio: "1672 / 941" },
+  { src: "/image3.jpeg", alt: "Students answering a quiz together in class", label: "Every answer counts", aspectRatio: "1672 / 941" },
+  { src: "/image4.jpeg", alt: "A student smiling while working through a quiz", label: "Make learning playful", aspectRatio: "1219 / 813" },
+  { src: "/image5.jpeg", alt: "Learners collaborating around a laptop", label: "Bring your room to life", aspectRatio: "705 / 735" },
+  { src: "/image6.jpeg", alt: "Students learning together in a bright classroom", label: "Learn something new", aspectRatio: "1 / 1" },
+  { src: "/image7.png", alt: "A colorful collaborative learning space", label: "Ready for the next challenge", aspectRatio: "736 / 1183" },
 ];
 
 // -------------------------------------------------------------------
@@ -217,7 +217,10 @@ export default function Home() {
           </div>
 
           <div className="hero-carousel relative mx-auto w-full min-w-0 max-w-[520px] lg:justify-self-end">
-            <div className="hero-carousel__frame relative aspect-[1.13/1] overflow-hidden bg-[var(--bg-primary)]">
+            <div
+              className="hero-carousel__frame relative overflow-hidden bg-[var(--bg-primary)]"
+              style={{ aspectRatio: heroImages[activeHeroImage].aspectRatio }}
+            >
               {heroImages.map((image, index) => (
                 <img
                   key={image.src}

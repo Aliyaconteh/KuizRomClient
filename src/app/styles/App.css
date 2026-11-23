@@ -131,6 +131,24 @@
   }
 }
 
+@media (max-width: 1023px) {
+  .hero-carousel__image {
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-carousel__frame {
+    aspect-ratio: 4 / 3 !important;
+    background-color: var(--app-bg);
+  }
+
+  .hero-carousel__image {
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
 @media (min-width: 1024px) {
   .hero-content {
     min-height: calc(100svh - 4rem);
@@ -1788,4 +1806,171 @@ nav.fixed .hover\:border-teal-400:hover {
 :root[data-theme='light'] .leaderboard-change--down {
   color: #9f1239;
   background: #ffe4e8;
+}
+
+@media (max-width: 639px) {
+  .profile-page {
+    padding-top: 1.25rem;
+    background: var(--app-bg) !important;
+  }
+
+  .profile-content {
+    gap: 1.25rem;
+  }
+
+  .profile-settings-grid {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .profile-stats {
+    order: 2;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--app-border);
+    border-radius: 1rem;
+    background: var(--app-surface);
+  }
+
+  .profile-stat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "label value"
+      "description value";
+    align-items: center;
+    gap: 0.15rem 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-bottom: 1px solid var(--app-border);
+    border-radius: 0;
+    background: transparent !important;
+  }
+
+  .profile-stat:last-child {
+    border-bottom: 0;
+  }
+
+  .profile-stat > div:first-child {
+    grid-area: label;
+    margin: 0 !important;
+  }
+
+  .profile-stat > p:nth-of-type(1) {
+    grid-area: value;
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .profile-stat > p:nth-of-type(2) {
+    display: none;
+  }
+
+  .profile-back {
+    align-self: flex-start;
+  }
+
+  .profile-settings-section {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .profile-settings-section > .flex.items-center.gap-4 {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  .profile-name-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0.75rem !important;
+  }
+
+  .profile-name-form > div {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  .profile-name-field label {
+    margin-bottom: 0.5rem;
+    color: var(--app-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .profile-name-field input {
+    border-radius: 0.75rem;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .profile-email-row {
+    border: 0 !important;
+    border-bottom: 1px solid var(--app-border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 0.95rem 0 !important;
+  }
+
+  .profile-name-form > button {
+    align-self: flex-end;
+    width: auto;
+    margin-top: 0.85rem;
+    border-radius: 0.75rem;
+    padding: 0.65rem 1rem;
+  }
+
+  .profile-password-column {
+    margin-top: 1.25rem !important;
+  }
+
+  .profile-password-section > .flex.items-center.justify-between {
+    padding: 1rem 0;
+    border-top: 1px solid var(--app-border);
+    border-bottom: 1px solid var(--app-border);
+  }
+
+  .profile-password-section h2 {
+    font-size: 1rem;
+  }
+
+  .profile-password-section > .flex.items-center.justify-between button {
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .profile-password-form {
+    margin-top: 1rem !important;
+  }
+
+  .profile-history {
+    order: 3;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .profile-history > .flex.items-center.justify-between {
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-history h2 {
+    font-size: 1rem;
+  }
+
+  .profile-history-item {
+    padding: 0.8rem 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--app-border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
 }

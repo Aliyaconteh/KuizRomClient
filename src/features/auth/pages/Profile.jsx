@@ -124,20 +124,20 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-10 text-slate-100 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+    <div className="profile-page min-h-screen bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 sm:py-10 lg:px-8">
+      <div className="profile-content mx-auto flex max-w-5xl flex-col gap-6">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-300 transition hover:border-blue-500/50 hover:text-white"
+          className="profile-back flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-300 transition hover:border-blue-500/50 hover:text-white"
         >
           <ArrowLeft size={16} />
           Back
         </button>
 
         {/* User Stats Overview Cards */}
-        <section className={`grid grid-cols-2 gap-4 ${isResearcher ? "sm:grid-cols-2" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+        <section className={`profile-stats grid grid-cols-2 gap-4 ${isResearcher ? "sm:grid-cols-2" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
+          <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
               <Gamepad2 size={15} className="text-blue-400" />
               Games Played
@@ -150,7 +150,7 @@ export default function Profile() {
 
           {!isResearcher && (
             <>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                   <Gamepad2 size={15} className="text-sky-400" />
                   Games Hosted
@@ -159,7 +159,7 @@ export default function Profile() {
                 <p className="text-[11px] text-slate-500 mt-0.5">Completed rooms you hosted</p>
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                   <Trophy size={15} className="text-amber-400" />
                   Victories
@@ -170,7 +170,7 @@ export default function Profile() {
             </>
           )}
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+          <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
               <Layers size={15} className="text-violet-400" />
               Quizzes Created
@@ -182,7 +182,7 @@ export default function Profile() {
           </div>
 
           {!isResearcher && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
                 <Award size={15} className="text-emerald-400" />
                 Avg Score
@@ -193,20 +193,20 @@ export default function Profile() {
           )}
         </section>
 
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
+        <div className="profile-settings-grid grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <section className="profile-settings-section rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-2xl font-bold">
                 {initials}
               </div>
-              <div>
-               
-                <p className="text-sm text-slate-400">Manage your identity and appearance</p>
+              <div className="min-w-0">
+                <p className="truncate text-lg font-bold sm:hidden">{user?.username || "Your profile"}</p>
+                <p className="hidden text-sm text-slate-400 sm:block">Manage your identity and appearance</p>
               </div>
             </div>
 
-            <form className="mt-8 space-y-5" onSubmit={handleProfileSave}>
-              <div>
+            <form className="profile-name-form mt-8 space-y-5" onSubmit={handleProfileSave}>
+              <div className="profile-name-field">
                 <label className="mb-2 block text-sm font-medium text-slate-300">Name</label>
                 <input
                   value={username}
@@ -216,7 +216,7 @@ export default function Profile() {
                 />
               </div>
 
-              <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+              <div className="profile-email-row rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
                 <div className="flex items-center gap-2 text-sm text-slate-400">
                   <UserCircle size={16} />
                   Signed in as {user?.email || "your account"}
@@ -233,8 +233,8 @@ export default function Profile() {
             </form>
           </section>
 
-          <div className="space-y-6">
-            <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
+          <div className="profile-password-column space-y-6">
+            <section className="profile-settings-section profile-password-section rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Lock size={18} className="text-blue-400" />
@@ -252,7 +252,7 @@ export default function Profile() {
               </div>
 
               {showPasswordForm && (
-                <form className="mt-6 space-y-4" onSubmit={handlePasswordChange}>
+                <form className="profile-password-form mt-6 space-y-4" onSubmit={handlePasswordChange}>
                   {hasPassword && (
                     <input
                       type="password"
@@ -301,7 +301,7 @@ export default function Profile() {
         </div>
 
         {!isResearcher && (
-        <section className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
+        <section className="profile-history rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-black/30">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Gamepad2 size={20} className="text-indigo-400" />
@@ -315,7 +315,7 @@ export default function Profile() {
               {(showAllHistory ? stats.history : stats.history.slice(0, 3)).map((game, idx) => (
                 <div
                   key={game.id || idx}
-                  className="flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4 transition hover:border-slate-700"
+                  className="profile-history-item flex items-center justify-between rounded-2xl border border-slate-800/80 bg-slate-950/60 p-4 transition hover:border-slate-700"
                 >
                   <div className="flex items-center gap-3.5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800/80 font-bold text-slate-300 text-sm">
