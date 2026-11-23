@@ -798,6 +798,7 @@ button:disabled {
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+  outline: none !important;
   color: #17283a !important;
 }
 

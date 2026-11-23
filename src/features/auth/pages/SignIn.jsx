@@ -82,7 +82,9 @@ export default function SignIn() {
         login(response.data.user, response.data.token);
         addToast("Signed in with Google!", { type: "success" });
         window.history.replaceState({}, document.title, window.location.pathname);
-        navigate(response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
+        navigate(response.data.user.role === "super_admin"
+          ? "/admin"
+          : response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
       } catch (err) {
         window.history.replaceState({}, document.title, window.location.pathname);
         setError(err.message);
@@ -145,7 +147,9 @@ export default function SignIn() {
 
       login(response.data.user, response.data.token);
       addToast("Welcome back!", { type: "success" });
-      navigate(response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
+      navigate(response.data.user.role === "super_admin"
+        ? "/admin"
+        : response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
     } catch (err) {
       setEmailVerificationRequired(err.message.toLowerCase().includes("verify your email"));
       setError(err.message);

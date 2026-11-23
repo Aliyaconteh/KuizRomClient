@@ -15,6 +15,9 @@ export default function Profile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [hasPassword, setHasPassword] = useState(
+    typeof user?.has_password === "boolean" ? user.has_password : null
+  );
   const [profileLoading, setProfileLoading] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
@@ -49,6 +52,26 @@ export default function Profile() {
       .finally(() => setStatsLoading(false));
   }, [addToast, authFetch, token]);
 
+  useEffect(() => {
+    if (!token) return;
+    let active = true;
+
+    authFetch("/auth/me")
+      .then((payload) => {
+        if (!payload?.success) {
+          throw new Error(payload?.message || "Unable to check password status");
+        }
+        if (active) setHasPassword(Boolean(payload.data?.has_password));
+      })
+      .catch((error) => {
+        if (active) addToast(error.message || "Unable to check password status", { type: "error" });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [addToast, authFetch, token]);
+
   const handleProfileSave = async (event) => {
     event.preventDefault();
     if (!username.trim()) {
@@ -69,12 +92,12 @@ export default function Profile() {
 
   const handlePasswordChange = async (event) => {
     event.preventDefault();
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if ((hasPassword && !currentPassword) || !newPassword || !confirmPassword) {
       addToast("Please fill in all password fields", { type: "error" });
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
       addToast("New password must be at least 8 characters", { type: "error" });
       return;
     }
@@ -86,12 +109,13 @@ export default function Profile() {
 
     setPasswordLoading(true);
     try {
-      await changePassword(currentPassword, newPassword);
+      await changePassword(hasPassword ? currentPassword : "", newPassword);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setHasPassword(true);
       setShowPasswordForm(false);
-      addToast("Password updated", { type: "success" });
+      addToast(hasPassword ? "Password updated" : "Password set", { type: "success" });
     } catch (error) {
       addToast(error.message || "Unable to change password", { type: "error" });
     } finally {
@@ -219,28 +243,35 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordForm((visible) => !visible)}
+                  disabled={hasPassword === null}
                   aria-expanded={showPasswordForm}
                   className="rounded-xl border border-slate-700 bg-slate-950/80 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-blue-500 hover:text-white"
                 >
-                  {showPasswordForm ? "Cancel" : "Change password"}
+                  {showPasswordForm ? "Cancel" : hasPassword ? "Change password" : "Set password"}
                 </button>
               </div>
 
               {showPasswordForm && (
                 <form className="mt-6 space-y-4" onSubmit={handlePasswordChange}>
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(event) => setCurrentPassword(event.target.value)}
-                    autoComplete="current-password"
-                    className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
-                    placeholder="Current password"
-                  />
+                  {hasPassword && (
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(event) => setCurrentPassword(event.target.value)}
+                      autoComplete="current-password"
+                      required
+                      className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
+                      placeholder="Current password"
+                    />
+                  )}
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(event) => setNewPassword(event.target.value)}
                     autoComplete="new-password"
+                    minLength={8}
+                    maxLength={72}
+                    required
                     className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
                     placeholder="New password"
                   />
@@ -249,6 +280,9 @@ export default function Profile() {
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     autoComplete="new-password"
+                    minLength={8}
+                    maxLength={72}
+                    required
                     className="w-full rounded-2xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition focus:border-blue-500"
                     placeholder="Confirm password"
                   />

@@ -22,6 +22,7 @@ import AIPractice from "../../features/ai/pages/AIPractice";
 import PrivacyPolicy from "../../features/legal/pages/PrivacyPolicy";
 import TermsAndServices from "../../features/legal/pages/TermsAndServices";
 import NotFound from "../pages/NotFound";
+import AdminDashboard from "../../features/admin/pages/AdminDashboard";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -71,8 +72,9 @@ export default function AppRoutes() {
 
         <Route
           path="/sync-analysis"
-          element={<RequireAuth allowedRoles={["host", "researcher"]}><SyncAnalysis /></RequireAuth>}
+          element={<RequireAuth allowedRoles={["host", "researcher", "super_admin"]}><SyncAnalysis /></RequireAuth>}
         />
+        <Route path="/admin" element={<RequireAuth allowedRoles={["super_admin"]}><AdminDashboard /></RequireAuth>} />
 
         <Route
           path="/leaderboard"

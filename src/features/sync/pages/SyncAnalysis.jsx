@@ -15,7 +15,7 @@ export default function SyncAnalysis() {
   const [roomLoading, setRoomLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const { addToast } = useToast();
-  const isResearcher = user?.role === "researcher";
+  const isResearcher = user?.role === "researcher" || user?.role === "super_admin";
 
   const fetchOverview = useCallback(async () => {
     try {

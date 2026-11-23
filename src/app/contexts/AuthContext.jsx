@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
         const parsed = JSON.parse(stored);
         if (parsed?.token && parsed?.user) {
           const user = parsed.user.email?.trim().toLowerCase() === "officialkuizroom@gmail.com"
-            ? { ...parsed.user, role: "researcher" }
+            ? { ...parsed.user, role: "super_admin" }
             : { ...parsed.user, role: parsed.user.role || "host" };
           setUser(user);
           setToken(parsed.token);
@@ -125,9 +125,13 @@ export function AuthProvider({ children }) {
         throw new Error(payload?.message || "Unable to change password");
       }
 
+      const updatedUser = { ...(user || {}), has_password: true };
+      setUser(updatedUser);
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {};
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stored, user: updatedUser, token }));
       return payload.data;
     },
-    [authFetch]
+    [authFetch, token, user]
   );
 
   const setTheme = useCallback((nextTheme) => {

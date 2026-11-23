@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "./ToastContext";
-import { ChevronDown, LogOut, Plus, Activity, UserCircle, Sparkles } from "lucide-react";
+import { ChevronDown, LogOut, Plus, Activity, UserCircle, Sparkles, ShieldCheck } from "lucide-react";
 
 export default function UserMenu() {
   const { user, logout } = useAuth();
@@ -27,7 +27,7 @@ export default function UserMenu() {
   };
 
   if (!user) return null;
-  const isHost = user.role === "host";
+  const isHost = user.role === "host" || user.role === "super_admin";
   const canViewAnalysis = isHost || user.role === "researcher";
 
   return (
@@ -100,6 +100,16 @@ export default function UserMenu() {
               >
                 <Activity size={15} />
                 <span>Analysis</span>
+              </button>
+            )}
+
+            {user.role === "super_admin" && (
+              <button
+                onClick={() => { navigate("/admin"); setOpen(false); }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+              >
+                <ShieldCheck size={15} />
+                <span>Admin dashboard</span>
               </button>
             )}
 

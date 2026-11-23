@@ -32,6 +32,10 @@ const researcherLinks = [
   { to: "/", label: "Home", icon: Home },
   { to: "/sync-analysis", label: "Analysis", icon: Activity },
 ];
+const adminLinks = [
+  ...hostDesktopLinks,
+  { to: "/admin", label: "Admin", icon: Activity },
+];
 
 function MobileNavButton({ to, label, Icon, isActive }) {
   const [showLabel, setShowLabel] = useState(false);
@@ -74,8 +78,9 @@ export default function Navbar() {
   const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email";
   const isHost = isAuthenticated && user?.role === "host";
   const isResearcher = isAuthenticated && user?.role === "researcher";
-  const links = isHost ? hostDesktopLinks : isResearcher ? researcherLinks : guestMainLinks;
-  const mobileLinks = isHost ? hostMobileLinks : isResearcher ? researcherLinks : guestMainLinks;
+  const isAdmin = isAuthenticated && user?.role === "super_admin";
+  const links = isAdmin ? adminLinks : isHost ? hostDesktopLinks : isResearcher ? researcherLinks : guestMainLinks;
+  const mobileLinks = isAdmin ? adminLinks : isHost ? hostMobileLinks : isResearcher ? researcherLinks : guestMainLinks;
   const authLink = isAuthenticated ? null : guestAuthLink;
 
   // --- Hide/show the mobile bottom nav based on scroll direction ---
@@ -198,7 +203,7 @@ export default function Navbar() {
           ))}
 
           {/* Big centered "Host a Quiz" FAB */}
-          {isHost && (
+          {(isHost || isAdmin) && (
             <NavLink
               to={hostFabLink.to}
               title={hostFabLink.label}
