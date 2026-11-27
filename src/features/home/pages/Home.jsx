@@ -4,6 +4,11 @@ import { ArrowRight, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../shared/components/ui/Footer";
 import { useToast } from "../../../shared/components/ui/ToastContext";
+import {
+  clearPwaInstallPrompt,
+  getPwaInstallState,
+  subscribeToPwaInstallState
+} from "../../../shared/utils/pwaInstall";
 
 // -------------------------------------------------------------------
 //  Data
@@ -107,14 +112,8 @@ export default function Home() {
   const { addToast } = useToast();
   const prefersReducedMotion = useReducedMotion();
   const [activeHeroImage, setActiveHeroImage] = useState(0);
-  const [installPrompt, setInstallPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone === true
-    );
-  });
+  const [installPrompt, setInstallPrompt] = useState(() => getPwaInstallState().installPrompt);
+  const [isInstalled, setIsInstalled] = useState(() => getPwaInstallState().installed);
 
   useEffect(() => {
     if (prefersReducedMotion) return undefined;
@@ -125,22 +124,10 @@ export default function Home() {
   }, [activeHeroImage, prefersReducedMotion]);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (event) => {
-      event.preventDefault();
-      setInstallPrompt(event);
-    };
-    const handleAppInstalled = () => {
-      setIsInstalled(true);
-      setInstallPrompt(null);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleAppInstalled);
-    };
+    return subscribeToPwaInstallState(({ installPrompt: promptEvent, installed }) => {
+      setInstallPrompt(promptEvent);
+      setIsInstalled(installed);
+    });
   }, []);
 
   const showHeroImage = (direction) => {
@@ -156,11 +143,12 @@ export default function Home() {
       return;
     }
 
-    installPrompt.prompt();
+    await installPrompt.prompt();
     const { outcome } = await installPrompt.userChoice;
     if (outcome === "accepted") {
       setIsInstalled(true);
     }
+    clearPwaInstallPrompt();
     setInstallPrompt(null);
   };
 
