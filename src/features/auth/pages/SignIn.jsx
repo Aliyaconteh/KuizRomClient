@@ -20,7 +20,7 @@ function GoogleIcon() {
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const { login, setError, theme } = useAuth();
+  const { login, setError, theme, markAccountSuspended } = useAuth();
   const { addToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -87,6 +87,9 @@ export default function SignIn() {
           : response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
       } catch (err) {
         window.history.replaceState({}, document.title, window.location.pathname);
+        if (err.errorType === "ACCOUNT_SUSPENDED") {
+          markAccountSuspended(err.message);
+        }
         setError(err.message);
         addToast(err.message, { type: "error" });
       } finally {
@@ -95,7 +98,7 @@ export default function SignIn() {
     };
 
     finishGoogleRedirect();
-  }, [addToast, login, navigate, setError]);
+  }, [addToast, login, markAccountSuspended, navigate, setError]);
 
   const continueWithGoogle = async () => {
     setGoogleLoading(true);
@@ -152,6 +155,9 @@ export default function SignIn() {
         : response.data.user.role === "researcher" ? "/sync-analysis" : "/quizzes");
     } catch (err) {
       setEmailVerificationRequired(err.message.toLowerCase().includes("verify your email"));
+      if (err.errorType === "ACCOUNT_SUSPENDED") {
+        markAccountSuspended(err.message);
+      }
       setError(err.message);
       addToast(err.message, { type: "error" });
     } finally {

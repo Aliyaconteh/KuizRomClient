@@ -1,5 +1,5 @@
 
-import { ArrowLeft, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const sections = [
@@ -132,16 +132,7 @@ export default function TermsAndServices() {
   return (
     <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
-
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Home
-        </Link>
-
-        <header className="mt-8 border-b border-[var(--border-color)] pb-8">
+        <header className="border-b border-[var(--border-color)] pb-8">
           <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-[var(--brand-secondary)]">
             <FileText size={18} aria-hidden="true" />
             KuizRoom · Website Terms
@@ -230,6 +221,17 @@ export default function TermsAndServices() {
             By accessing and using KuizRoom, you acknowledge that you
             have read and understood these Terms of Use and agree to
             comply with the applicable conditions.
+          </p>
+
+          <p className="mt-4 text-sm text-[var(--text-secondary)]">
+            Also read our{" "}
+            <Link
+              to="/privacy-policy"
+              className="font-semibold text-[var(--brand-secondary)] underline underline-offset-4 hover:text-[var(--text-primary)]"
+            >
+              Privacy Policy
+            </Link>
+            .
           </p>
 
           <p className="mt-4 text-xs text-[var(--text-muted)]">

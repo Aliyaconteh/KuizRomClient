@@ -6,6 +6,21 @@ import { logger } from "../../shared/utils/apiLogger";
 const AuthContext = createContext();
 const STORAGE_KEY = "kuizroom_host_auth";
 const THEME_STORAGE_KEY = "kuizroom_host_theme";
+const SUSPENSION_STORAGE_KEY = "kuizroom_account_suspension";
+const DEFAULT_SUSPENSION_MESSAGE = "This account has been suspended. Contact officialkuizroom@gmail.com for assistance.";
+
+const getTokenExpiration = (token) => {
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return null;
+    const base64Payload = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const paddedPayload = base64Payload.padEnd(Math.ceil(base64Payload.length / 4) * 4, "=");
+    const decoded = JSON.parse(atob(paddedPayload));
+    return typeof decoded.exp === "number" ? decoded.exp * 1000 : null;
+  } catch {
+    return null;
+  }
+};
 
 const getStoredTheme = () => {
   if (typeof window === "undefined") return "dark";
@@ -27,24 +42,35 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [accountSuspension, setAccountSuspension] = useState(null);
   const [theme, setThemeState] = useState(getStoredTheme);
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed?.token && parsed?.user) {
-          const user = parsed.user.email?.trim().toLowerCase() === "officialkuizroom@gmail.com"
-            ? { ...parsed.user, role: "super_admin" }
-            : { ...parsed.user, role: parsed.user.role || "host" };
-          setUser(user);
-          setToken(parsed.token);
-          setIsAuthenticated(true);
+      const suspensionMessage = localStorage.getItem(SUSPENSION_STORAGE_KEY);
+      if (suspensionMessage) {
+        setAccountSuspension(suspensionMessage);
+        localStorage.removeItem(STORAGE_KEY);
+      } else {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const expiresAt = parsed?.token ? getTokenExpiration(parsed.token) : null;
+          if (parsed?.token && parsed?.user && expiresAt && expiresAt > Date.now()) {
+            const user = parsed.user.email?.trim().toLowerCase() === "officialkuizroom@gmail.com"
+              ? { ...parsed.user, role: "super_admin" }
+              : { ...parsed.user, role: parsed.user.role || "host" };
+            setUser(user);
+            setToken(parsed.token);
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
         }
       }
     } catch (err) {
       logger.warn("AUTH_STORAGE", "Failed to read auth from storage", { error: err.message });
+      localStorage.removeItem(STORAGE_KEY);
     } finally {
       setLoading(false);
     }
@@ -59,6 +85,8 @@ export function AuthProvider({ children }) {
     setToken(authToken);
     setIsAuthenticated(true);
     setError(null);
+    setAccountSuspension(null);
+    localStorage.removeItem(SUSPENSION_STORAGE_KEY);
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: userData, token: authToken }));
     logger.info("AUTH_PERSIST", `User session authenticated for ${userData?.email || userData?.username || "user"}`);
   }, []);
@@ -76,6 +104,37 @@ export function AuthProvider({ children }) {
     logger.info("AUTH_LOGOUT", "User logged out successfully");
   }, []);
 
+  const markAccountSuspended = useCallback((message) => {
+    const suspensionMessage = typeof message === "string" && message.trim()
+      ? message
+      : DEFAULT_SUSPENSION_MESSAGE;
+    setAccountSuspension(suspensionMessage);
+    setUser(null);
+    setToken(null);
+    setIsAuthenticated(false);
+    localStorage.setItem(SUSPENSION_STORAGE_KEY, suspensionMessage);
+    localStorage.removeItem(STORAGE_KEY);
+    logger.warn("ACCOUNT_SUSPENDED", "Suspended account session was cleared");
+  }, []);
+
+  const clearAccountSuspension = useCallback(() => {
+    setAccountSuspension(null);
+    localStorage.removeItem(SUSPENSION_STORAGE_KEY);
+  }, []);
+
+  useEffect(() => {
+    if (!token) return undefined;
+
+    const expiresAt = getTokenExpiration(token);
+    if (!expiresAt || expiresAt <= Date.now()) {
+      logout();
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(logout, expiresAt - Date.now());
+    return () => window.clearTimeout(timeoutId);
+  }, [logout, token]);
+
   const authFetch = useCallback(
     async (path, options = {}) => {
       const headers = {
@@ -83,13 +142,20 @@ export function AuthProvider({ children }) {
         ...(token ? { Authorization: `Bearer ${token}` } : {})
       };
 
-      return apiRequest(path, {
-        ...options,
-        headers,
-        action: options.action || "AUTH_FETCH"
-      });
+      try {
+        return await apiRequest(path, {
+          ...options,
+          headers,
+          action: options.action || "AUTH_FETCH"
+        });
+      } catch (requestError) {
+        if (requestError.errorType === "ACCOUNT_SUSPENDED") {
+          markAccountSuspended(requestError.message);
+        }
+        throw requestError;
+      }
     },
-    [token]
+    [markAccountSuspended, token]
   );
 
   const updateProfile = useCallback(
@@ -145,11 +211,14 @@ export function AuthProvider({ children }) {
     isAuthenticated,
     loading,
     error,
+    accountSuspension,
     theme,
     setTheme,
     setError,
     login,
     logout,
+    markAccountSuspended,
+    clearAccountSuspension,
     authFetch,
     updateProfile,
     changePassword

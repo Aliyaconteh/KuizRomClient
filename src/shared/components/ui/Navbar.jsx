@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn, Activity } from "lucide-react";
+import { Home, DoorOpen, Plus, Trophy, Sun, Moon, BookOpen, LogIn, Activity, Users } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import UserMenu from "./UserMenu";
@@ -33,8 +33,10 @@ const researcherLinks = [
   { to: "/sync-analysis", label: "Analysis", icon: Activity },
 ];
 const adminLinks = [
-  ...hostDesktopLinks,
   { to: "/admin", label: "Admin", icon: Activity },
+  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/quizzes", label: "Quizzes", icon: BookOpen },
+  { to: "/admin/synchronization", label: "Sync logs", icon: Activity },
 ];
 
 function MobileNavButton({ to, label, Icon, isActive }) {

@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { ArrowLeft, Compass, House } from "lucide-react";
+import { Compass } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -20,26 +19,8 @@ export default function NotFound() {
           Looks like you took a wrong turn
         </h2>
         <p className="mx-auto mt-3 max-w-md text-base leading-7 text-[var(--text-secondary)]">
-          The page you’re looking for doesn’t exist or may have moved. Let’s get you back to the quiz.
+          The page you’re looking for doesn’t exist or may have moved. Use the back arrow to return to the previous page.
         </p>
-
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link
-            to="/"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand-primary)] px-6 py-3 font-bold text-[#17283a] transition hover:-translate-y-0.5 hover:brightness-105"
-          >
-            <House size={17} aria-hidden="true" />
-            Back to Home
-          </Link>
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-card)] px-6 py-3 font-bold text-[var(--text-primary)] transition hover:border-[var(--brand-secondary)]"
-          >
-            <ArrowLeft size={17} aria-hidden="true" />
-            Go Back
-          </button>
-        </div>
       </section>
     </main>
   );

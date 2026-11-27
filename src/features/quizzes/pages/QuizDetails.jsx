@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarDays, Check, Clock3, Loader2, Play, FileText } from "lucide-react";
+import { CalendarDays, Check, Clock3, Loader2, Play, FileText } from "lucide-react";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "../../../shared/components/ui/ToastContext";
 
@@ -61,15 +61,6 @@ export default function QuizDetails() {
   return (
     <main className="quiz-details-page min-h-screen bg-[#060a0f] px-4 py-8 text-white sm:px-6 sm:py-10">
       <div className="mx-auto max-w-4xl">
-        <button
-          type="button"
-          onClick={() => navigate("/quizzes")}
-          className="mb-6 inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-[#0d131c]/80 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-700 hover:text-white"
-        >
-          <ArrowLeft size={16} />
-          Back to quizzes
-        </button>
-
         {loading ? (
           <div className="flex min-h-64 items-center justify-center text-indigo-300" role="status">
             <Loader2 className="mr-3 animate-spin" size={22} />

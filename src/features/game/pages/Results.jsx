@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Trophy, Users, Star, ArrowLeft, Crown, Medal, BookOpen, CheckCircle, ChevronDown, ChevronUp, FileSpreadsheet, Activity } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { Trophy, Users, Star, Crown, Medal, BookOpen, CheckCircle, ChevronDown, ChevronUp, FileSpreadsheet, Activity } from "lucide-react";
 import { useGame } from "../../../app/contexts/GameContext";
 import { apiUrl } from "../../../shared/config/api";
 import { useToast } from "../../../shared/components/ui/ToastContext";
@@ -13,8 +13,7 @@ const rankStyles = [
 
 export default function Results() {
   const { roomCode } = useParams();
-  const navigate = useNavigate();
-  const { leaderboard, setLeaderboard, resetGame } = useGame();
+  const { leaderboard, setLeaderboard } = useGame();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -90,11 +89,6 @@ export default function Results() {
 
   const handleExportSyncCSV = () => {
     window.open(apiUrl(`/api/sync/export/${roomCode}?format=csv`), "_blank");
-  };
-
-  const handleBackToHome = () => {
-    resetGame();
-    navigate("/");
   };
 
   return (
@@ -302,14 +296,6 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Back to Home */}
-        <button
-          onClick={handleBackToHome}
-          className="btn-shimmer w-full mt-6 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 py-3.5 font-bold shadow-[0_4px_16px_rgba(99,102,241,0.25)] hover:-translate-y-0.5 hover:shadow-[0_6px_24px_rgba(99,102,241,0.35)] transition-all duration-200 flex items-center justify-center gap-2"
-        >
-          <ArrowLeft size={16} />
-          Back to Home
-        </button>
       </div>
     </div>
   );

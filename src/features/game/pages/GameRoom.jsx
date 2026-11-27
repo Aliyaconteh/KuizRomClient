@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Clock, Flag, Zap, Server, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertTriangle, Clock, Flag, Zap, Server, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import { socket } from "../../../shared/services/socket/socket";
 import ScoreBoard from "../../../shared/components/game/ScoreBoard";
 import { useGame } from "../../../app/contexts/GameContext";
@@ -53,6 +53,7 @@ export default function GameRoom() {
   const [rankChanges, setRankChanges] = useState({});
   const [leaderChange, setLeaderChange] = useState(null);
   const [previousLeaderboard, setPreviousLeaderboard] = useState([]);
+  const [adminTermination, setAdminTermination] = useState(null);
   const { addToast } = useToast();
 
   const username = useMemo(() => localStorage.getItem("username") || "Guest", []);
@@ -249,7 +250,20 @@ export default function GameRoom() {
     };
 
     const handleFinished = (data) => {
-      setLeaderboard(data.leaderboard || data.scores || []);
+      const finalScores = data.leaderboard || data.scores || [];
+      setLeaderboard(finalScores);
+      if (
+        data.terminatedByAdmin
+        && user?.id
+        && data.hostId
+        && String(user.id) === String(data.hostId)
+      ) {
+        setAdminTermination({
+          reason: data.terminationReason
+            || "This quiz was stopped by an administrator for administrative reasons."
+        });
+        return;
+      }
       navigate(`/results/${roomCode}`);
     };
 
@@ -299,7 +313,7 @@ export default function GameRoom() {
       socket.off("game:finished", handleFinished);
       socket.off("error", handleError);
     };
-  }, [navigate, playerId, roomCode, setCurrentQuestion, setLeaderboard, setQuestionsAnswered, setTimeRemaining, setTotalQuestions, username, addToast, setMetrics, setServerScore, setSyncModel]);
+  }, [navigate, playerId, roomCode, setCurrentQuestion, setLeaderboard, setQuestionsAnswered, setTimeRemaining, setTotalQuestions, username, addToast, setMetrics, setServerScore, setSyncModel, user]);
 
   const submitAnswer = (answer) => {
     if (!currentQuestion || answerStatus === "pending" || Number(timeRemaining || 0) <= 0) return;
@@ -351,6 +365,43 @@ export default function GameRoom() {
 
   const isOptimistic = roomSyncMode.toLowerCase().includes("optimistic");
   const isHost = Boolean(user?.id && room?.hostId && user.id === room.hostId);
+
+  if (adminTermination) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[var(--app-bg)] px-4 py-10 text-[var(--app-text)]">
+        <section className="w-full max-w-2xl rounded-3xl border border-[var(--app-border)] border-t-2 border-t-[var(--brand-primary)] bg-[var(--app-surface)] p-6 shadow-2xl shadow-black/30 sm:p-9">
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-secondary)] text-[var(--brand-primary)]">
+            <AlertTriangle size={28} aria-hidden="true" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--brand-primary)]">
+            Quiz session update
+          </p>
+          <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl">
+            This quiz was stopped by an administrator
+          </h1>
+          <p className="mt-4 leading-7 text-[var(--text-muted)]">
+            We’re sorry for the interruption. The administrator ended this live quiz before it could finish.
+          </p>
+          <div className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-bg)] p-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-[var(--brand-primary)]">Reason</p>
+            <p className="mt-2 leading-6">{adminTermination.reason}</p>
+          </div>
+          <p className="mt-4 text-sm leading-6 text-[var(--text-muted)]">
+            Scores collected so far have been saved. You can view the final results.
+          </p>
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => navigate(`/results/${roomCode}`)}
+              className="rounded-xl bg-[var(--brand-primary)] px-5 py-3 font-bold text-[var(--app-bg)] transition hover:brightness-105"
+            >
+              View saved results
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <div

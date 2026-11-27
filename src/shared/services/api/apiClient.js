@@ -17,7 +17,10 @@ export async function readJsonResponse(response, action = "Request") {
   }
 
   if (!response.ok || payload?.success === false) {
-    throw new Error(payload?.message || payload?.error || `${action} failed (HTTP ${response.status}).`);
+    const error = new Error(payload?.message || payload?.error || `${action} failed (HTTP ${response.status}).`);
+    error.status = response.status;
+    error.errorType = payload?.errorType;
+    throw error;
   }
 
   return payload;
@@ -85,6 +88,7 @@ export async function apiRequest(path, options = {}) {
     standardError.category = parsedError.category;
     standardError.status = parsedError.status;
     standardError.hint = parsedError.hint;
+    standardError.errorType = error.errorType || error.responsePayload?.errorType;
     throw standardError;
   }
 }

@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Lock, UserCircle, Trophy, Award, Gamepad2, Layers } from "lucide-react";
+import { Lock, UserCircle, Trophy, Award, Gamepad2, Layers } from "lucide-react";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "../../../shared/components/ui/ToastContext";
 
 export default function Profile() {
-  const navigate = useNavigate();
   const { user, updateProfile, changePassword, authFetch, token } = useAuth();
   const { addToast } = useToast();
   const isResearcher = user?.role === "researcher"
@@ -126,15 +124,6 @@ export default function Profile() {
   return (
     <div className="profile-page min-h-screen bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 sm:py-10 lg:px-8">
       <div className="profile-content mx-auto flex max-w-5xl flex-col gap-6">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="profile-back flex w-fit items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-300 transition hover:border-blue-500/50 hover:text-white"
-        >
-          <ArrowLeft size={16} />
-          Back
-        </button>
-
         {/* User Stats Overview Cards */}
         <section className={`profile-stats grid grid-cols-2 gap-4 ${isResearcher ? "sm:grid-cols-2" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
           <div className="profile-stat rounded-2xl border border-slate-800 bg-slate-900/80 p-4">

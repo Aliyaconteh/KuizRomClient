@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import { useToast } from "./ToastContext";
-import { ChevronDown, LogOut, Plus, Activity, UserCircle, Sparkles, ShieldCheck } from "lucide-react";
+import { ChevronDown, LogOut, Plus, Activity, UserCircle, Sparkles, ShieldCheck, Users, BookOpen } from "lucide-react";
 
 export default function UserMenu() {
   const { user, logout } = useAuth();
@@ -104,13 +104,36 @@ export default function UserMenu() {
             )}
 
             {user.role === "super_admin" && (
-              <button
-                onClick={() => { navigate("/admin"); setOpen(false); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
-              >
-                <ShieldCheck size={15} />
-                <span>Admin dashboard</span>
-              </button>
+              <>
+                <button
+                  onClick={() => { navigate("/admin"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <ShieldCheck size={15} />
+                  <span>Admin dashboard</span>
+                </button>
+                <button
+                  onClick={() => { navigate("/admin/users"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <Users size={15} />
+                  <span>Manage users</span>
+                </button>
+                <button
+                  onClick={() => { navigate("/admin/quizzes"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <BookOpen size={15} />
+                  <span>Manage quizzes</span>
+                </button>
+                <button
+                  onClick={() => { navigate("/admin/synchronization"); setOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all duration-150 text-sm"
+                >
+                  <Activity size={15} />
+                  <span>Synchronization logs</span>
+                </button>
+              </>
             )}
 
             <div className="border-t border-slate-700/50 my-1" />

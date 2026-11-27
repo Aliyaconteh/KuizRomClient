@@ -196,9 +196,6 @@ export default function WaitingRoom() {
         <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center max-w-md" style={{ animation: "popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}>
           <p className="text-xl font-bold text-red-300 mb-2" >Error</p>
           <p className="text-red-200/80 mb-6 text-sm">{error}</p>
-          <button onClick={() => navigate("/")} className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl transition font-semibold">
-            Back to Home
-          </button>
         </div>
       </div>
     );

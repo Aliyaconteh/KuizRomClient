@@ -1,5 +1,5 @@
 
-import { ArrowLeft, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const sections = [
@@ -108,16 +108,7 @@ export default function PrivacyPolicy() {
   return (
     <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-16">
-
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back to Home
-        </Link>
-
-        <header className="mt-8 border-b border-[var(--border-color)] pb-8">
+        <header className="border-b border-[var(--border-color)] pb-8">
           <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-[var(--brand-secondary)]">
             <LockKeyhole size={18} aria-hidden="true" />
             KuizRoom
@@ -204,6 +195,16 @@ export default function PrivacyPolicy() {
         </div>
 
         <footer className="mt-4 border-t border-[var(--border-color)] pt-6">
+          <p className="text-sm text-[var(--text-secondary)]">
+            Also read our{" "}
+            <Link
+              to="/terms-and-services"
+              className="font-semibold text-[var(--brand-secondary)] underline underline-offset-4 hover:text-[var(--text-primary)]"
+            >
+              Terms and Services
+            </Link>
+            .
+          </p>
           <p className="text-xs text-[var(--text-muted)]">
             © {new Date().getFullYear()} KuizRoom. All rights reserved.
           </p>

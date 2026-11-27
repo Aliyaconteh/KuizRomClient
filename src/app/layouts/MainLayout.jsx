@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { WifiOff } from "lucide-react";
 import Navbar from "../../shared/components/ui/Navbar";
+import BackButton from "../../shared/components/ui/BackButton";
 
 export default function MainLayout({ children }) {
   const { pathname } = useLocation();
-  const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email";
+  const isAuthPage = pathname === "/signin" || pathname === "/signup" || pathname === "/verify-email" || pathname === "/account-suspended";
   const isFullHeightAuthPage = pathname === "/signin" || pathname === "/signup";
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
@@ -30,6 +31,7 @@ export default function MainLayout({ children }) {
         </div>
       )}
       {!isAuthPage && <Navbar />}
+      <BackButton className={`fixed left-4 z-40 ${isAuthPage ? "bottom-6" : "bottom-24 lg:bottom-6"}`} />
       {children}
     </div>
   );

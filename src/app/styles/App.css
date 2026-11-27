@@ -405,6 +405,31 @@ button:disabled {
   background: #475569;
 }
 
+.admin-account-dialog-backdrop {
+  background-color: rgba(12, 20, 34, 0.72);
+}
+
+.admin-account-dialog-content {
+  scrollbar-color: var(--app-border) transparent;
+  scrollbar-width: thin;
+}
+
+.admin-account-dialog-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-account-dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-account-dialog-content::-webkit-scrollbar-thumb {
+  background: var(--app-border);
+}
+
+.admin-account-dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
 /* ── Global Focus-Visible (accessibility) ───────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--brand-primary);
